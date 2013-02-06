@@ -1,0 +1,10 @@
+# Directive AddDefaultCharset MUST BE in .htaccess !!!
+# Select source html document encoding
+AddDefaultCharset utf-8
+
+RewriteEngine On
+
+# Prevent web access to some sensitive files and folders.
+RewriteRule ^(.*/)?\.git - [F,L]
+RewriteRule composer\.phar - [F,L]
+ErrorDocument 403 "Access Forbidden"
