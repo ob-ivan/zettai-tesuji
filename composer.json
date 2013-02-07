@@ -1,10 +1,18 @@
 {
     "require": {
-        "doctrine/common"           : ">=2.2,<2.4-dev",
-        "symfony/config"            : "v2.1.7",
-        "symfony/http-foundation"   : "v2.1.7",
-        "symfony/routing"           : "v2.1.7",
-        "symfony/templating"        : "v2.1.7",
-        "symfony/yaml"              : "v2.1.7"
+        "doctrine/common"               : ">=2.2,<2.4-dev",
+        "symfony/browser-kit"           : "v2.1.7",
+        "symfony/class-loader"          : "v2.1.7",
+        "symfony/config"                : "v2.1.7",
+        "symfony/console"               : "v2.1.7",
+        "symfony/css-selector"          : "v2.1.7",
+        "symfony/dependency-injection"  : "v2.1.7",
+        "symfony/finder"                : "v2.1.7",
+        "symfony/http-foundation"       : "v2.1.7",
+        "symfony/http-kernel"           : "v2.1.7",
+        "symfony/process"               : "v2.1.7",
+        "symfony/routing"               : "v2.1.7",
+        "symfony/templating"            : "v2.1.7",
+        "symfony/yaml"                  : "v2.1.7"
     }
 }

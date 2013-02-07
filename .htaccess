@@ -6,5 +6,5 @@ RewriteEngine On
 
 # Prevent web access to some sensitive files and folders.
 RewriteRule ^(.*/)?\.git - [F,L]
-RewriteRule composer\.phar - [F,L]
+RewriteRule composer\..* - [F,L]
 ErrorDocument 403 "Access Forbidden"
