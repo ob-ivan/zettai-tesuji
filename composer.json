@@ -1,8 +1,10 @@
 {
     "require": {
+        "doctrine/common"           : ">=2.2,<2.4-dev",
         "symfony/config"            : "v2.1.7",
         "symfony/http-foundation"   : "v2.1.7",
         "symfony/routing"           : "v2.1.7",
-        "symfony/templating"        : "v2.1.7"
+        "symfony/templating"        : "v2.1.7",
+        "symfony/yaml"              : "v2.1.7"
     }
 }
