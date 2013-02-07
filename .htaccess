@@ -5,6 +5,8 @@ AddDefaultCharset utf-8
 RewriteEngine On
 
 # Prevent web access to some sensitive files and folders.
-RewriteRule ^(.*/)?\.git - [F,L]
-RewriteRule composer\..* - [F,L]
+RewriteRule ^\.git    - [F,L]
+RewriteRule ^composer - [F,L]
+RewriteRule ^config   - [F,L]
+RewriteRule ^vendor   - [F,L]
 ErrorDocument 403 "Access Forbidden"
