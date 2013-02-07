@@ -1,6 +1,7 @@
 {
     "require": {
         "doctrine/common"               : ">=2.2,<2.4-dev",
+        "silex/silex"                   : "1.0.*@dev",
         "symfony/browser-kit"           : "v2.1.7",
         "symfony/class-loader"          : "v2.1.7",
         "symfony/config"                : "v2.1.7",
