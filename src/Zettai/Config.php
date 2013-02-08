@@ -5,8 +5,12 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Загружает и отдаёт конфиг для проекта.
- * Построен на компонентах Symfony.
+ * Загружает конфиг проекта.
+ * 
+ * Конфиг берётся из файла {$rootDirectory}/config/config.yml.
+ * К переменным конфига можно обращаться через стрелочку (->).
+ * Если переменная не определена в конфиге, бросается исключение
+ * Zettai\Exception::CONFIG_VARIABLE_UNKNOWN.
 **/
 class Config
 {
