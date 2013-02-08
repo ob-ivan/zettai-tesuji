@@ -13,16 +13,16 @@ $app = new Silex\Application();
 if ($config->debug) {
     $app['debug'] = true;
 }
+$app->register(new Silex\Provider\TwigServiceProvider(), [
+    'twig.path' => __DIR__ . '/template',
+]);
 
 // Задаём рутинг и контроллеры.
 
-$app->get('/', function () use ($config) {
-    $output = '';
-    if ($config->debug) {
-        $output .= '[debug mode] ';
-    }
-    $output .= 'hello world';
-    return $output;
+$app->get('/', function () use ($app, $config) {
+    return $app['twig']->render('main.twig', [
+        'debug' => $config->debug,
+    ]);
 });
 
 // Запускаем приложение.
