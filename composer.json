@@ -19,5 +19,8 @@
         "symfony/templating"            : "v2.1.7",
         "symfony/validator"             : "v2.1.7",
         "symfony/yaml"                  : "v2.1.7"
+    },
+    "autoload": {
+        "psr-0": {"Zettai": "src/"}
     }
 }
