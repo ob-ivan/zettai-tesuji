@@ -22,7 +22,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
         'admin' => [
             'pattern' => '^/admin/',
             'form' => ['login_path' => '/login', 'check_path' => '/admin/login_check'],
-            'logout' => ['logout_path' => '/logout'],
+            'logout' => ['logout_path' => '/admin/logout'],
             'users' => $app->share(function() use ($app, $config) {
                 return new Zettai\UserProvider($config);
             }),
@@ -47,8 +47,7 @@ $app->get('/', function () use ($app) {
 
 // Вход в админку.
 $app->get('/admin/', function () use ($app) {
-    return $app->render('admin/main.twig', [
-    ]);
+    return $app->render('admin/main.twig');
 });
 $app->get('/login', function (Request $request) use ($app) {
     return $app->render('login.twig', [
