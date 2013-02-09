@@ -57,6 +57,9 @@ $app->get('/admin/check_path', function () use ($app) {
 })
 ->bind('login_check');
 
+// DEBUG
+print $app['url_generator']->generate('login_check'); die;
+
 // На дев-хосте добавляем генератор паролей.
 $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app, $config) {
     return $app['security.encoder.digest']->encodePassword($password, $salt);
