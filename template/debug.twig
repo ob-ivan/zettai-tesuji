@@ -1,4 +1,3 @@
-{% if debug %}
-    [debug mode]
-{% endif %}
-hello world
+
+app.url_generator.generate = {{ app.url_generator.generate('login_check') }} <br/>
+path = {{ path('login_check') }} <br/>
