@@ -8,7 +8,7 @@ $config = new Zettai\Config(__DIR__);
 
 // Инициализируем приложение.
 
-$app = new Silex\Application();
+$app = new Zettai\Application();
 
 if ($config->debug) {
     $app['debug'] = true;
@@ -22,14 +22,14 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 if ($config->debug) {
     // На дев-хосте выводим всё, что душе угодно.
     $app->get('/', function () use ($app, $config) {
-        return $app['twig']->render('main.twig', [
+        return $app->render('main.twig', [
             'debug' => $config->debug,
         ]);
     });
 } else {
     // Заглушка для продакшна.
     $app->get('/', function () use ($app) {
-        return $app['twig']->render('dummy.twig');
+        return $app->render('dummy.twig');
     });
 }
 
