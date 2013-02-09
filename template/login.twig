@@ -1,25 +1,22 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Беспроигрышное мастерство маджонга</title>
-        <link rel="stylesheet" href="/style/main.css"/>
-    </head>
-    <body class="login">
-        {% if error %}
-            <div class="error">
-                {{ error }}
-            </div>
-        {% endif %}
-        <form action="{{ path('admin_login_check') }}" method="post">
-            <p>
-                <label for="username">Username: </label>
-                <input type="text" name="_username" value="{{ last_username }}"/>
-            </p>
-            <p>
-                <label for="password">Password: </label>
-                <input type="password" name="_password"/>
-            </p>
-            <p><input type="submit" value="Log in"></p>
-        </form>
-    </body>
-</html>
+{% extends 'layout.twig' %}
+
+{% block style %}login{% endblock %}
+
+{% block body %}
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+    <form action="{{ path('admin_login_check') }}" method="post">
+        <p>
+            <label for="username">Username: </label>
+            <input type="text" name="_username" value="{{ last_username }}"/>
+        </p>
+        <p>
+            <label for="password">Password: </label>
+            <input type="password" name="_password"/>
+        </p>
+        <p><input type="submit" value="Log in"></p>
+    </form>
+{% endblock %}
