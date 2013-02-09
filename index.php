@@ -19,11 +19,19 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 
 // Задаём рутинг и контроллеры.
 
-$app->get('/', function () use ($app, $config) {
-    return $app['twig']->render('main.twig', [
-        'debug' => $config->debug,
-    ]);
-});
+if ($config->debug) {
+    // На дев-хосте выводим всё, что душе угодно.
+    $app->get('/', function () use ($app, $config) {
+        return $app['twig']->render('main.twig', [
+            'debug' => $config->debug,
+        ]);
+    });
+} else {
+    // Заглушка для продакшна.
+    $app->get('/', function () use ($app) {
+        return $app['twig']->render('dummy.twig');
+    });
+}
 
 // Запускаем приложение.
 
