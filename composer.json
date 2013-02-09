@@ -17,6 +17,7 @@
         "symfony/routing"               : "v2.1.7",
         "symfony/security"              : "v2.1.7",
         "symfony/templating"            : "v2.1.7",
+        "symfony/twig-bridge"           : "v2.1.7",
         "symfony/validator"             : "v2.1.7",
         "symfony/yaml"                  : "v2.1.7",
         "twig/twig"                     : ">=1.8,<2.0-dev"

@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Беспроигрышное мастерство маджонга</title>
+        <link rel="stylesheet" href="/style/main.css"/>
+    </head>
+    <body class="login">
+        <form action="{{ path('login_check') }}" method="post">
+            <p>
+                <label for="username">Username: </label>
+                <input type="text" name="_username" value=""/>
+            </p>
+            <p>
+                <label for="password">Password: </label>
+                <input type="password" name="_password"/>
+            </p>
+            <p><input type="submit" value="Log in"></p>
+        </form>
+    </body>
+</html>

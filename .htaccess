@@ -12,3 +12,5 @@ RewriteRule ^src      - [F,L]
 RewriteRule ^template - [F,L]
 RewriteRule ^vendor   - [F,L]
 ErrorDocument 403 "Access Forbidden"
+
+RewriteRule (.*) index.php [L]
