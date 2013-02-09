@@ -1,0 +1,8 @@
+{% extends 'layout.twig' %}
+
+{% block style %}debug{% endblock %}
+
+{% block body %}
+    app.url_generator.generate = {{ app.url_generator.generate('login_check') }} <br/>
+    path = {{ path('login_check') }} <br/>
+{% endblock %}

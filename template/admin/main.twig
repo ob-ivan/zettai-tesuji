@@ -1,0 +1,10 @@
+{% extends 'layout.twig' %}
+
+{% block style %}admin{% endblock %}
+
+{% block body %}
+    <div class="welcome">
+        Привет, {{ app.security.token.user.username }}!
+        <a href="{{ path('admin_logout') }}">[Выйти]</a>
+    </div>
+{% endblock %}
