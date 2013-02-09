@@ -17,14 +17,17 @@ $app = new Zettai\Application();
 if ($config->debug) {
     $app['debug'] = true;
 }
+$app['config'] = $app->share(function () use ($config) {
+    return $config;
+});
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
             'pattern' => '^/admin/',
             'form' => ['login_path' => '/login', 'check_path' => '/admin/login_check'],
             'logout' => ['logout_path' => '/admin/logout'],
-            'users' => $app->share(function() use ($app, $config) {
-                return new Zettai\UserProvider($config);
+            'users' => $app->share(function() use ($app) {
+                return new Zettai\UserProvider($app['config']);
             }),
         ],
     ],
@@ -56,7 +59,7 @@ $app->get('/login', function (Request $request) use ($app) {
     ]);
 });
 // На дев-хосте добавляем генератор паролей.
-$app->get('/password/{password}/{salt}', function ($password, $salt) use ($app, $config) {
+$app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
     return $app['security.encoder.digest']->encodePassword($password, $salt);
 })
 ->value('salt', '');
