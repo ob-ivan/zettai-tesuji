@@ -5,10 +5,15 @@
         <link rel="stylesheet" href="/style/main.css"/>
     </head>
     <body class="login">
-        <form action="{{ path('login_check') }}" method="post">
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+        <form action="{{ path('admin_login_check') }}" method="post">
             <p>
                 <label for="username">Username: </label>
-                <input type="text" name="_username" value=""/>
+                <input type="text" name="_username" value="{{ last_username }}"/>
             </p>
             <p>
                 <label for="password">Password: </label>
