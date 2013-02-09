@@ -1,0 +1,17 @@
+/*
+    Страница-заглушка.
+    Крупный текст по центру на белом фоне.
+*/
+
+body.dummy {
+    font-family: verdana, arial, tahoma, sans-serif;
+}
+
+h1 {
+    position: relative;
+    margin-top: 20%;
+}
+
+h1, p {
+    text-align: center;
+}
