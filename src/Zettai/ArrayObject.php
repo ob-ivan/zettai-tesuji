@@ -27,13 +27,11 @@ class ArrayObject extends BaseArrayObject
         );
         if ($flags & self::READ_ONLY) {
             $this->readOnly = true;
-            print __FILE__ . ':' . __LINE__ . '<br>'; // debug
         }
     }
     
     public function __set ($name, $value)
     {
-        print __FILE__ . ':' . __LINE__ . '<br>'; // debug
         if ($this->readOnly) {
             throw new Exception ('Array object is read only', Exception::ARRAY_OBJECT_READ_ONLY);
         }
