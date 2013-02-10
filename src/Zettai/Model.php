@@ -26,13 +26,47 @@ class Model
     {
         return $this->db->fetchAssoc('
             SELECT
-                mondai_id,
-                title,
-                content
-            FROM mondai
-            WHERE mondai_id = :mondai_id
+                `mondai_id`,
+                `title`,
+                `content`
+            FROM `mondai`
+            WHERE `mondai_id` = :mondai_id
         ', [
             'mondai_id' => intval ($mondaiId)
+        ]);
+    }
+    
+    public function getMondaiList ($offset = 0, $limit = 20)
+    {
+        return $this->db->fetchAssoc('
+            SELECT
+                `mondai_id`,
+                `title`
+            FROM `mondai`
+            ORDER BY `mondai_id` ASC
+            LIMIT :offset, :limit
+        ', [
+            'offset' => intval ($offset),
+            'limit'  => intval ($limit),
+        ]);
+    }
+    
+    public function setMondai ($mondai)
+    {
+        return $this->db->executeUpdate('
+            REPLACE INTO `mondai` (
+                `mondai_id`,
+                `title`,
+                `content`
+            ) VALUES (
+                :mondai_id,
+                :title,
+                :content
+            )
+        ', [
+            'mondai_id' => intval ($mondai['mondai_id']),
+            'title'     => strval ($mondai['title']),
+            'content'   => strval ($mondai['content']),
         ]);
     }
 }
