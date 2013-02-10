@@ -53,6 +53,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+
 // Задаём рутинг и контроллеры.
 
 // Заглушка для главной страницы.
