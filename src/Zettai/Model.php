@@ -22,8 +22,17 @@ class Model
     
     // Mondai //
     
-    public function getMondai ($mondaiId)
+    public function getMondai ($mondai_id)
     {
+        // prepare
+        $mondai_id  = intval ($mondai['mondai_id']);
+        
+        // validate
+        if (! ($mondai_id > 0)) {
+            throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
+        }
+        
+        // execute
         return $this->db->fetchAssoc('
             SELECT
                 `mondai_id`,
@@ -32,8 +41,16 @@ class Model
             FROM `mondai`
             WHERE `mondai_id` = :mondai_id
         ', [
-            'mondai_id' => intval ($mondaiId)
+            'mondai_id' => $mondai_id,
         ]);
+    }
+    
+    public function getMondaiCount()
+    {
+        return $this->db->fetchColumn('
+            SELECT COUNT(`mondai_id`)
+            FROM `mondai`
+        ');
     }
     
     public function getMondaiList ($offset = 0, $limit = 20)
@@ -53,6 +70,23 @@ class Model
     
     public function setMondai ($mondai)
     {
+        // prepare
+        $mondai_id  = intval ($mondai['mondai_id']);
+        $title      = trim (strval ($mondai['title']));
+        $content    = trim (strval ($mondai['content']));
+        
+        // validate
+        if (! ($mondai_id > 0)) {
+            throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
+        }
+        if (! (strlen($title) > 0)) {
+            throw new Exception('Mondai title is empty', Exception::MODEL_MONDAI_TITLE_EMPTY);
+        }
+        if (! (strlen($content) > 0)) {
+            throw new Exception('Mondai content is empty', Exception::MODEL_MONDAI_CONTENT_EMPTY);
+        }
+        
+        // execute
         return $this->db->executeUpdate('
             REPLACE INTO `mondai` (
                 `mondai_id`,
@@ -64,9 +98,9 @@ class Model
                 :content
             )
         ', [
-            'mondai_id' => intval ($mondai['mondai_id']),
-            'title'     => strval ($mondai['title']),
-            'content'   => strval ($mondai['content']),
+            'mondai_id' => $mondai_id,
+            'title'     => $title,
+            'content'   => $content,
         ]);
     }
 }
