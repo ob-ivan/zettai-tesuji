@@ -3,7 +3,7 @@
 
 class ModelTestCase
 {
-    public function MondaiTest()
+    public function MondaiTest($app)
     {
         $mondai = ['mondai_id' => rand(200, 400), 'title' => 'a', 'content' => 'b'];
         print '<pre>setMondai</pre>';
