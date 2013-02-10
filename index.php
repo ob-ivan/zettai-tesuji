@@ -30,6 +30,9 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
         'charset'   => 'utf8',
     ],
 ]);
+$app['model'] = $app->share(function () use ($app) {
+    return new Zettai\Model($app['db']);
+});
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
