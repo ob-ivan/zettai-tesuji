@@ -9,7 +9,9 @@ use ArrayObject as BaseArrayObject;
 **/
 class ArrayObject extends BaseArrayObject
 {
-    const FLAG_READ_ONLY = 0x80;
+    const READ_ONLY = 0x80;
+    
+    private $readOnly = false;
     
     public function __construct ($input, $flags = 0, $iterator_class = 'ArrayIterator')
     {
@@ -23,6 +25,27 @@ class ArrayObject extends BaseArrayObject
             $flags,
             $iterator_class
         );
+        if ($flags & self::READ_ONLY) {
+            $this->readOnly = true;
+            print __FILE__ . ':' . __LINE__ . '<br>'; // debug
+        }
+    }
+    
+    public function __set ($name, $value)
+    {
+        print __FILE__ . ':' . __LINE__ . '<br>'; // debug
+        if ($this->readOnly) {
+            throw new Exception ('Array object is read only', Exception::ARRAY_OBJECT_READ_ONLY);
+        }
+        parent::__set($name, $value);
+    }
+    
+    public function offsetSet($offset, $value)
+    {
+        if ($this->readOnly) {
+            throw new Exception ('Array object is read only', Exception::ARRAY_OBJECT_READ_ONLY);
+        }
+        parent::offsetSet($offset, $value);
     }
     
     private static function objectifyChildren ($input, $flags, $iterator_class)
