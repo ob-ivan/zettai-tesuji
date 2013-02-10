@@ -20,6 +20,16 @@ if ($config->debug) {
 $app['config'] = $app->share(function () use ($config) {
     return $config;
 });
+$app->register(new Silex\Provider\DoctrineServiceProvider(), [
+    'db.options' => [
+        'driver'    => 'pdo_mysql',
+        'host'      => $config->db->host,
+        'dbname'    => $config->db->dbname,
+        'user'      => $config->db->user,
+        'password'  => $config->db->password,
+        'charset'   => 'utf8',
+    ],
+]);
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
@@ -32,7 +42,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
         ],
     ],
     'security.access_rules' => [
-        array('^/admin/', 'ROLE_ADMIN'),
+        ['^/admin/', 'ROLE_ADMIN'],
     ]
 ]);
 $app->register(new Silex\Provider\SessionServiceProvider());
@@ -40,7 +50,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
-
 // Задаём рутинг и контроллеры.
 
 // Заглушка для главной страницы.

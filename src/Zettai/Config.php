@@ -47,7 +47,7 @@ class Config
         }
         $locator = new FileLocator($this->rootDirectory . '/config');
         $resource = $locator->locate('config.yml');
-        $this->configValues = Yaml::parse($resource);
+        $this->configValues = new ArrayObject (Yaml::parse($resource), ArrayObject::FLAG_READ_ONLY);
         $this->isLoaded = true;
     }
 }
