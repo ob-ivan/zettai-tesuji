@@ -72,10 +72,12 @@ $app->get('/login', function (Request $request) use ($app) {
     ]);
 });
 // На дев-хосте добавляем генератор паролей.
-$app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
-    return $app['security.encoder.digest']->encodePassword($password, $salt);
-})
-->value('salt', '');
+if ($config->debug) {
+    $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
+        return $app['security.encoder.digest']->encodePassword($password, $salt);
+    })
+    ->value('salt', '');
+}
 
 // Запускаем приложение.
 
