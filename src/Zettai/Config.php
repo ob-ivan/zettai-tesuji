@@ -38,6 +38,11 @@ class Config
         throw new Exception('Config variable "' . $name . '" is unknown', Exception::CONFIG_VARIABLE_UNKNOWN);
     }
     
+    public function __set ($name, $value)
+    {
+        throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
+    }
+    
     // private //
     
     private function load()
@@ -47,7 +52,7 @@ class Config
         }
         $locator = new FileLocator($this->rootDirectory . '/config');
         $resource = $locator->locate('config.yml');
-        $this->configValues = Yaml::parse($resource);
+        $this->configValues = new ArrayObject (Yaml::parse($resource), ArrayObject::READ_ONLY);
         $this->isLoaded = true;
     }
 }

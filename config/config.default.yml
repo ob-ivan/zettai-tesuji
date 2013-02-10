@@ -8,7 +8,11 @@ debug : false
 
 ### Перечисленные здесь пользователи будут иметь доступ к админке.
 security:
-    # username : password_hash
+    # username : digest
     
-### База данных пока не используется.
+### База данных.
 # db :
+#     host     : 
+#     dbname   : 
+#     user     : 
+#     password : 

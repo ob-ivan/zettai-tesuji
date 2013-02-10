@@ -10,6 +10,7 @@ RewriteRule ^composer - [F,L]
 RewriteRule ^config   - [F,L]
 RewriteRule ^src      - [F,L]
 RewriteRule ^template - [F,L]
+RewriteRule ^test     - [F,L]
 RewriteRule ^vendor   - [F,L]
 ErrorDocument 403 "Access Forbidden"
 
