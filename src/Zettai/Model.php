@@ -25,7 +25,7 @@ class Model
     public function getMondai ($mondai_id)
     {
         // prepare
-        $mondai_id  = intval ($mondai['mondai_id']);
+        $mondai_id  = intval ($mondai_id);
         
         // validate
         if (! ($mondai_id > 0)) {
@@ -55,23 +55,25 @@ class Model
     
     public function getMondaiList ($offset = 0, $limit = 20)
     {
+        // prepare
+        $offset = intval ($offset);
+        $limit  = intval ($limit);
+        
+        // execute
         return $this->db->fetchAll('
             SELECT
                 `mondai_id`,
                 `title`
             FROM `mondai`
             ORDER BY `mondai_id` ASC
-            LIMIT :offset, :limit
-        ', [
-            'offset' => intval ($offset),
-            'limit'  => intval ($limit),
-        ]);
+            LIMIT ' . $offset . ', ' . $limit . '
+        ');
     }
     
-    public function removeMondai ($mondai_id)
+    public function deleteMondai ($mondai_id)
     {
         // prepare
-        $mondai_id  = intval ($mondai['mondai_id']);
+        $mondai_id  = intval ($mondai_id);
         
         // validate
         if (! ($mondai_id > 0)) {
