@@ -6,10 +6,7 @@ use Doctrine\DBAL\Connection;
 /**
  * Класс, дающий доступ к извлечению и изменению данных в базе.
  *
- * Методы для сущности "Задача" (Mondai):
- *  [mondai_id, title, content]? getMondai(int $mondaiId)
- *  [mondai_id => title] getMondaiList(int $offset, int $limit) --- сортировка по возрастанию номера.
- *  void setMondai([mondai_id, title, content] $mondai)
+ * Документация: https://github.com/ob-ivan/zettai-tesuji/wiki/Модель-данных
 **/
 class Model
 {
