@@ -55,7 +55,7 @@ class Model
     
     public function getMondaiList ($offset = 0, $limit = 20)
     {
-        return $this->db->fetchAssoc('
+        return $this->db->fetchAll('
             SELECT
                 `mondai_id`,
                 `title`
