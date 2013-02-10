@@ -68,6 +68,20 @@ class Model
         ]);
     }
     
+    public function removeMondai ($mondai_id)
+    {
+        // prepare
+        $mondai_id  = intval ($mondai['mondai_id']);
+        
+        // validate
+        if (! ($mondai_id > 0)) {
+            throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
+        }
+        
+        // execute
+        $this->db->delete ('mondai', ['mondai_id' => $mondai_id]);
+    }
+    
     public function setMondai ($mondai)
     {
         // prepare
