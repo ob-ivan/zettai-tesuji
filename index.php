@@ -62,15 +62,35 @@ $app->get('/', function () use ($app) {
 });
 
 // Вход в админку.
-$app->get('/admin/', function () use ($app) {
-    return $app->render('admin/main.twig');
-});
 $app->get('/login', function (Request $request) use ($app) {
     return $app->render('login.twig', [
         'error'         => $app['security.last_error']($request),
         'last_username' => $app['session']->get('_security.last_username'),
     ]);
 });
+
+// Главная страница админки.
+$app->get('/admin/{page}', function ($page) use ($app) {
+    $perPage = 20;
+    $mondaiList = $app['model']->getMondaiList($page * $perPage, $perPage);
+    $mondaiCount = $app['model']->getMondaiCount();
+    
+    return $app->render('admin/main.twig', [
+        'mondaiList'  => $mondaiList,
+        'mondaiCount' => $mondaiCount,
+        'curPage'     => $page,
+        'perPage'     => $perPage,
+    ]);
+})
+->assert('page', '\\d*')
+->convert('page', function ($page) {
+    $page = intval ($page);
+    if ($page < 1) {
+        $page = 1;
+    }
+    return $page;
+});
+
 // На дев-хосте добавляем генератор паролей.
 if ($config->debug) {
     $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
