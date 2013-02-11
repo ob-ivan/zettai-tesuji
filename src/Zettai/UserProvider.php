@@ -24,7 +24,7 @@ class UserProvider implements UserProviderInterface
             throw new UsernameNotFoundException('Пользователя "' . $username . '" не существует');
         }
         $userdata = $this->config->security[$username];
-        return new User($username, $userdata['password'], $userdata['roles']);
+        return new User($username, $userdata['password'], $userdata['roles']->getArrayCopy());
     }
  
     public function refreshUser(UserInterface $user)

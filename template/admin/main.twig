@@ -7,4 +7,26 @@
         Привет, {{ app.security.token.user.username }}!
         <a href="{{ path('admin_logout') }}">[Выйти]</a>
     </div>
+    <h1>Админка</h1>
+    
+    <h2>Задачи</h2>
+    {% if mondaiList %}
+        <ul>
+            {% for mondai in mondaiList %}
+                <li>
+                    <a href="{{ path('admin_mondai_view', { 'mondai_id' : mondai.mondai_id }) }}?page={{ curPage }}">
+                        №{{ mondai.mondai_id }}. {{ mondai.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% include 'paginator.twig' with {
+            'totalCount'    : mondaiCount,
+            'perPage'       : perPage,
+            'curPage'       : curPage,
+            'linkTemplate'  : 'admin_page'
+        } only %}
+    {% else %}
+        <p class="empty">Нет задач</p>
+    {% endif %}
 {% endblock %}
