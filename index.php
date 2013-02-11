@@ -89,7 +89,15 @@ $app->get('/admin/{page}', function ($page) use ($app) {
         $page = 1;
     }
     return $page;
-});
+})
+->bind('admin_page');
+
+// Страница просмотра задачи в админке.
+$app->get('/admin/mondai/view/{mondai_id}', function ($mondai_id) {
+    // TODO
+    return 'Not implemented yet.';
+})
+->bind('admin_mondai_view');
 
 // На дев-хосте добавляем генератор паролей.
 if ($config->debug) {
