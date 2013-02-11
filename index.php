@@ -52,6 +52,11 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
+$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
+    $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
+    return $twig;
+}));
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Задаём рутинг и контроллеры.
@@ -62,15 +67,46 @@ $app->get('/', function () use ($app) {
 });
 
 // Вход в админку.
-$app->get('/admin/', function () use ($app) {
-    return $app->render('admin/main.twig');
-});
 $app->get('/login', function (Request $request) use ($app) {
     return $app->render('login.twig', [
         'error'         => $app['security.last_error']($request),
         'last_username' => $app['session']->get('_security.last_username'),
     ]);
 });
+
+// Главная страница админки.
+$app->get('/admin/{page}', function ($page) use ($app) {
+    $mondaiCount = $app['model']->getMondaiCount();
+    $perPage = 20;
+    if (($page - 1) * $perPage > $mondaiCount) {
+        return $app->redirect($app['url_generator']->generate('admin_page', ['page' => 1]));
+    }
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
+    
+    return $app->render('admin/main.twig', [
+        'mondaiList'  => $mondaiList,
+        'mondaiCount' => $mondaiCount,
+        'curPage'     => $page,
+        'perPage'     => $perPage,
+    ]);
+})
+->assert('page', '\\d*')
+->convert('page', function ($page) {
+    $page = intval ($page);
+    if ($page < 1) {
+        $page = 1;
+    }
+    return $page;
+})
+->bind('admin_page');
+
+// Страница просмотра задачи в админке.
+$app->get('/admin/mondai/view/{mondai_id}', function ($mondai_id) {
+    // TODO
+    return 'Not implemented yet.';
+})
+->bind('admin_mondai_view');
+
 // На дев-хосте добавляем генератор паролей.
 if ($config->debug) {
     $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {

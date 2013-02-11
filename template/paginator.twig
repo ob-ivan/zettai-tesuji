@@ -1,0 +1,29 @@
+{#
+    Подключаемый шаблон для вывода пагинации.
+    На входе должен иметь параметры:
+    {
+        'totalCount'    :
+        'perPage'       :
+        'curPage'       :
+        'linkTemplate'  :
+    }
+#}
+{% if totalCount > perPage %}
+    {# На предыдущую страницу #}
+    {% if curPage > 1 %}
+        {% if curPage > 2%}
+            ...
+        {% endif %}
+        <a href="{{ path(linkTemplate, { 'page' : curPage - 1 }) }}">{{ curPage - 1 }}</a>
+    {% endif %}
+    {# Текущая страница #}
+    <b>{{ curPage }}</b>
+    {# На следующую страницу #}
+    {% set totalPages = ceil(totalCount / perPage) %}
+    {% if curPage < totalPages %}
+        <a href="{{ path(linkTemplate, { 'page' : curPage + 1 }) }}">{{ curPage + 1 }}</a>
+        {% if curPage < totalPages - 1 %}
+            ...
+        {% endif %}
+    {% endif %}
+{% endif %}
