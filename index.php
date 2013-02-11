@@ -72,7 +72,7 @@ $app->get('/login', function (Request $request) use ($app) {
 // Главная страница админки.
 $app->get('/admin/{page}', function ($page) use ($app) {
     $perPage = 20;
-    $mondaiList = $app['model']->getMondaiList($page * $perPage, $perPage);
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
     $mondaiCount = $app['model']->getMondaiCount();
     
     return $app->render('admin/main.twig', [
