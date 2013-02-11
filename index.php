@@ -52,6 +52,11 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
+$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
+    $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
+    return $twig;
+}));
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Задаём рутинг и контроллеры.
@@ -71,9 +76,12 @@ $app->get('/login', function (Request $request) use ($app) {
 
 // Главная страница админки.
 $app->get('/admin/{page}', function ($page) use ($app) {
-    $perPage = 20;
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
     $mondaiCount = $app['model']->getMondaiCount();
+    $perPage = 20;
+    if (($page - 1) * $perPage > $mondaiCount) {
+        return $app->redirect($app['url_generator']->generate('admin_page', ['page' => 1]));
+    }
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
     
     return $app->render('admin/main.twig', [
         'mondaiList'  => $mondaiList,
