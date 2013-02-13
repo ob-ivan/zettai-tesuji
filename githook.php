@@ -1,4 +1,5 @@
 <?php
+
 define('LOG_DIR', 'log');
 define('LOG_PATH', LOG_DIR . '/githook.log');
 
@@ -21,18 +22,18 @@ try {
 }
 
 // log the request
-writeLog('payload = ' . print_r($payload, true));
+writeLog('Payload = ' . print_r($payload, true));
 
 // only execute if pushed to master
 if ($payload->ref === 'refs/heads/master')
 {
-    writeLog('ref is ok, trying to exec(deploy.sh)');
+    writeLog('Ref is ok, running exec(deploy.sh)');
     
     // run deployment script
     try {
-        $output = shell_exec('./deploy.sh');
-        writeLog('returned from exec(deploy.sh), output = ' . $output);
+        $output = shell_exec('./deploy.sh 2>&1 >>' . LOG_PATH . ' &');
     } catch (Exception $e) {
-        writeLog('caught exception = ' . print_r($e, true));
+        writeLog('Caught exception = ' . print_r($e, true));
     }
 }
+writeLog('Done.');
