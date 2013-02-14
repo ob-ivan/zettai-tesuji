@@ -53,6 +53,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
+        return str_pad($input, $length, $char, STR_PAD_LEFT);
+    }));
     $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;

@@ -15,7 +15,7 @@
             {% for mondai in mondaiList %}
                 <li>
                     <a href="{{ path('admin_mondai_view', { 'mondai_id' : mondai.mondai_id }) }}?page={{ curPage }}">
-                        №{{ mondai.mondai_id }}. {{ mondai.title }}
+                        №{{ mondai.mondai_id|lpad('0', 3) }}. {{ mondai.title }}
                     </a>
                 </li>
             {% endfor %}
