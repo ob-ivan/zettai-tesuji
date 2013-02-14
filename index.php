@@ -101,9 +101,21 @@ $app->get('/admin/{page}', function ($page) use ($app) {
 ->bind('admin_page');
 
 // Страница просмотра задачи в админке.
-$app->get('/admin/mondai/view/{mondai_id}', function ($mondai_id) {
-    // TODO
-    return 'Not implemented yet.';
+$app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
+    $mondai = $app['model']->getMondai($mondai_id);
+    $page = $request->get('page');
+    return $app->render('admin/mondai/view.twig', [
+        'mondai' => $mondai,
+        'page' => $page,
+    ]);
+})
+->assert('mondai_id', '\\d+')
+->convert('mondai_id', function ($mondai_id) {
+    $mondai_id = intval ($mondai_id);
+    if ($mondai_id < 1) {
+        throw new Exception('Mondai id must be positive integer');
+    }
+    return $mondai_id;
 })
 ->bind('admin_mondai_view');
 

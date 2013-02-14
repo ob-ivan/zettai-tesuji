@@ -1,0 +1,21 @@
+{% extends 'layout.twig' %}
+
+{% block style %}admin{% endblock %}
+
+{% block body %}
+    <div class="welcome">
+        Привет, {{ app.security.token.user.username }}!
+        <a href="{{ path('admin_logout') }}">[Выйти]</a>
+    </div>
+    <h1>Админка</h1>
+    
+    {% if mondai %}
+        <h2>Задача №{{ mondai.mondai_id }}. {{ mondai.title }}</h2>
+        <p>{{ mondai.content }}</p>
+    {% else %}
+        <p class="empty">Нет такой задачи</p>
+    {% endif %}
+    
+    <a href="{{ path('admin') }}">[на главную]</a>
+    <a href="{{ path('admin_page', page) }}">[к списку задач]</a>
+{% endblock %}
