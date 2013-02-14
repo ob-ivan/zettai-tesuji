@@ -36,7 +36,7 @@ $app['model'] = $app->share(function () use ($app) {
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
-            'pattern' => '^/admin/',
+            'pattern' => '^/admin(/|$)',
             'form' => ['login_path' => '/login', 'check_path' => '/admin/login_check'],
             'logout' => ['logout_path' => '/admin/logout'],
             'users' => $app->share(function() use ($app) {
@@ -90,7 +90,8 @@ $app->get('/admin/{page}', function ($page) use ($app) {
         'perPage'     => $perPage,
     ]);
 })
-->assert('page', '\\d*')
+->assert ('page', '\\d*')
+->value  ('page', '1')
 ->convert('page', function ($page) {
     $page = intval ($page);
     if ($page < 1) {

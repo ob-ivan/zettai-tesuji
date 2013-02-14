@@ -16,6 +16,6 @@
         <p class="empty">Нет такой задачи</p>
     {% endif %}
     
-    <a href="{{ path('admin') }}">[на главную]</a>
-    <a href="{{ path('admin_page', page) }}">[к списку задач]</a>
+    <a href="{{ path('admin_page') }}">[на главную]</a>
+    <a href="{{ path('admin_page', { 'page' : page }) }}">[к списку задач]</a>
 {% endblock %}
