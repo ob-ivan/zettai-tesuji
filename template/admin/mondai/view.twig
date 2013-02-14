@@ -1,0 +1,13 @@
+{% extends 'admin/_layout.twig' %}
+
+{% block admin_body %}
+    {% if mondai %}
+        <h2>Задача №{{ mondai.mondai_id|lpad('0', 3) }}. {{ mondai.title }}</h2>
+        <p>{{ mondai.content }}</p>
+    {% else %}
+        <p class="empty">Нет такой задачи</p>
+    {% endif %}
+    
+    <a href="{{ path('admin_page') }}">[на главную]</a>
+    <a href="{{ path('admin_page', { 'page' : page }) }}">[к списку задач]</a>
+{% endblock %}

@@ -1,21 +1,13 @@
-{% extends 'layout.twig' %}
+{% extends 'admin/_layout.twig' %}
 
-{% block style %}admin{% endblock %}
-
-{% block body %}
-    <div class="welcome">
-        Привет, {{ app.security.token.user.username }}!
-        <a href="{{ path('admin_logout') }}">[Выйти]</a>
-    </div>
-    <h1>Админка</h1>
-    
+{% block admin_body %}
     <h2>Задачи</h2>
     {% if mondaiList %}
         <ul>
             {% for mondai in mondaiList %}
                 <li>
                     <a href="{{ path('admin_mondai_view', { 'mondai_id' : mondai.mondai_id }) }}?page={{ curPage }}">
-                        №{{ mondai.mondai_id }}. {{ mondai.title }}
+                        №{{ mondai.mondai_id|lpad('0', 3) }}. {{ mondai.title }}
                     </a>
                 </li>
             {% endfor %}

@@ -36,7 +36,7 @@ $app['model'] = $app->share(function () use ($app) {
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
-            'pattern' => '^/admin/',
+            'pattern' => '^/admin(/|$)',
             'form' => ['login_path' => '/login', 'check_path' => '/admin/login_check'],
             'logout' => ['logout_path' => '/admin/logout'],
             'users' => $app->share(function() use ($app) {
@@ -53,6 +53,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
+        return str_pad($input, $length, $char, STR_PAD_LEFT);
+    }));
     $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;
@@ -90,7 +93,8 @@ $app->get('/admin/{page}', function ($page) use ($app) {
         'perPage'     => $perPage,
     ]);
 })
-->assert('page', '\\d*')
+->assert ('page', '\\d*')
+->value  ('page', '1')
 ->convert('page', function ($page) {
     $page = intval ($page);
     if ($page < 1) {
@@ -101,9 +105,21 @@ $app->get('/admin/{page}', function ($page) use ($app) {
 ->bind('admin_page');
 
 // Страница просмотра задачи в админке.
-$app->get('/admin/mondai/view/{mondai_id}', function ($mondai_id) {
-    // TODO
-    return 'Not implemented yet.';
+$app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
+    $mondai = $app['model']->getMondai($mondai_id);
+    $page = $request->get('page');
+    return $app->render('admin/mondai/view.twig', [
+        'mondai' => $mondai,
+        'page' => $page,
+    ]);
+})
+->assert('mondai_id', '\\d+')
+->convert('mondai_id', function ($mondai_id) {
+    $mondai_id = intval ($mondai_id);
+    if ($mondai_id < 1) {
+        throw new Exception('Mondai id must be positive integer');
+    }
+    return $mondai_id;
 })
 ->bind('admin_mondai_view');
 
