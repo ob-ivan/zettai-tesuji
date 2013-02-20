@@ -21,7 +21,8 @@ class CsrfHandler
 {
     // const //
     
-    const SALT = 'KSt;tE:0c-j9N5_6';
+    const HASH_SALT  = 'KSt;tE:0c-j9N5_6';
+    const KEY_PREFIX = 'csrf_';
     
     // public //
     
@@ -36,7 +37,8 @@ class CsrfHandler
     public function generate($seed)
     {
         $csrf = $this->hash($seed);
-        $this->session->set($csrf, $seed);
+        $key  = $this->key($csrf);
+        $this->session->set($key, $seed);
         return $csrf;
     }
     
@@ -46,10 +48,11 @@ class CsrfHandler
     **/
     public function validate($csrf, $test)
     {
-        if (! $this->session->has($csrf)) {
+        $key  = $this->key($csrf);
+        if (! $this->session->has($key)) {
             return false;
         }
-        $seed = $this->session->get($csrf);
+        $seed = $this->session->get($key);
         return $seed === $test;
     }
     
@@ -57,6 +60,11 @@ class CsrfHandler
     
     private function hash($seed)
     {
-        return md5($seed . microtime(true) . self::SALT);
+        return md5($seed . microtime(true) . self::HASH_SALT);
+    }
+    
+    private function key($csrf)
+    {
+        return self::KEY_PREFIX . $csrf;
     }
 }

@@ -128,20 +128,28 @@ $app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_
 
 // Страница редактирования задачи в админке.
 $app->get('/admin/mondai/edit/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
-    $mondai = $app['model']->getMondai($mondai_id);
-    $page   = $request->query->get('page');
-    $csrf   = $app['csrf']->generate('admin_mondai_edit_' . $mondai_id);
-    return $app->render('admin/mondai/edit.twig', [
-        'mondai' => $mondai,
-        'page'   => $page,
-        'csrf'   => $csrf,
-    ]);
+    $data = [
+        'page'          => $request->query->get('page'),
+        'mondai_id_old' => $mondai_id,
+        'csrf'          => $app['csrf']->generate('admin_mondai_edit_' . $mondai_id),
+    ];
+    if ($mondai_id === 'new') {
+        $data['mondai_id_new'] = $app['model']->getMondaiNextId();
+    } else {
+        // TODO: Что делать, если передан mondai_id, а такой задачи в базе не существует?
+        $data['mondai'] = $app['model']->getMondai($mondai_id);
+        $data['mondai_id_new'] = $mondai_id;
+    }
+    return $app->render('admin/mondai/edit.twig', $data);
 })
-->assert('mondai_id', '\\d+')
+->assert('mondai_id', '\\d+|new')
 ->convert('mondai_id', function ($mondai_id) {
+    if ($mondai_id === 'new') {
+        return $mondai_id;
+    }
     $mondai_id = intval ($mondai_id);
     if ($mondai_id < 1) {
-        throw new Exception('Mondai id must be positive integer');
+        throw new Exception('Mondai id must be "new" or positive integer');
     }
     return $mondai_id;
 })

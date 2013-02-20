@@ -2,3 +2,15 @@
 div.welcome {
     float : right;
 }
+
+/* Редактирование задачи */
+
+input[name=mondai_id_new] {
+    width: 3ex;
+}
+input[name=title] {
+    width: 30ex;
+}
+textarea[name=content] {
+    width  : 30em;
+}
