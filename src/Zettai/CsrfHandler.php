@@ -9,7 +9,7 @@
  *  - При выводе формы вставляем токен:
  *      <input type="hidden" name="csrf" value="{{ csrfHandler.generate('operation_name_' ~ operation_id) }}"/>
  *  - В обработчике формы сравниваем токен с ранее сохранённым:
- *      if (! $csrfHandler->validate ($request->request('csrf'), 'operation_name_' . $operation_id)) {
+ *      if (! $csrfHandler->validate ($request->request->get('csrf'), 'operation_name_' . $operation_id)) {
  *          throw new Exception('Попытка взлома');
  *      }
 **/

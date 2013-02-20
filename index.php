@@ -20,6 +20,9 @@ if ($config->debug) {
 $app['config'] = $app->share(function () use ($config) {
     return $config;
 });
+$app['csrf'] = $app->share(function () use ($app) {
+    return new Zettai\CsrfHandler($app['session']);
+});
 $app->register(new Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
         'driver'    => 'pdo_mysql',
@@ -107,7 +110,7 @@ $app->get('/admin/{page}', function ($page) use ($app) {
 // Страница просмотра задачи в админке.
 $app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
     $mondai = $app['model']->getMondai($mondai_id);
-    $page = $request->get('page');
+    $page = $request->query->get('page');
     return $app->render('admin/mondai/view.twig', [
         'mondai' => $mondai,
         'page' => $page,
@@ -122,6 +125,27 @@ $app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_
     return $mondai_id;
 })
 ->bind('admin_mondai_view');
+
+// Страница редактирования задачи в админке.
+$app->get('/admin/mondai/edit/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
+    $mondai = $app['model']->getMondai($mondai_id);
+    $page   = $request->query->get('page');
+    $csrf   = $app['csrf']->generate('admin_mondai_edit_' . $mondai_id);
+    return $app->render('admin/mondai/edit.twig', [
+        'mondai' => $mondai,
+        'page'   => $page,
+        'csrf'   => $csrf,
+    ]);
+})
+->assert('mondai_id', '\\d+')
+->convert('mondai_id', function ($mondai_id) {
+    $mondai_id = intval ($mondai_id);
+    if ($mondai_id < 1) {
+        throw new Exception('Mondai id must be positive integer');
+    }
+    return $mondai_id;
+})
+->bind('admin_mondai_edit');
 
 // На дев-хосте добавляем генератор паролей.
 if ($config->debug) {
