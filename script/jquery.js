@@ -1,0 +1,1 @@
+vendor/kraksoft/jquery/js/jquery.min.js
