@@ -1,1 +1,1 @@
-vendor/andyet/Happy.js/happy.js
+../vendor/andyet/Happy.js/happy.js
