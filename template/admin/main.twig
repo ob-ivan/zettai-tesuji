@@ -21,4 +21,5 @@
     {% else %}
         <p class="empty">Нет задач</p>
     {% endif %}
+    <a href="{{ path('admin_mondai_edit', { 'mondai_id_old' : 'new' }) }}">[Создать задачу]</a>
 {% endblock %}
