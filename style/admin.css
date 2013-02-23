@@ -2,3 +2,26 @@
 div.welcome {
     float : right;
 }
+
+/* Редактирование задачи */
+
+input[name=mondai_id_new] {
+    width: 3.5ex;
+}
+input[name=title] {
+    width: 30ex;
+}
+textarea[name=content] {
+    width  : 30em;
+}
+
+input.unhappy {
+    box-shadow : #f00 0px 0px 1.5px 1px;
+}
+span.unhappyMessage {
+    background : white;
+    border   : 1px solid red;
+    display  : block;
+    padding  : 3px;
+    position : absolute;
+}

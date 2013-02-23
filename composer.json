@@ -1,7 +1,9 @@
 {
     "require": {
+        "andyet/Happy.js"               : "*",
         "doctrine/common"               : "v2.3.0",
         "doctrine/dbal"                 : "v2.3.2",
+        "jquery/jquery"                 : "1.8.3",
         "silex/silex"                   : "1.0.*@dev",
         "symfony/browser-kit"           : "v2.1.7",
         "symfony/class-loader"          : "v2.1.7",
@@ -30,5 +32,29 @@
         "psr-0": {
             "Zettai": "src/"
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "jquery/jquery",
+                "version": "1.8.3",
+                "dist": {
+                    "url": "http://code.jquery.com/jquery-1.8.3.min.js",
+                    "type": "file"
+                }
+            }
+        },        
+        {
+            "type": "package",
+            "package": {
+                "name": "andyet/Happy.js",
+                "version": "0.2",
+                "dist": {
+                    "url": "https://raw.github.com/andyet/Happy.js/master/happy.js",
+                    "type": "file"
+                }
+            }
+        }
+    ]
 }

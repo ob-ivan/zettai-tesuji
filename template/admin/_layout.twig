@@ -3,6 +3,7 @@
 {% block style %}admin{% endblock %}
 
 {% block body %}
+    <script src="/script/jquery.js"></script>
     <div class="welcome">
         Привет, {{ app.security.token.user.username }}!
         <a href="{{ path('admin_logout') }}">[Выйти]</a>

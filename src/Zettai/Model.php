@@ -67,6 +67,14 @@ class Model
         ');
     }
     
+    public function getMondaiNextId()
+    {
+        return $this->db->fetchColumn('
+            SELECT MAX(`mondai_id`) + 1
+            FROM `mondai`
+        ');
+    }
+    
     public function deleteMondai ($mondai_id)
     {
         // prepare
