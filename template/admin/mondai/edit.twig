@@ -35,9 +35,9 @@
         <p>
             <input type="submit" value="Сохранить"/>
             {% if mondai_id_old == 'new' %}
-                {% set cancel = url('admin_page', { 'page' : page }) %}
+                {% set cancel = path('admin_page', { 'page' : page }) %}
             {% else %}
-                {% set cancel = url('admin_mondai_view', { 'mondai_id' : mondai_id_old }) ~ '?page=' ~ page %}
+                {% set cancel = path('admin_mondai_view', { 'mondai_id' : mondai_id_old }) ~ '?page=' ~ page %}
             {% endif %}
             <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
             {# <input type="button" value="Удалить"/> #}
