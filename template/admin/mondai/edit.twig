@@ -3,7 +3,11 @@
 {% block admin_body %}
     <script src="/script/happy.js"></script>
     <h2>Редактирование задачи</h2>
-    <form id="admin_mondai_edit" action="{{ path('admin_mondai_edit', { 'mondai_id' : mondai_id_old }) }}?page={{ page }}" method="post">
+    <form
+        id="admin_mondai_edit"
+        action="{{ path('admin_mondai_edit', { 'mondai_id_old' : mondai_id_old }) }}?page={{ page }}"
+        method="post"
+    >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
         <p>№<input name="mondai_id_new" required value="{{ mondai.mondai_id|default(mondai_id_new) }}" maxlength="3"/>.
             <input name="title"         required value="{{ mondai.title|default('') }}"/>
@@ -12,7 +16,7 @@
         <p>
             <input type="submit" value="Сохранить"/>
             <input type="button" value="Отмена"/>
-            <input type="button" value="Удалить"/>
+            {# <input type="button" value="Удалить"/> #}
         </p>
     </form>
     <script>
