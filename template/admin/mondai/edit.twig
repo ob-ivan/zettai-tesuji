@@ -32,6 +32,17 @@
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
         <p>№<input name="mondai_id_new" required value="{{ mondai_id_new }}" maxlength="3"/>.
             <input name="title"         required value="{{ title }}"/>
+            <label>
+                <input
+                    type="checkbox"
+                    name="is_hidden"
+                    value="1"
+                    {% if is_hidden == 1 %}
+                        checked
+                    {% endif %}
+                />
+                (скрыта)
+            </label>
         </p>
         <p><textarea name="content" required rows="13">{{ content }}</textarea></p>
         <p>

@@ -2,7 +2,13 @@
 
 {% block admin_body %}
     {% if mondai %}
-        <h2>Задача №{{ mondai.mondai_id|lpad('0', 3) }}. {{ mondai.title }}</h2>
+        <h2>
+            Задача №{{ mondai.mondai_id|lpad('0', 3) }}.
+            {{ mondai.title }}
+            {% if mondai.is_hidden %}
+                (скрыта)
+            {% endif %}
+        </h2>
         <pre>{{ mondai.content }}</pre>
         <p><a href="{{ path('admin_mondai_edit', { 'mondai_id_old' : mondai.mondai_id }) }}">[редактировать]</a></p>
     {% else %}
