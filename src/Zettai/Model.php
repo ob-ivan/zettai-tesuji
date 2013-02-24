@@ -123,6 +123,6 @@ class Model
         if ($this->getMondai($mondai->mondai_id)) {
             return $this->db->update('mondai', $mondai->getData(), ['mondai_id' => $mondai->mondai_id]);
         }
-         return $this->db->insert('mondai', $mondai->getData());
+        return $this->db->insert('mondai', $mondai->getData());
     }
 }
