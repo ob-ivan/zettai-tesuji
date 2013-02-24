@@ -173,11 +173,9 @@ $app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_
 ->bind('admin_mondai_view');
 
 // Страница редактирования задачи в админке.
-$app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $mondai_id_old) use ($app) {
+$app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
 
-    $csrfKey = function () use ($mondai_id_old) {
-        return 'admin_mondai_edit_' . $mondai_id_old;
-    };
+    $csrfKey = 'admin_mondai_edit_' . $mondai_id;
 
     // Процедура отображения формы с задачей.
     $view = function (
@@ -186,15 +184,15 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     ) use (
         $app,
         $request,
-        $mondai_id_old,
+        $mondai_id,
         $csrfKey
     ) {
         return $app->render('admin/mondai/edit.twig', [
-            'page'          => $request->query->get('page'),
-            'mondai_id_old' => $mondai_id_old,
-            'csrf'          => $app['csrf']->generate($csrfKey()),
-            'mondai'        => $mondai,
-            'errors'        => $errors,
+            'page'      => $request->query->get('page'),
+            'mondai_id' => $mondai_id,
+            'csrf'      => $app['csrf']->generate($csrfKey),
+            'mondai'    => $mondai,
+            'errors'    => $errors,
         ]);
     };
     
@@ -205,7 +203,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     ) use (
         $app,
         $request,
-        $mondai_id_old
+        $mondai_id
     ) {
         $formKey = md5(microtime(true));
         $app['session']->set($formKey, [
@@ -213,8 +211,8 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             'errors' => $errors,
         ]);
         return $app->redirect(
-            $app['url_generator']->generate('admin_mondai_edit', ['mondai_id_old' => $mondai_id_old]) .
-            '?page=' . $request->query->get('page') .
+            $app['url_generator']->generate('admin_mondai_edit', ['mondai_id' => $mondai_id]) .
+            '?page='    . $request->query->get('page') .
             '&formKey=' . $formKey
         );
     };
@@ -224,12 +222,12 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
         $errors = [];
         
         // Проверить csrf-токен.
-        if (! $app['csrf']->validate($request->request->get('csrf'), $csrfKey())) {
+        if (! $app['csrf']->validate($request->request->get('csrf'), $csrfKey)) {
             $errors[] = 'CSRF';
         }
         
         $mondai = new Zettai\Mondai ([
-            'mondai_id' => $request->request->get('mondai_id_new'),
+            'mondai_id' => $request->request->get('mondai_id'),
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => $request->request->get('content'),
@@ -241,14 +239,14 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             // Проверить поля.
             // TODO: Прикрутить валидатор.
             if (! preg_match ('/\\d{1,3}/', $mondai->mondai_id)) {
-                $errors[] = 'MONDAI_ID_NEW:NOT_A_NUMBER';
+                $errors[] = 'MONDAI_ID:NOT_A_NUMBER';
             } else {
                 if (! ($mondai->mondai_id > 0)) {
-                    $errors[] = 'MONDAI_ID_NEW:NOT_POSITIVE';
+                    $errors[] = 'MONDAI_ID:NOT_POSITIVE';
                 } else {
                     // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
-                    if ($mondai_id_old !== $mondai->mondai_id && $app['model']->getMondai($mondai->mondai_id)) {
-                        $errors[] = 'MONDAI_ID_NEW:ALREADY_EXISTS';
+                    if ($mondai_id !== $mondai->mondai_id && $app['model']->getMondai($mondai->mondai_id)) {
+                        $errors[] = 'MONDAI_ID:ALREADY_EXISTS';
                     }
                 }
             }
@@ -268,8 +266,8 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             $app['model']->setMondai($mondai);
             
             // Если старый номер не равен new, то после создания нового надо удалить старое.
-            if ($mondai_id_old !== 'new' && $mondai_id_old !== $mondai->mondai_id) {
-                $app['model']->deleteMondai($mondai_id_old);
+            if ($mondai_id !== 'new' && $mondai_id !== $mondai->mondai_id) {
+                $app['model']->deleteMondai($mondai_id);
             }
             
             // Показать новую задачу в админке.
@@ -286,7 +284,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             }
             
             // Удалить задачу.
-            $app['model']->deleteMondai($mondai_id_old);
+            $app['model']->deleteMondai($mondai_id);
             
             // Показать список задач.
             return $app->redirect($app['url_generator']->generate('admin_page', ['page' => $request->query->get('page')]));
@@ -301,29 +299,29 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     }
     
     // Отобразить свежую форму для новой задачи.
-    if ($mondai_id_old === 'new') {
+    if ($mondai_id === 'new') {
         return $view (new Zettai\Mondai (['mondai_id' => $app['model']->getMondaiNextId()]));
     }
     
     // Существует ли запрошенная задача?
-    $mondai = $app['model']->getMondai($mondai_id_old);
+    $mondai = $app['model']->getMondai($mondai_id);
     if (! $mondai) {
-        return $view (0, '', '', ['MONDAI_ID_OLD:DOES_NOT_EXIST']);
+        return $view (null, ['MONDAI:DOES_NOT_EXIST']);
     }
     
     // Отобразить свежую форму для старой задачи.
     return $view ($mondai);
 })
-->assert('mondai_id_old', '\\d+|new')
-->convert('mondai_id_old', function ($mondai_id_old) {
-    if ($mondai_id_old === 'new') {
-        return $mondai_id_old;
+->assert('mondai_id', '\\d+|new')
+->convert('mondai_id', function ($mondai_id) {
+    if ($mondai_id === 'new') {
+        return $mondai_id;
     }
-    $mondai_id_old = intval ($mondai_id_old);
-    if ($mondai_id_old < 1) {
+    $mondai_id = intval ($mondai_id);
+    if ($mondai_id < 1) {
         throw new Exception('Mondai id must be "new" or positive integer');
     }
-    return $mondai_id_old;
+    return $mondai_id;
 })
 ->method('GET|POST')
 ->bind('admin_mondai_edit');

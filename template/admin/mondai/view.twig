@@ -10,7 +10,7 @@
             {% endif %}
         </h2>
         <pre>{{ mondai.content }}</pre>
-        <p><a href="{{ path('admin_mondai_edit', { 'mondai_id_old' : mondai.mondai_id }) }}">[редактировать]</a></p>
+        <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : mondai.mondai_id }) }}?page={{ page }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
