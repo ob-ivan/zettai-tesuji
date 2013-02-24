@@ -9,7 +9,13 @@
                 (скрыта)
             {% endif %}
         </h2>
-        <pre>{{ mondai.content }}</pre>
+        <p>Сдача:   {{ mondai.kyoku |kyoku   }}</p>
+        <p>Позиция: {{ mondai.jikaze|kaze    }}</p>
+        <p>Ход:     {{ mondai.junme          }}</p>
+        <p>Дора:    {{ mondai.dora  |pai|raw }}</p>
+        <p>Очки:    {{ mondai.mochiten       }}</p>
+        <p>Рука:    {{ mondai.tehai |pai|raw }}</p>
+        <p>Набрал:  {{ mondai.tsumo |pai|raw }}</p>
         <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : mondai.mondai_id }) }}?page={{ page }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>

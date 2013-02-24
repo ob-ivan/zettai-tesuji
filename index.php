@@ -56,9 +56,49 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $kazeName = function ($kaze) {
+        switch ($kaze) {
+            case 'ton': return 'восток';
+            case 'nan': return 'юг';
+            case 'sha': return 'запад';
+            case 'pei': return 'север';
+        }
+        return $kaze;
+    };
+    
+    // фильтры //
+    
+    $twig->addFilter('kaze', new \Twig_Filter_Function(function ($kaze) use ($app, $kazeName) {
+        return $kazeName($kaze);
+    }));
+    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $kazeName) {
+        if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
+            return $kyoku;
+        }
+        return $kazeName($matches[1]) . '-' . $matches[2];
+    }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
     }));
+    $twig->addFilter('pai', new \Twig_Filter_Function(function ($tehai) use ($app) {
+        // Распознать масти и собрать в массив.
+        $pais = [];
+        while (strlen ($tehai) > 0) {
+            $tehai = trim ($tehai);
+            if (! preg_match ('/^(\d+)([mpsz])/', $tehai, $matches)) {
+                break;
+            }
+            $tehai = substr ($tehai, strlen ($matches[0]));
+            for ($i = 0, $c = strlen ($matches[1]); $i < $c; ++$i) {
+                $pais[] = $matches[1][$i] . $matches[2];
+            }
+        }
+        // Превратить коды в картинки.
+        return $app['twig']->render('_pai.twig', ['pais' => $pais]);
+    }));
+    
+    // функции //
+    
     $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;
