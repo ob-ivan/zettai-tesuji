@@ -10,12 +10,14 @@ class Mondai
     
     const PROPERTY_TYPE    = __LINE__;
     const PROPERTY_DEFAULT = __LINE__;
+    const PROPERTY_SCHEMA  = __LINE__;
     
     const TYPE_INTEGER  = __LINE__;
     const TYPE_STRING   = __LINE__;
     const TYPE_BOOLEAN  = __LINE__;
     const TYPE_KYOKU    = __LINE__;
     const TYPE_JIKAZE   = __LINE__;
+    const TYPE_JSON     = __LINE__;
     const TYPE_PAI      = __LINE__;
 
     private static $KYOKU = [
@@ -49,49 +51,51 @@ class Mondai
             self::PROPERTY_TYPE    => self::TYPE_BOOLEAN,
             self::PROPERTY_DEFAULT => false,
         ],
-        'content'     => [ // DEPRECATED
-            self::PROPERTY_TYPE    => self::TYPE_STRING,
-            self::PROPERTY_DEFAULT => '',
-        ],
-        'kyoku'     => [
-            self::PROPERTY_TYPE    => self::TYPE_KYOKU,
-            self::PROPERTY_DEFAULT => 'ton-1',
-        ],
-        'jikaze'    => [
-            self::PROPERTY_TYPE    => self::TYPE_JIKAZE,
-            self::PROPERTY_DEFAULT => 'ton',
-        ],
-        'junme'     => [
-            self::PROPERTY_TYPE    => self::TYPE_INTEGER,
-            self::PROPERTY_DEFAULT => '1',
-        ],
-        'dora'      => [
-            self::PROPERTY_TYPE    => self::TYPE_PAI,
-            self::PROPERTY_DEFAULT => '5z',
-        ],
-        'mochiten'  => [
-            self::PROPERTY_TYPE    => self::TYPE_STRING,
-            self::PROPERTY_DEFAULT => '25000',
-        ],
-        'tehai'     => [
-            self::PROPERTY_TYPE    => self::TYPE_PAI,
-            self::PROPERTY_DEFAULT => '',
-        ],
-        'tsumo'     => [
-            self::PROPERTY_TYPE    => self::TYPE_PAI,
-            self::PROPERTY_DEFAULT => '5z',
-        ],
-        'kiri_a'    => [
-            self::PROPERTY_TYPE    => self::TYPE_PAI,
-            self::PROPERTY_DEFAULT => '5z',
-        ],
-        'kiri_b'    => [
-            self::PROPERTY_TYPE    => self::TYPE_PAI,
-            self::PROPERTY_DEFAULT => '5z',
-        ],
-        'kiri_c'    => [
-            self::PROPERTY_TYPE    => self::TYPE_PAI,
-            self::PROPERTY_DEFAULT => '5z',
+        'content'     => [ 
+            self::PROPERTY_TYPE    => self::TYPE_JSON,
+            self::PROPERTY_DEFAULT => '{}',
+            self::PROPERTY_SCHEMA  => [
+                'kyoku'     => [
+                    self::PROPERTY_TYPE    => self::TYPE_KYOKU,
+                    self::PROPERTY_DEFAULT => 'ton-1',
+                ],
+                'jikaze'    => [
+                    self::PROPERTY_TYPE    => self::TYPE_JIKAZE,
+                    self::PROPERTY_DEFAULT => 'ton',
+                ],
+                'junme'     => [
+                    self::PROPERTY_TYPE    => self::TYPE_INTEGER,
+                    self::PROPERTY_DEFAULT => '1',
+                ],
+                'dora'      => [
+                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_DEFAULT => '5z',
+                ],
+                'mochiten'  => [
+                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                    self::PROPERTY_DEFAULT => '25000',
+                ],
+                'tehai'     => [
+                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_DEFAULT => '',
+                ],
+                'tsumo'     => [
+                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_DEFAULT => '5z',
+                ],
+                'kiri_a'    => [
+                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_DEFAULT => '5z',
+                ],
+                'kiri_b'    => [
+                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_DEFAULT => '5z',
+                ],
+                'kiri_c'    => [
+                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_DEFAULT => '5z',
+                ],
+            ],
         ],
     ];
     
@@ -156,6 +160,22 @@ class Mondai
                     return $properties[self::PROPERTY_DEFAULT];
                 }
                 return $value;
+                
+            case self::TYPE_JSON:
+                $unpacked = json_decode($value);
+                if (! is_array($unpacked)) {
+                    $unpacked = [];
+                }
+                $prepared = [];
+                foreach ($properties[self::PROPERTY_SCHEMA] as $field => $subproperties) {
+                    if (isset($unpacked[$field])) {
+                        $subvalue = $unpacked[$field];
+                    } else {
+                        $subvalue = $subproperties[self::PROPERTY_DEFAULT];
+                    }
+                    $prepared[$field] = self::prepare($subvalue, $subproperties);
+                }
+                return $prepared;
                 
             case self::TYPE_PAI:
                 return new Pai($value);

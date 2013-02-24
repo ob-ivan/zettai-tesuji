@@ -10,18 +10,18 @@
             {% endif %}
         </h2>
         <div class="mondai">
-            <div class="kyoku"   >Сдача:   {{ mondai.kyoku |kyoku   }}</div>
-            <div class="jikaze"  >Позиция: {{ mondai.jikaze|kaze    }}</div>
-            <div class="junme"   >Ход:     {{ mondai.junme          }}</div>
-            <div class="dora"    >Дора:    {{ mondai.dora  |pai|raw }}</div>
-            <div class="mochiten">Очки:    {{ mondai.mochiten       }}</div>
-            <div class="tehai"   >Рука:    {{ mondai.tehai |pai|raw }}</div>
-            <div class="tsumo"   >Набрал:  {{ mondai.tsumo |pai|raw }}</div>
+            <div class="kyoku"   >Сдача:   {{ mondai.content.kyoku |kyoku   }}</div>
+            <div class="jikaze"  >Позиция: {{ mondai.content.jikaze|kaze    }}</div>
+            <div class="junme"   >Ход:     {{ mondai.content.junme          }}</div>
+            <div class="dora"    >Дора:    {{ mondai.content.dora  |pai|raw }}</div>
+            <div class="mochiten">Очки:    {{ mondai.content.mochiten       }}</div>
+            <div class="tehai"   >Рука:    {{ mondai.content.tehai |pai|raw }}</div>
+            <div class="tsumo"   >Набрал:  {{ mondai.content.tsumo |pai|raw }}</div>
             <div class="question">Варианты ответа:</div>
             <ol  class="variants" style="list-style-type: upper-alpha">
-                <li>{{ mondai.kiri_a|pai|raw }}</li>
-                <li>{{ mondai.kiri_b|pai|raw }}</li>
-                <li>{{ mondai.kiri_c|pai|raw }}</li>
+                <li>{{ mondai.content.kiri_a|pai|raw }}</li>
+                <li>{{ mondai.content.kiri_b|pai|raw }}</li>
+                <li>{{ mondai.content.kiri_c|pai|raw }}</li>
             </ol>
         </div>
         <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : mondai.mondai_id }) }}?page={{ page }}">[редактировать]</a></p>
