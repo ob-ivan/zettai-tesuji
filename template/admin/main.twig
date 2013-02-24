@@ -12,7 +12,7 @@
                 </li>
             {% endfor %}
         </ul>
-        {% include 'paginator.twig' with {
+        {% include '_paginator.twig' with {
             'totalCount'    : mondaiCount,
             'perPage'       : perPage,
             'curPage'       : curPage,
