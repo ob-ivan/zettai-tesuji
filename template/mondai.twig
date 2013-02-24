@@ -1,0 +1,20 @@
+{% extends '_layout.twig' %}
+
+{% block style %}main{% endblock %}
+
+{% block body %}
+    {% if mondai %}
+        <h2>
+            Задача №{{ mondai.mondai_id|lpad('0', 3) }}.
+            {{ mondai.title }}
+        </h2>
+        <pre>{{ mondai.content }}</pre>
+    {% else %}
+        <p class="empty">Нет такой задачи</p>
+    {% endif %}
+    
+    <p>
+        <a href="{{ path('main') }}">[на главную]</a>
+        <a href="{{ path('main', { 'page' : page }) }}">[к списку задач]</a>
+    </p>
+{% endblock %}
