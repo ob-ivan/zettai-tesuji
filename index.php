@@ -56,9 +56,36 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/template',
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $kazeName = function ($kaze) {
+        switch ($kaze) {
+            case 'ton': return 'восток';
+            case 'nan': return 'юг';
+            case 'sha': return 'запад';
+            case 'pei': return 'север';
+        }
+        return $kaze;
+    };
+    
+    // фильтры //
+    
+    $twig->addFilter('kaze', new \Twig_Filter_Function(function ($kaze) use ($app, $kazeName) {
+        return $kazeName($kaze);
+    }));
+    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $kazeName) {
+        if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
+            return $kyoku;
+        }
+        return $kazeName($matches[1]) . '-' . $matches[2];
+    }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
     }));
+    $twig->addFilter('pai', new \Twig_Filter_Function(function ($pais) use ($app) {
+        return $app['twig']->render('_pai.twig', ['pais' => $pais]);
+    }));
+    
+    // функции //
+    
     $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;
@@ -193,6 +220,9 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             'csrf'      => $app['csrf']->generate($csrfKey),
             'mondai'    => $mondai,
             'errors'    => $errors,
+            'KYOKUS'    => array_keys(Zettai\Mondai::$KYOKUS),
+            'KAZES'     => array_keys(Zettai\Mondai::$KAZES),
+            'PAIS'      => Zettai\Pai::$PAIS,
         ]);
     };
     
@@ -230,7 +260,18 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             'mondai_id' => $request->request->get('mondai_id'),
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
-            'content'   => $request->request->get('content'),
+            'content'   => [
+                'kyoku'     => $request->request->get('kyoku'),
+                'jikaze'    => $request->request->get('jikaze'),
+                'junme'     => $request->request->get('junme'),
+                'dora'      => $request->request->get('dora'),
+                'mochiten'  => $request->request->get('mochiten'),
+                'tehai'     => $request->request->get('tehai'),
+                'tsumo'     => $request->request->get('tsumo'),
+                'kiri_a'    => $request->request->get('kiri_a'),
+                'kiri_b'    => $request->request->get('kiri_b'),
+                'kiri_c'    => $request->request->get('kiri_c'),
+            ],
         ]);
         
         if ($request->request->get('save')) {
@@ -252,9 +293,6 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             }
             if (empty ($mondai->title)) {
                 $errors[] = 'TITLE:EMPTY';
-            }
-            if (empty ($mondai->content)) {
-                $errors[] = 'CONTENT:EMPTY';
             }
             
             // Если есть ошибки, редиректнуть на форму и показать ошибки.

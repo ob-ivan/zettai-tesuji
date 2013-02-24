@@ -9,7 +9,10 @@
                 (скрыта)
             {% endif %}
         </h2>
-        <pre>{{ mondai.content }}</pre>
+        {% include '_mondai_content.twig' with {
+            'content'  : mondai.content,
+            'question' : 'Варианты ответа:',
+        } only %}
         <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : mondai.mondai_id }) }}?page={{ page }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>

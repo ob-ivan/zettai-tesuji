@@ -119,28 +119,7 @@ class Model
         if (! (strlen($mondai->title) > 0)) {
             throw new Exception('Mondai title is empty', Exception::MODEL_MONDAI_TITLE_EMPTY);
         }
-        if (! (strlen($mondai->content) > 0)) {
-            throw new Exception('Mondai content is empty', Exception::MODEL_MONDAI_CONTENT_EMPTY);
-        }
         
-        // execute
-        return $this->db->executeUpdate('
-            REPLACE INTO `mondai` (
-                `mondai_id`,
-                `title`,
-                `is_hidden`,
-                `content`
-            ) VALUES (
-                :mondai_id,
-                :title,
-                :is_hidden,
-                :content
-            )
-        ', [
-            'mondai_id' => $mondai->mondai_id,
-            'title'     => $mondai->title,
-            'is_hidden' => $mondai->is_hidden,
-            'content'   => $mondai->content,
-        ]);
+        return $this->db->update('mondai', $mondai->getData(), ['mondai_id' => $mondai->mondai_id]);
     }
 }

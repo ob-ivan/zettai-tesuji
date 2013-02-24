@@ -8,7 +8,10 @@
             Задача №{{ mondai.mondai_id|lpad('0', 3) }}.
             {{ mondai.title }}
         </h2>
-        <pre>{{ mondai.content }}</pre>
+        {% include '_mondai_content.twig' with {
+            'content'  : mondai.content,
+            'question' : 'Что сбросить?',
+        } only %}
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}

@@ -16,9 +16,10 @@ class ArrayObject extends BaseArrayObject
     public function __construct ($input, $flags = 0, $iterator_class = 'ArrayIterator')
     {
         $flags |= BaseArrayObject::ARRAY_AS_PROPS;
+        $object = new BaseArrayObject($input);
         parent::__construct (
             self::objectifyChildren (
-                $input,
+                $object,
                 $flags,
                 $iterator_class
             ),
