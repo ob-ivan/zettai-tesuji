@@ -267,6 +267,10 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
                 'dora'      => $request->request->get('dora'),
                 'mochiten'  => $request->request->get('mochiten'),
                 'tehai'     => $request->request->get('tehai'),
+                'tsumo'     => $request->request->get('tsumo'),
+                'kiri_a'    => $request->request->get('kiri_a'),
+                'kiri_b'    => $request->request->get('kiri_b'),
+                'kiri_c'    => $request->request->get('kiri_c'),
             ],
         ]);
         

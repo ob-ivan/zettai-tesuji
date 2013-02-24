@@ -30,7 +30,8 @@
         method="post"
     >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
-        <p>№<input name="mondai_id" required value="{{ mondai.mondai_id }}" maxlength="3"/>.
+        <p>
+            <label>№<input name="mondai_id" required value="{{ mondai.mondai_id }}" maxlength="3"/>.</label>
             <input name="title"     required value="{{ mondai.title }}"/>
             <label>
                 <input
@@ -45,56 +46,74 @@
             </label>
         </p>
         <p>
-            Сдача:
-            <select name="kyoku">
-                {% for kyoku in KYOKUS %}
-                    <option
-                        value="{{ kyoku }}"
-                        {% if kyoku == mondai.content.kyoku %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ kyoku|kyoku }}
-                    </option>
-                {% endfor %}
-            </select>
+            <label>
+                Сдача:
+                <select name="kyoku">
+                    {% for kyoku in KYOKUS %}
+                        <option
+                            value="{{ kyoku }}"
+                            {% if kyoku == mondai.content.kyoku %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ kyoku|kyoku }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
         </p>
         <p>
-            Позиция:
-            <select name="jikaze">
-                {% for kaze in KAZES %}
-                    <option
-                        value="{{ kaze }}"
-                        {% if kaze == mondai.content.jikaze %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ kaze|kaze }}
-                    </option>
-                {% endfor %}
-            </select>
+            <label>
+                Позиция:
+                <select name="jikaze">
+                    {% for kaze in KAZES %}
+                        <option
+                            value="{{ kaze }}"
+                            {% if kaze == mondai.content.jikaze %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ kaze|kaze }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
         </p>
-        <p>Ход: <input name="junme" required value="{{ mondai.content.junme }}" maxlength="2"/></p>
+        <p><label>Ход: <input name="junme" required value="{{ mondai.content.junme }}" maxlength="2"/></label></p>
         <p>
-            Дора:
-            {% include 'admin/mondai/_pai_select.twig' with {
-                'name'  : 'dora',
-                'PAIS'  : PAIS,
-                'value' : mondai.content.dora,
-            } only %}
+            <label>
+                Дора:
+                {% include 'admin/mondai/_pai_select.twig' with {
+                    'name'  : 'dora',
+                    'PAIS'  : PAIS,
+                    'value' : mondai.content.dora,
+                } only %}
+            </label>
         </p>
-        <p>Очки: <input name="mochiten" required value="{{ mondai.content.mochiten }}"/></p>
-        <p>Рука: <input name="tehai"    required value="{{ mondai.content.tehai }}"/></p>
-        
-        {#
-            <div class="tsumo"   >Набрал:  {{ mondai.content.tsumo |pai|raw }}</div>
-            <div class="question">Варианты ответа:</div>
-            <ol  class="variants" style="list-style-type: upper-alpha">
-                <li>{{ mondai.content.kiri_a|pai|raw }}</li>
-                <li>{{ mondai.content.kiri_b|pai|raw }}</li>
-                <li>{{ mondai.content.kiri_c|pai|raw }}</li>
-            </ol>
-        #}
+        <p><label>Очки: <input name="mochiten" required value="{{ mondai.content.mochiten }}"/></label></p>
+        <p><label>Рука: <input name="tehai"    required value="{{ mondai.content.tehai }}"/></label></p>
+        <p>
+            <label>
+                Набрал:
+                {% include 'admin/mondai/_pai_select.twig' with {
+                    'name'  : 'tsumo',
+                    'PAIS'  : PAIS,
+                    'value' : mondai.content.tsumo,
+                } only %}
+            </label>
+        </p>
+        {% for letter in ['a', 'b', 'c'] %}
+            <p>
+                <label>
+                    Вариант {{ letter|upper }}:
+                    {% include 'admin/mondai/_pai_select.twig' with {
+                        'name'  : 'kiri_' ~ letter,
+                        'PAIS'  : PAIS,
+                        'value' : attribute(mondai.content, 'kiri_' ~ letter),
+                    } only %}
+                </label>
+            </p>
+        {% endfor %}
         <p>
             <input type="submit" name="save" value="Сохранить"/>
             {% if mondai_id == 'new' %}
