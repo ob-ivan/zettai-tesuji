@@ -77,18 +77,11 @@
         <p>Ход: <input name="junme" required value="{{ mondai.content.junme }}" maxlength="2"/></p>
         <p>
             Дора:
-            <select name="dora">
-                {% for pai in PAIS %}
-                    <option
-                        value="{{ pai }}"
-                        {% if pai == mondai.content.dora %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ pai }}
-                    </option>
-                {% endfor %}
-            </select>
+            {% include 'admin/mondai/_pai_select.twig' with {
+                'name'  : 'dora',
+                'PAIS'  : PAIS,
+                'value' : mondai.content.dora,
+            } only %}
         </p>
         <p>Очки: <input name="mochiten" required value="{{ mondai.content.mochiten }}"/></p>
         <p>Рука: <input name="tehai"    required value="{{ mondai.content.tehai }}"/></p>
