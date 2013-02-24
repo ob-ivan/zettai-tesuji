@@ -9,13 +9,21 @@
                 (скрыта)
             {% endif %}
         </h2>
-        <p>Сдача:   {{ mondai.kyoku |kyoku   }}</p>
-        <p>Позиция: {{ mondai.jikaze|kaze    }}</p>
-        <p>Ход:     {{ mondai.junme          }}</p>
-        <p>Дора:    {{ mondai.dora  |pai|raw }}</p>
-        <p>Очки:    {{ mondai.mochiten       }}</p>
-        <p>Рука:    {{ mondai.tehai |pai|raw }}</p>
-        <p>Набрал:  {{ mondai.tsumo |pai|raw }}</p>
+        <div class="mondai">
+            <div class="kyoku"   >Сдача:   {{ mondai.kyoku |kyoku   }}</div>
+            <div class="jikaze"  >Позиция: {{ mondai.jikaze|kaze    }}</div>
+            <div class="junme"   >Ход:     {{ mondai.junme          }}</div>
+            <div class="dora"    >Дора:    {{ mondai.dora  |pai|raw }}</div>
+            <div class="mochiten">Очки:    {{ mondai.mochiten       }}</div>
+            <div class="tehai"   >Рука:    {{ mondai.tehai |pai|raw }}</div>
+            <div class="tsumo"   >Набрал:  {{ mondai.tsumo |pai|raw }}</div>
+            <div class="question">Что сбросить?</div>
+            <ol  class="variants" style="list-style-type: upper-alpha">
+                <li>{{ mondai.kiri_a|pai|raw }}</li>
+                <li>{{ mondai.kiri_b|pai|raw }}</li>
+                <li>{{ mondai.kiri_c|pai|raw }}</li>
+            </ol>
+        </div>
         <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : mondai.mondai_id }) }}?page={{ page }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>

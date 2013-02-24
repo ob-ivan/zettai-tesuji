@@ -80,20 +80,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
     }));
-    $twig->addFilter('pai', new \Twig_Filter_Function(function ($tehai) use ($app) {
-        // Распознать масти и собрать в массив.
-        $pais = [];
-        while (strlen ($tehai) > 0) {
-            $tehai = trim ($tehai);
-            if (! preg_match ('/^(\d+)([mpsz])/', $tehai, $matches)) {
-                break;
-            }
-            $tehai = substr ($tehai, strlen ($matches[0]));
-            for ($i = 0, $c = strlen ($matches[1]); $i < $c; ++$i) {
-                $pais[] = $matches[1][$i] . $matches[2];
-            }
-        }
-        // Превратить коды в картинки.
+    $twig->addFilter('pai', new \Twig_Filter_Function(function ($pais) use ($app) {
         return $app['twig']->render('_pai.twig', ['pais' => $pais]);
     }));
     

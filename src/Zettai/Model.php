@@ -35,11 +35,7 @@ class Model
         
         // execute
         $row = $this->db->fetchAssoc('
-            SELECT
-                `mondai_id`,
-                `title`,
-                `is_hidden`,
-                `content`
+            SELECT *
             FROM `mondai`
             WHERE `mondai_id` = :mondai_id
         ', [

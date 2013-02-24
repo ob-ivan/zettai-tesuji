@@ -74,7 +74,7 @@ class Mondai
             self::PROPERTY_DEFAULT => '25000',
         ],
         'tehai'     => [
-            self::PROPERTY_TYPE    => self::TYPE_STRING,
+            self::PROPERTY_TYPE    => self::TYPE_PAI,
             self::PROPERTY_DEFAULT => '',
         ],
         'tsumo'     => [
@@ -157,11 +157,14 @@ class Mondai
                 }
                 return $value;
                 
+            case self::TYPE_PAI:
+                return new Pai($value);
+                
             case self::TYPE_STRING:
                 return trim(strval($value));
             
             default:
-                throw new Exception('Unknown type "' . $type . '"', Exception::MONDAI_TYPE_UNKNOWN);
+                throw new Exception('Unknown type "' . $properties[self::PROPERTY_TYPE] . '"', Exception::MONDAI_TYPE_UNKNOWN);
         }
     }
 }
