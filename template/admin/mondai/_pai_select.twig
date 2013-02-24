@@ -1,0 +1,19 @@
+{#
+    Селектор фишек для формы редактирования задачи.
+    Параметры:
+        name
+        PAIS
+        value
+#}
+<select name="{{ name }}">
+    {% for pai in PAIS %}
+        <option
+            value="{{ pai }}"
+            {% if pai == value %}
+                selected
+            {% endif %}
+        >
+            {{ pai }}
+        </option>
+    {% endfor %}
+</select>

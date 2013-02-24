@@ -30,8 +30,9 @@
         method="post"
     >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
-        <p>№<input name="mondai_id" required value="{{ mondai.mondai_id }}" maxlength="3"/>.
-            <input name="title"         required value="{{ mondai.title }}"/>
+        <p>
+            <label>№<input name="mondai_id" required value="{{ mondai.mondai_id }}" maxlength="3"/>.</label>
+            <input name="title"     required value="{{ mondai.title }}"/>
             <label>
                 <input
                     type="checkbox"
@@ -44,7 +45,75 @@
                 (скрыта)
             </label>
         </p>
-        <p><textarea name="content" required rows="13">{{ mondai.content }}</textarea></p>
+        <p>
+            <label>
+                Сдача:
+                <select name="kyoku">
+                    {% for kyoku in KYOKUS %}
+                        <option
+                            value="{{ kyoku }}"
+                            {% if kyoku == mondai.content.kyoku %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ kyoku|kyoku }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </p>
+        <p>
+            <label>
+                Позиция:
+                <select name="jikaze">
+                    {% for kaze in KAZES %}
+                        <option
+                            value="{{ kaze }}"
+                            {% if kaze == mondai.content.jikaze %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ kaze|kaze }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </p>
+        <p><label>Ход: <input name="junme" required value="{{ mondai.content.junme }}" maxlength="2"/></label></p>
+        <p>
+            <label>
+                Дора:
+                {% include 'admin/mondai/_pai_select.twig' with {
+                    'name'  : 'dora',
+                    'PAIS'  : PAIS,
+                    'value' : mondai.content.dora,
+                } only %}
+            </label>
+        </p>
+        <p><label>Очки: <input name="mochiten" required value="{{ mondai.content.mochiten }}"/></label></p>
+        <p><label>Рука: <input name="tehai"    required value="{{ mondai.content.tehai }}"/></label></p>
+        <p>
+            <label>
+                Набрал:
+                {% include 'admin/mondai/_pai_select.twig' with {
+                    'name'  : 'tsumo',
+                    'PAIS'  : PAIS,
+                    'value' : mondai.content.tsumo,
+                } only %}
+            </label>
+        </p>
+        {% for letter in ['a', 'b', 'c'] %}
+            <p>
+                <label>
+                    Вариант {{ letter|upper }}:
+                    {% include 'admin/mondai/_pai_select.twig' with {
+                        'name'  : 'kiri_' ~ letter,
+                        'PAIS'  : PAIS,
+                        'value' : attribute(mondai.content, 'kiri_' ~ letter),
+                    } only %}
+                </label>
+            </p>
+        {% endfor %}
         <p>
             <input type="submit" name="save" value="Сохранить"/>
             {% if mondai_id == 'new' %}
@@ -71,13 +140,20 @@
                         return !! (mondaiId + '').match(/^\d{1,3}$/) && parseInt(mondaiId, 10) > 0;
                     }
                 },
+                'input[name=junme]' : {
+                    required : true,
+                    message  : 'Номер хода должен быть числом от 1 до 18',
+                    test : function checkJunme(junme) {
+                        if (! (junme + '').match(/^\d{1,2}$/)) {
+                            return false;
+                        }
+                        var parsed = parseInt(junme, 10);
+                        return parsed >= 1 && parsed <= 18;
+                    }
+                },
                 'input[name=title]' : {
                     required : true,
                     message  : 'Заголовок должен быть не пуст'
-                },
-                'textarea[name=content]' : {
-                    required : true,
-                    message  : 'Текст задачи должен быть не пуст'
                 }
             }
         });

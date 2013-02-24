@@ -3,16 +3,18 @@ div.welcome {
     float : right;
 }
 
+/* Просмотр задачи */
+
 /* Редактирование задачи */
 
 input[name=mondai_id] {
     width: 3.5ex;
 }
+input[name=junme] {
+    width: 2.5ex;
+}
 input[name=title] {
     width: 30ex;
-}
-textarea[name=content] {
-    width  : 30em;
 }
 
 input.unhappy {
