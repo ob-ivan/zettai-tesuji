@@ -129,6 +129,11 @@ class Mondai
         return isset(self::$FIELD_PROPERTIES[$name]);
     }
     
+    public function getData()
+    {
+        return $this->data;
+    }
+    
     // private //
     
     private function prepare ($value, $properties)
