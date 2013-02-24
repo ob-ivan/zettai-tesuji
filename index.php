@@ -141,7 +141,12 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
         $title      = '',
         $content    = '',
         $errors     = []
-    ) use ($app, $request, $mondai_id_old, $csrfKey) {
+    ) use (
+        $app,
+        $request,
+        $mondai_id_old,
+        $csrfKey
+    ) {
         return $app->render('admin/mondai/edit.twig', [
             'page'          => $request->query->get('page'),
             'mondai_id_old' => $mondai_id_old,
@@ -153,6 +158,31 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
         ]);
     };
     
+    // Процедура редиректа на старую форму с сохранением полей и выводом ошибок.
+    $redirect = function (
+        $mondai_id_new,
+        $title,
+        $content,
+        $errors
+    ) use (
+        $app,
+        $request,
+        $mondai_id_old
+    ) {
+        $formKey = md5(microtime(true));
+        $app['session']->set($formKey, [
+            'mondai_id_new' => $mondai_id_new,
+            'title'         => $title,
+            'content'       => $content,
+            'errors'        => $errors,
+        ]);
+        return $app->redirect(
+            $app['url_generator']->generate('admin_mondai_edit', ['mondai_id_old' => $mondai_id_old]) .
+            '?page=' . $request->query->get('page') .
+            '&formKey=' . $formKey
+        );
+    };
+    
     // Обработать присланную форму.
     if ($request->getMethod() === 'POST') {
         $errors = [];
@@ -162,66 +192,83 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             $errors[] = 'CSRF';
         }
         
-        // Проверить поля.
-        // TODO: Прикрутить валидатор.
         $mondai_id_new = $request->request->get('mondai_id_new');
         $title         = $request->request->get('title');
         $content       = $request->request->get('content');
-        if (! preg_match ('/\\d{1,3}/', $mondai_id_new)) {
-            $errors[] = 'MONDAI_ID_NEW:NOT_A_NUMBER';
-        } else {
-            $mondai_id_new = intval ($mondai_id_new);
-            if (! ($mondai_id_new > 0)) {
-                $errors[] = 'MONDAI_ID_NEW:NOT_POSITIVE';
+            
+        if ($request->request->get('save')) {
+            // Попросили сохранить задачу.
+            
+            // Проверить поля.
+            // TODO: Прикрутить валидатор.
+            if (! preg_match ('/\\d{1,3}/', $mondai_id_new)) {
+                $errors[] = 'MONDAI_ID_NEW:NOT_A_NUMBER';
             } else {
-                // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
-                if ($mondai_id_old !== $mondai_id_new && $app['model']->getMondai($mondai_id_new)) {
-                    $errors[] = 'MONDAI_ID_NEW:ALREADY_EXISTS';
+                $mondai_id_new = intval ($mondai_id_new);
+                if (! ($mondai_id_new > 0)) {
+                    $errors[] = 'MONDAI_ID_NEW:NOT_POSITIVE';
+                } else {
+                    // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
+                    if ($mondai_id_old !== $mondai_id_new && $app['model']->getMondai($mondai_id_new)) {
+                        $errors[] = 'MONDAI_ID_NEW:ALREADY_EXISTS';
+                    }
                 }
             }
-        }
-        $title = trim ($title);
-        if (empty ($title)) {
-            $errors[] = 'TITLE:EMPTY';
-        }
-        $content = trim ($content);
-        if (empty ($content)) {
-            $errors[] = 'CONTENT:EMPTY';
-        }
-        
-        // Если есть ошибки, редиректнуть на форму и показать ошибки.
-        if (! empty ($errors)) {
-            $formKey = md5(microtime(true));
-            $app['session']->set($formKey, [
-                'mondai_id_new' => $mondai_id_new,
-                'title'         => $title,
-                'content'       => $content,
-                'errors'        => $errors,
+            $title = trim ($title);
+            if (empty ($title)) {
+                $errors[] = 'TITLE:EMPTY';
+            }
+            $content = trim ($content);
+            if (empty ($content)) {
+                $errors[] = 'CONTENT:EMPTY';
+            }
+            
+            // Если есть ошибки, редиректнуть на форму и показать ошибки.
+            if (! empty ($errors)) {
+                return $redirect (
+                    $mondai_id_new,
+                    $title,
+                    $content,
+                    $errors
+                );
+            }
+            
+            // Создать задачу.
+            $app['model']->setMondai([
+                'mondai_id' => $mondai_id_new,
+                'title'     => $title,
+                'content'   => $content,
             ]);
+            
+            // Если старый номер не равен new, то после создания нового надо удалить старое.
+            if ($mondai_id_old !== 'new' && $mondai_id_old !== $mondai_id_new) {
+                $app['model']->deleteMondai($mondai_id_old);
+            }
+            
+            // Показать новую задачу в админке.
             return $app->redirect(
-                $app['url_generator']->generate('admin_mondai_edit', ['mondai_id_old' => $mondai_id_old]) .
-                '?page=' . $request->query->get('page') .
-                '&formKey=' . $formKey
+                $app['url_generator']->generate('admin_mondai_view', ['mondai_id' => $mondai_id_new]) .
+                '?page=' . $request->query->get('page')
             );
-        }
-        
-        // Создать задачу.
-        $app['model']->setMondai([
-            'mondai_id' => $mondai_id_new,
-            'title'     => $title,
-            'content'   => $content,
-        ]);
-        
-        // Если старый номер не равен new, то после создания нового надо удалить старое.
-        if ($mondai_id_old !== 'new' && $mondai_id_old !== $mondai_id_new) {
+        } elseif ($request->request->get('delete')) {
+            // Попросили удалить задачу.
+            
+            // Если есть ошибки, редиректнуть на форму и показать ошибки.
+            if (! empty ($errors)) {
+                return $redirect (
+                    $mondai_id_new,
+                    $title,
+                    $content,
+                    $errors
+                );
+            }
+            
+            // Удалить задачу.
             $app['model']->deleteMondai($mondai_id_old);
+            
+            // Показать список задач.
+            return $app->redirect($app['url_generator']->generate('admin_page', ['page' => $request->query->get('page')]));
         }
-        
-        // Показать новую задачу в админке.
-        return $app->redirect(
-            $app['url_generator']->generate('admin_mondai_view', ['mondai_id' => $mondai_id_new]) .
-            '?page=' . $request->query->get('page')
-        );
     }
     
     // Отобразить старую форму после редиректа.
