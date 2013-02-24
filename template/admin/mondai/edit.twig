@@ -7,7 +7,9 @@
         <ul class="error">
             {% for error in errors %}
                 <li>
-                    {% if error == 'MONDAI_ID_NEW:ALREADY_EXISTS' %}
+                    {% if error == 'CSRF' %}
+                        Попытка взлома.
+                    {% elseif error == 'MONDAI_ID_NEW:ALREADY_EXISTS' %}
                         Задача №{{ mondai_id_new }} уже существует.
                     {% elseif error == 'MONDAI_ID_NEW:NOT_A_NUMBER' %}
                         Номер задачи должен быть положительным целым числом.
@@ -33,14 +35,19 @@
         </p>
         <p><textarea name="content" required rows="13">{{ content }}</textarea></p>
         <p>
-            <input type="submit" value="Сохранить"/>
+            <input type="submit" name="save" value="Сохранить"/>
             {% if mondai_id_old == 'new' %}
                 {% set cancel = path('admin_page', { 'page' : page }) %}
             {% else %}
                 {% set cancel = path('admin_mondai_view', { 'mondai_id' : mondai_id_old }) ~ '?page=' ~ page %}
             {% endif %}
             <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
-            {# <input type="button" value="Удалить"/> #}
+            {% if mondai_id_old != 'new' %}
+                <input
+                    type="submit" name="delete"  value="Удалить"
+                    onclick="return window.confirm('После удаления задача не может быть восстановлена.\n\nУдалить задачу?')"
+                />
+            {% endif %}
         </p>
     </form>
     <script>
