@@ -6,7 +6,7 @@ use Doctrine\DBAL\Connection;
 /**
  * Класс, дающий доступ к извлечению и изменению данных в базе.
  *
- * Документация: https://github.com/ob-ivan/zettai-tesuji/wiki/Модель-данных
+ * Документация: https://github.com/ob-ivan/zettai-tesuji/wiki/Data-Model
 **/
 class Model
 {
@@ -19,6 +19,10 @@ class Model
     
     // Mondai //
     
+    /**
+     *  @param  integer $mondai_id
+     *  @return Mondai
+    **/
     public function getMondai ($mondai_id)
     {
         // prepare
@@ -30,7 +34,7 @@ class Model
         }
         
         // execute
-        return $this->db->fetchAssoc('
+        $row = $this->db->fetchAssoc('
             SELECT
                 `mondai_id`,
                 `title`,
@@ -41,6 +45,12 @@ class Model
         ', [
             'mondai_id' => $mondai_id,
         ]);
+        
+        // convert to record
+        if ($row) {
+            return new Mondai($row);
+        }
+        return null;
     }
     
     public function getMondaiCount($includeHidden = false)
@@ -59,7 +69,7 @@ class Model
         $limit  = intval ($limit);
         
         // execute
-        return $this->db->fetchAll('
+        $rows = $this->db->fetchAll('
             SELECT
                 `mondai_id`,
                 `title`,
@@ -69,6 +79,13 @@ class Model
             ORDER BY `mondai_id` ASC
             LIMIT ' . $offset . ', ' . $limit . '
         ');
+        
+        // convert to records
+        $records = [];
+        foreach ($rows as $row) {
+            $records[] = new Mondai ($row);
+        }
+        return $records;
     }
     
     public function getMondaiNextId()
@@ -93,22 +110,16 @@ class Model
         $this->db->delete ('mondai', ['mondai_id' => $mondai_id]);
     }
     
-    public function setMondai ($mondai)
+    public function setMondai (Mondai $mondai)
     {
-        // prepare
-        $mondai_id  = intval ($mondai['mondai_id']);
-        $title      = trim (strval ($mondai['title']));
-        $is_hidden  = intval (!! (isset($mondai['is_hidden']) ? $mondai['is_hidden'] : true));
-        $content    = trim (strval ($mondai['content']));
-        
         // validate
-        if (! ($mondai_id > 0)) {
+        if (! ($mondai->mondai_id > 0)) {
             throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
         }
-        if (! (strlen($title) > 0)) {
+        if (! (strlen($mondai->title) > 0)) {
             throw new Exception('Mondai title is empty', Exception::MODEL_MONDAI_TITLE_EMPTY);
         }
-        if (! (strlen($content) > 0)) {
+        if (! (strlen($mondai->content) > 0)) {
             throw new Exception('Mondai content is empty', Exception::MODEL_MONDAI_CONTENT_EMPTY);
         }
         
@@ -126,10 +137,10 @@ class Model
                 :content
             )
         ', [
-            'mondai_id' => $mondai_id,
-            'title'     => $title,
-            'is_hidden' => $is_hidden,
-            'content'   => $content,
+            'mondai_id' => $mondai->mondai_id,
+            'title'     => $mondai->title,
+            'is_hidden' => $mondai->is_hidden,
+            'content'   => $mondai->content,
         ]);
     }
 }

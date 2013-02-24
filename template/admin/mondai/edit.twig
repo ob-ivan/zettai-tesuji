@@ -10,7 +10,7 @@
                     {% if error == 'CSRF' %}
                         Попытка взлома.
                     {% elseif error == 'MONDAI_ID_NEW:ALREADY_EXISTS' %}
-                        Задача №{{ mondai_id_new }} уже существует.
+                        Задача №{{ mondai.mondai_id }} уже существует.
                     {% elseif error == 'MONDAI_ID_NEW:NOT_A_NUMBER' %}
                         Номер задачи должен быть положительным целым числом.
                     {% elseif error == 'TITLE:EMPTY' %}
@@ -30,21 +30,21 @@
         method="post"
     >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
-        <p>№<input name="mondai_id_new" required value="{{ mondai_id_new }}" maxlength="3"/>.
-            <input name="title"         required value="{{ title }}"/>
+        <p>№<input name="mondai_id_new" required value="{{ mondai.mondai_id }}" maxlength="3"/>.
+            <input name="title"         required value="{{ mondai.title }}"/>
             <label>
                 <input
                     type="checkbox"
                     name="is_hidden"
                     value="1"
-                    {% if is_hidden == 1 %}
+                    {% if mondai.is_hidden == 1 %}
                         checked
                     {% endif %}
                 />
                 (скрыта)
             </label>
         </p>
-        <p><textarea name="content" required rows="13">{{ content }}</textarea></p>
+        <p><textarea name="content" required rows="13">{{ mondai.content }}</textarea></p>
         <p>
             <input type="submit" name="save" value="Сохранить"/>
             {% if mondai_id_old == 'new' %}

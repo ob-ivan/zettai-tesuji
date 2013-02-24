@@ -99,7 +99,7 @@ $app->get('/{page}', function ($page) use ($app) {
 // Просмотр одной задачи на сайте.
 $app->get('/mondai/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
     $mondai = $app['model']->getMondai($mondai_id);
-    if ($mondai['is_hidden']) {
+    if ($mondai->is_hidden) {
         $mondai = null;
     }
     $page = $request->query->get('page');
@@ -181,11 +181,8 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
 
     // Процедура отображения формы с задачей.
     $view = function (
-        $mondai_id_new,
-        $title      = '',
-        $is_hidden  = true,
-        $content    = '',
-        $errors     = []
+        $mondai,
+        $errors = []
     ) use (
         $app,
         $request,
@@ -196,20 +193,14 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             'page'          => $request->query->get('page'),
             'mondai_id_old' => $mondai_id_old,
             'csrf'          => $app['csrf']->generate($csrfKey()),
-            'mondai_id_new' => $mondai_id_new,
-            'title'         => $title,
-            'is_hidden'     => $is_hidden,
-            'content'       => $content,
+            'mondai'        => $mondai,
             'errors'        => $errors,
         ]);
     };
     
     // Процедура редиректа на старую форму с сохранением полей и выводом ошибок.
     $redirect = function (
-        $mondai_id_new,
-        $title,
-        $is_hidden,
-        $content,
+        $mondai,
         $errors
     ) use (
         $app,
@@ -218,11 +209,8 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     ) {
         $formKey = md5(microtime(true));
         $app['session']->set($formKey, [
-            'mondai_id_new' => $mondai_id_new,
-            'title'         => $title,
-            'is_hidden'     => $is_hidden,
-            'content'       => $content,
-            'errors'        => $errors,
+            'mondai' => $mondai,
+            'errors' => $errors,
         ]);
         return $app->redirect(
             $app['url_generator']->generate('admin_mondai_edit', ['mondai_id_old' => $mondai_id_old]) .
@@ -240,65 +228,53 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             $errors[] = 'CSRF';
         }
         
-        $mondai_id_new = $request->request->get('mondai_id_new');
-        $title         = $request->request->get('title');
-        $is_hidden     = intval($request->request->get('is_hidden')) === 1;
-        $content       = $request->request->get('content');
-            
+        $mondai = new Zettai\Mondai ([
+            'mondai_id' => $request->request->get('mondai_id_new'),
+            'title'     => $request->request->get('title'),
+            'is_hidden' => intval($request->request->get('is_hidden')) === 1,
+            'content'   => $request->request->get('content'),
+        ]);
+        
         if ($request->request->get('save')) {
             // Попросили сохранить задачу.
             
             // Проверить поля.
             // TODO: Прикрутить валидатор.
-            if (! preg_match ('/\\d{1,3}/', $mondai_id_new)) {
+            if (! preg_match ('/\\d{1,3}/', $mondai->mondai_id)) {
                 $errors[] = 'MONDAI_ID_NEW:NOT_A_NUMBER';
             } else {
-                $mondai_id_new = intval ($mondai_id_new);
-                if (! ($mondai_id_new > 0)) {
+                if (! ($mondai->mondai_id > 0)) {
                     $errors[] = 'MONDAI_ID_NEW:NOT_POSITIVE';
                 } else {
                     // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
-                    if ($mondai_id_old !== $mondai_id_new && $app['model']->getMondai($mondai_id_new)) {
+                    if ($mondai_id_old !== $mondai->mondai_id && $app['model']->getMondai($mondai->mondai_id)) {
                         $errors[] = 'MONDAI_ID_NEW:ALREADY_EXISTS';
                     }
                 }
             }
-            $title = trim ($title);
-            if (empty ($title)) {
+            if (empty ($mondai->title)) {
                 $errors[] = 'TITLE:EMPTY';
             }
-            $content = trim ($content);
-            if (empty ($content)) {
+            if (empty ($mondai->content)) {
                 $errors[] = 'CONTENT:EMPTY';
             }
             
             // Если есть ошибки, редиректнуть на форму и показать ошибки.
             if (! empty ($errors)) {
-                return $redirect (
-                    $mondai_id_new,
-                    $title,
-                    $is_hidden,
-                    $content,
-                    $errors
-                );
+                return $redirect ($mondai, $errors);
             }
             
             // Создать задачу.
-            $app['model']->setMondai([
-                'mondai_id' => $mondai_id_new,
-                'title'     => $title,
-                'is_hidden' => $is_hidden,
-                'content'   => $content,
-            ]);
+            $app['model']->setMondai($mondai);
             
             // Если старый номер не равен new, то после создания нового надо удалить старое.
-            if ($mondai_id_old !== 'new' && $mondai_id_old !== $mondai_id_new) {
+            if ($mondai_id_old !== 'new' && $mondai_id_old !== $mondai->mondai_id) {
                 $app['model']->deleteMondai($mondai_id_old);
             }
             
             // Показать новую задачу в админке.
             return $app->redirect(
-                $app['url_generator']->generate('admin_mondai_view', ['mondai_id' => $mondai_id_new]) .
+                $app['url_generator']->generate('admin_mondai_view', ['mondai_id' => $mondai->mondai_id]) .
                 '?page=' . $request->query->get('page')
             );
         } elseif ($request->request->get('delete')) {
@@ -306,13 +282,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             
             // Если есть ошибки, редиректнуть на форму и показать ошибки.
             if (! empty ($errors)) {
-                return $redirect (
-                    $mondai_id_new,
-                    $title,
-                    $is_hidden,
-                    $content,
-                    $errors
-                );
+                return $redirect ($mondai, $errors);
             }
             
             // Удалить задачу.
@@ -327,18 +297,12 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     $formKey = $request->query->get('formKey');
     if ($formKey) {
         $data = $app['session']->get($formKey);
-        return $view(
-            $data['mondai_id_new'],
-            $data['title'],
-            $data['is_hidden'],
-            $data['content'],
-            $data['errors']
-        );
+        return $view($data['mondai'], $data['errors']);
     }
     
     // Отобразить свежую форму для новой задачи.
     if ($mondai_id_old === 'new') {
-        return $view ($app['model']->getMondaiNextId());
+        return $view (new Zettai\Mondai (['mondai_id' => $app['model']->getMondaiNextId()]));
     }
     
     // Существует ли запрошенная задача?
@@ -348,12 +312,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     }
     
     // Отобразить свежую форму для старой задачи.
-    return $view (
-        $mondai_id_old,
-        $mondai['title'],
-        $mondai['is_hidden'],
-        $mondai['content']
-    );
+    return $view ($mondai);
 })
 ->assert('mondai_id_old', '\\d+|new')
 ->convert('mondai_id_old', function ($mondai_id_old) {
