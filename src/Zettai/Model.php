@@ -34,7 +34,8 @@ class Model
             SELECT
                 `mondai_id`,
                 `title`,
-                `content`
+                `content`,
+                `is_hidden`
             FROM `mondai`
             WHERE `mondai_id` = :mondai_id
         ', [
@@ -42,15 +43,16 @@ class Model
         ]);
     }
     
-    public function getMondaiCount()
+    public function getMondaiCount($includeHidden = false)
     {
         return $this->db->fetchColumn('
             SELECT COUNT(`mondai_id`)
             FROM `mondai`
+            ' . ($includeHidden ? '' : ' WHERE `is_hidden` = 0 ') . '
         ');
     }
     
-    public function getMondaiList ($offset = 0, $limit = 20)
+    public function getMondaiList ($offset = 0, $limit = 20, $includeHidden = false)
     {
         // prepare
         $offset = intval ($offset);
@@ -60,8 +62,10 @@ class Model
         return $this->db->fetchAll('
             SELECT
                 `mondai_id`,
-                `title`
+                `title`,
+                `is_hidden`
             FROM `mondai`
+            ' . ($includeHidden ? '' : ' WHERE `is_hidden` = 0 ') . '
             ORDER BY `mondai_id` ASC
             LIMIT ' . $offset . ', ' . $limit . '
         ');
@@ -95,6 +99,7 @@ class Model
         $mondai_id  = intval ($mondai['mondai_id']);
         $title      = trim (strval ($mondai['title']));
         $content    = trim (strval ($mondai['content']));
+        $is_hidden  = intval (!! (isset($mondai['is_hidden']) ? $mondai['is_hidden'] : true));
         
         // validate
         if (! ($mondai_id > 0)) {
@@ -112,16 +117,19 @@ class Model
             REPLACE INTO `mondai` (
                 `mondai_id`,
                 `title`,
-                `content`
+                `content`,
+                `is_hidden`
             ) VALUES (
                 :mondai_id,
                 :title,
-                :content
+                :content,
+                :is_hidden
             )
         ', [
             'mondai_id' => $mondai_id,
             'title'     => $title,
             'content'   => $content,
+            'is_hidden' => $is_hidden,
         ]);
     }
 }

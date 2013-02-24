@@ -71,12 +71,12 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Главная страница.
 $app->get('/{page}', function ($page) use ($app) {
-    $mondaiCount = $app['model']->getMondaiCount();
+    $mondaiCount = $app['model']->getMondaiCount(false);
     $perPage = 20;
     if (($page - 1) * $perPage > $mondaiCount) {
         return $app->redirect($app['url_generator']->generate('main', ['page' => 1]));
     }
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage, false);
     
     return $app->render('main.twig', [
         'mondaiList'  => $mondaiList,
@@ -112,12 +112,12 @@ $app->get('/login', function (Request $request) use ($app) {
 
 // Главная страница админки.
 $app->get('/admin/{page}', function ($page) use ($app) {
-    $mondaiCount = $app['model']->getMondaiCount();
+    $mondaiCount = $app['model']->getMondaiCount(true);
     $perPage = 20;
     if (($page - 1) * $perPage > $mondaiCount) {
         return $app->redirect($app['url_generator']->generate('admin_page', ['page' => 1]));
     }
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage, true);
     
     return $app->render('admin/main.twig', [
         'mondaiList'  => $mondaiList,
