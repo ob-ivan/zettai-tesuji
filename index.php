@@ -69,10 +69,20 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Задаём рутинг и контроллеры.
 
-// Заглушка для главной страницы.
-$app->get('/', function () use ($app) {
-    return $app->render('dummy.twig');
-});
+// Главная страница.
+$app->get('/{page}', function ($page) use ($app) {
+    return $app->render('main.twig');
+})
+->assert ('page', '\\d*')
+->value  ('page', '1')
+->convert('page', function ($page) {
+    $page = intval ($page);
+    if ($page < 1) {
+        $page = 1;
+    }
+    return $page;
+})
+->bind('main');
 
 // Вход в админку.
 $app->get('/login', function (Request $request) use ($app) {
