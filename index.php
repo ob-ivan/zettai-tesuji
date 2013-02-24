@@ -97,7 +97,7 @@ $app->get('/{page}', function ($page) use ($app) {
 ->bind('main');
 
 // Просмотр одной задачи на сайте.
-$app->get('/mondai/{mondai_id}', function ($mondai_id) use ($app) {
+$app->get('/mondai/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
     $mondai = $app['model']->getMondai($mondai_id);
     if ($mondai['is_hidden']) {
         $mondai = null;
