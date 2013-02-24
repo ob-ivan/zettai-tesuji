@@ -98,7 +98,23 @@ $app->get('/{page}', function ($page) use ($app) {
 
 // Просмотр одной задачи на сайте.
 $app->get('/mondai/{mondai_id}', function ($mondai_id) use ($app) {
-    return 'Не реализовано.';
+    $mondai = $app['model']->getMondai($mondai_id);
+    if ($mondai['is_hidden']) {
+        $mondai = null;
+    }
+    $page = $request->query->get('page');
+    return $app->render('mondai.twig', [
+        'mondai' => $mondai,
+        'page'   => $page,
+    ]);
+})
+->assert('mondai_id', '\\d+')
+->convert('mondai_id', function ($mondai_id) {
+    $mondai_id = intval ($mondai_id);
+    if ($mondai_id < 1) {
+        throw new Exception('Mondai id must be positive integer');
+    }
+    return $mondai_id;
 })
 ->bind('mondai');
 
@@ -143,7 +159,7 @@ $app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_
     $page = $request->query->get('page');
     return $app->render('admin/mondai/view.twig', [
         'mondai' => $mondai,
-        'page' => $page,
+        'page'   => $page,
     ]);
 })
 ->assert('mondai_id', '\\d+')
