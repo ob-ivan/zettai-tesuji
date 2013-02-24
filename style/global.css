@@ -1,0 +1,16 @@
+
+div.mondai {
+    width: 600px;
+}
+
+div.mondai br {
+    clear : both;
+}
+
+div.mondai ol.variants {
+    list-style-type: upper-alpha;
+}
+
+img.pai {
+    vertical-align: middle;
+}

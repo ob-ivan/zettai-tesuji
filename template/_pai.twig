@@ -23,6 +23,11 @@
                 {% set name = 'Красный' %}
             {% endif %}
         {% endif %}
-        <img src="http://tenhou.net/2/t/{{ pai.number }}{{ pai.color }}.gif" alt="{{ name }}" title="{{ name }}"/>
+        <img
+            src="http://tenhou.net/2/t/{{ pai.number }}{{ pai.color }}.gif" 
+            alt="{{ name }}"
+            title="{{ name }}"
+            class="pai"
+        />
     {% endfor %}
 {% endspaceless %}
