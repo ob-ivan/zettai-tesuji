@@ -12,4 +12,5 @@ class Exception extends GlobalException
     const MODEL_MONDAI_TITLE_EMPTY      = 0x0105;
     const MODEL_MONDAI_CONTENT_EMPTY    = 0x0106;
     const MONDAI_GET_FIELD_UNKNOWN      = 0x0107;
+    const MONDAI_TYPE_UNKNOWN           = 0x0108;
 }
