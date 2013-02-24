@@ -221,7 +221,7 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             'mondai'    => $mondai,
             'errors'    => $errors,
             'KYOKUS'    => array_keys(Zettai\Mondai::$KYOKUS),
-            'KAZES '    => array_keys(Zettai\Mondai::$KAZES),
+            'KAZES'     => array_keys(Zettai\Mondai::$KAZES),
         ]);
     };
     
@@ -261,6 +261,8 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
                 'kyoku'     => $request->request->get('kyoku'),
+                'jikaze'    => $request->request->get('jikaze'),
+                'junme'     => $request->request->get('junme'),
             ],
         ]);
         
