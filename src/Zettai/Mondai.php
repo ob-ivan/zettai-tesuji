@@ -169,7 +169,12 @@ class Mondai
                 
             case self::TYPE_JSON:
                 if (is_string ($value)) {
-                    $unpacked = new ArrayObject(json_decode($value));
+                    $decoded = json_decode($value);
+                    if (is_object($decoded)) {
+                        $unpacked = new ArrayObject($decoded);
+                    } else {
+                        $unpacked = [];
+                    }
                 } elseif (is_array ($value)) {
                     $unpacked = $value;
                 }
