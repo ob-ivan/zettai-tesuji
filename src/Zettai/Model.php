@@ -34,8 +34,8 @@ class Model
             SELECT
                 `mondai_id`,
                 `title`,
-                `content`,
-                `is_hidden`
+                `is_hidden`,
+                `content`
             FROM `mondai`
             WHERE `mondai_id` = :mondai_id
         ', [
@@ -98,8 +98,8 @@ class Model
         // prepare
         $mondai_id  = intval ($mondai['mondai_id']);
         $title      = trim (strval ($mondai['title']));
-        $content    = trim (strval ($mondai['content']));
         $is_hidden  = intval (!! (isset($mondai['is_hidden']) ? $mondai['is_hidden'] : true));
+        $content    = trim (strval ($mondai['content']));
         
         // validate
         if (! ($mondai_id > 0)) {
@@ -117,19 +117,19 @@ class Model
             REPLACE INTO `mondai` (
                 `mondai_id`,
                 `title`,
-                `content`,
-                `is_hidden`
+                `is_hidden`,
+                `content`
             ) VALUES (
                 :mondai_id,
                 :title,
-                :content,
-                :is_hidden
+                :is_hidden,
+                :content
             )
         ', [
             'mondai_id' => $mondai_id,
             'title'     => $title,
-            'content'   => $content,
             'is_hidden' => $is_hidden,
+            'content'   => $content,
         ]);
     }
 }
