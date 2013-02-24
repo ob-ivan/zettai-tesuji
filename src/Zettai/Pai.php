@@ -3,8 +3,9 @@ namespace Zettai;
 
 use ArrayIterator;
 use IteratorAggregate;
+use JsonSerializable;
 
-class Pai implements IteratorAggregate
+class Pai implements IteratorAggregate, JsonSerializable
 {
     private $pais;
     
@@ -30,5 +31,32 @@ class Pai implements IteratorAggregate
     public function getIterator()
     {
         return new ArrayIterator($this->pais);
+    }
+    
+    public function jsonSerialize()
+    {
+        $colors = [
+            'm' => [],
+            'p' => [],
+            's' => [],
+            'z' => [],
+        ];
+        foreach ($this->pais as $pai) {
+            $colors[$pai['color']][] = $pai['number'];
+        }
+        $string = '';
+        foreach ($colors as $color => $numbers)  {
+            if (! empty($numbers)) {
+                usort($numbers, function ($a, $b) {
+                    if (! $a) $a = 5;
+                    if (! $b) $b = 5;
+                    if ($a < $b) return -1;
+                    if ($a > $b) return  1;
+                    return 0;
+                });
+                $string .= implode('', $numbers) . $color;
+            }
+        }
+        return $string;
     }
 }

@@ -8,7 +8,21 @@
             Задача №{{ mondai.mondai_id|lpad('0', 3) }}.
             {{ mondai.title }}
         </h2>
-        {# <pre>{{ mondai.content }}</pre> #}
+        <div class="mondai">
+            <div class="kyoku"   >Сдача:   {{ mondai.content.kyoku |kyoku   }}</div>
+            <div class="jikaze"  >Позиция: {{ mondai.content.jikaze|kaze    }}</div>
+            <div class="junme"   >Ход:     {{ mondai.content.junme          }}</div>
+            <div class="dora"    >Дора:    {{ mondai.content.dora  |pai|raw }}</div>
+            <div class="mochiten">Очки:    {{ mondai.content.mochiten       }}</div>
+            <div class="tehai"   >Рука:    {{ mondai.content.tehai |pai|raw }}</div>
+            <div class="tsumo"   >Набрал:  {{ mondai.content.tsumo |pai|raw }}</div>
+            <div class="question">Варианты ответа:</div>
+            <ol  class="variants" style="list-style-type: upper-alpha">
+                <li>{{ mondai.content.kiri_a|pai|raw }}</li>
+                <li>{{ mondai.content.kiri_b|pai|raw }}</li>
+                <li>{{ mondai.content.kiri_c|pai|raw }}</li>
+            </ol>
+        </div>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}

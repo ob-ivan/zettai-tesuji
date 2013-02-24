@@ -220,6 +220,8 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             'csrf'      => $app['csrf']->generate($csrfKey),
             'mondai'    => $mondai,
             'errors'    => $errors,
+            'KYOKUS'    => array_keys(Zettai\Mondai::$KYOKUS),
+            'KAZES '    => array_keys(Zettai\Mondai::$KAZES),
         ]);
     };
     
@@ -257,7 +259,9 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             'mondai_id' => $request->request->get('mondai_id'),
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
-            'content'   => $request->request->get('content'),
+            'content'   => [
+                'kyoku'     => $request->request->get('kyoku'),
+            ],
         ]);
         
         if ($request->request->get('save')) {
@@ -279,9 +283,6 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             }
             if (empty ($mondai->title)) {
                 $errors[] = 'TITLE:EMPTY';
-            }
-            if (empty ($mondai->content)) {
-                $errors[] = 'CONTENT:EMPTY';
             }
             
             // Если есть ошибки, редиректнуть на форму и показать ошибки.

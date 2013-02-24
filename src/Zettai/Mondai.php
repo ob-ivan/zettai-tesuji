@@ -20,7 +20,7 @@ class Mondai
     const TYPE_JSON     = __LINE__;
     const TYPE_PAI      = __LINE__;
 
-    private static $KYOKU = [
+    public static $KYOKUS = [
         'ton-1' => 1,
         'ton-2' => 1,
         'ton-3' => 1,
@@ -31,7 +31,7 @@ class Mondai
         'nan-4' => 1,
     ];
     
-    private static $JIKAZE = [
+    public static $KAZES = [
         'ton' => 1,
         'nan' => 1,
         'sha' => 1,
@@ -135,7 +135,13 @@ class Mondai
     
     public function getData()
     {
-        return $this->data;
+        $data = $this->data;
+        foreach (self::$FIELD_PROPERTIES as $field => $properties) {
+            if ($properties[self::PROPERTY_TYPE] === self::TYPE_JSON) {
+                $data[$field] = json_encode($data[$field]);
+            }
+        }
+        return $data;
     }
     
     // private //
@@ -147,7 +153,7 @@ class Mondai
                 return !! $value;
                 
             case self::TYPE_KYOKU:
-                if (! isset(self::$KYOKU[$value])) {
+                if (! isset(self::$KYOKUS[$value])) {
                     return $properties[self::PROPERTY_DEFAULT];
                 }
                 return $value;
@@ -156,15 +162,16 @@ class Mondai
                 return intval($value);
                 
             case self::TYPE_JIKAZE:
-                if (! isset(self::$JIKAZE[$value])) {
+                if (! isset(self::$KAZES[$value])) {
                     return $properties[self::PROPERTY_DEFAULT];
                 }
                 return $value;
                 
             case self::TYPE_JSON:
-                $unpacked = json_decode($value);
-                if (! is_array($unpacked)) {
-                    $unpacked = [];
+                if (is_string ($value)) {
+                    $unpacked = new ArrayObject(json_decode($value));
+                } elseif (is_array ($value)) {
+                    $unpacked = $value;
                 }
                 $prepared = [];
                 foreach ($properties[self::PROPERTY_SCHEMA] as $field => $subproperties) {

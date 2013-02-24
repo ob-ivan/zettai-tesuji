@@ -115,9 +115,6 @@ class Model
         if (! (strlen($mondai->title) > 0)) {
             throw new Exception('Mondai title is empty', Exception::MODEL_MONDAI_TITLE_EMPTY);
         }
-        if (! (strlen($mondai->content) > 0)) {
-            throw new Exception('Mondai content is empty', Exception::MODEL_MONDAI_CONTENT_EMPTY);
-        }
         
         return $this->db->update('mondai', $mondai->getData(), ['mondai_id' => $mondai->mondai_id]);
     }
