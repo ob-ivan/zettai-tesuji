@@ -69,10 +69,38 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Задаём рутинг и контроллеры.
 
-// Заглушка для главной страницы.
-$app->get('/', function () use ($app) {
-    return $app->render('dummy.twig');
-});
+// Главная страница.
+$app->get('/{page}', function ($page) use ($app) {
+    $mondaiCount = $app['model']->getMondaiCount();
+    $perPage = 20;
+    if (($page - 1) * $perPage > $mondaiCount) {
+        return $app->redirect($app['url_generator']->generate('main', ['page' => 1]));
+    }
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
+    
+    return $app->render('main.twig', [
+        'mondaiList'  => $mondaiList,
+        'mondaiCount' => $mondaiCount,
+        'curPage'     => $page,
+        'perPage'     => $perPage,
+    ]);
+})
+->assert ('page', '\\d*')
+->value  ('page', '1')
+->convert('page', function ($page) {
+    $page = intval ($page);
+    if ($page < 1) {
+        $page = 1;
+    }
+    return $page;
+})
+->bind('main');
+
+// Просмотр одной задачи на сайте.
+$app->get('/mondai/{mondai_id}', function ($mondai_id) use ($app) {
+    return 'Не реализовано.';
+})
+->bind('mondai');
 
 // Вход в админку.
 $app->get('/login', function (Request $request) use ($app) {
