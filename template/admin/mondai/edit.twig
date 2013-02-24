@@ -90,9 +90,9 @@
                 {% endfor %}
             </select>
         </p>
+        <p>Очки: <input name="mochiten" required value="{{ mondai.content.mochiten }}"/></p>
         
         {#
-            <div class="mochiten">Очки:    {{ mondai.content.mochiten       }}</div>
             <div class="tehai"   >Рука:    {{ mondai.content.tehai |pai|raw }}</div>
             <div class="tsumo"   >Набрал:  {{ mondai.content.tsumo |pai|raw }}</div>
             <div class="question">Варианты ответа:</div>
