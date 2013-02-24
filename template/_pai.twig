@@ -1,26 +1,28 @@
-{% for pai in pais %}
-    {% if pai.color == 'm' %}
-        {% set name = pai.number ~ 'ман' %}
-    {% elseif pai.color == 'p' %}
-        {% set name = pai.number ~ 'пин' %}
-    {% elseif pai.color == 's' %}
-        {% set name = pai.number ~ 'со' %}
-    {% elseif pai.color == 'z' %}
-        {% if pai.number == '1' %}
-            {% set name = 'восток' %}
-        {% elseif pai.number == '2' %}
-            {% set name = 'юг' %}
-        {% elseif pai.number == '3' %}
-            {% set name = 'запад' %}
-        {% elseif pai.number == '4' %}
-            {% set name = 'север' %}
-        {% elseif pai.number == '5' %}
-            {% set name = 'Белый' %}
-        {% elseif pai.number == '6' %}
-            {% set name = 'Зелёный' %}
-        {% elseif pai.number == '7' %}
-            {% set name = 'Красный' %}
+{% spaceless %}
+    {% for pai in pais %}
+        {% if pai.color == 'm' %}
+            {% set name = pai.number ~ 'ман' %}
+        {% elseif pai.color == 'p' %}
+            {% set name = pai.number ~ 'пин' %}
+        {% elseif pai.color == 's' %}
+            {% set name = pai.number ~ 'со' %}
+        {% elseif pai.color == 'z' %}
+            {% if pai.number == '1' %}
+                {% set name = 'восток' %}
+            {% elseif pai.number == '2' %}
+                {% set name = 'юг' %}
+            {% elseif pai.number == '3' %}
+                {% set name = 'запад' %}
+            {% elseif pai.number == '4' %}
+                {% set name = 'север' %}
+            {% elseif pai.number == '5' %}
+                {% set name = 'Белый' %}
+            {% elseif pai.number == '6' %}
+                {% set name = 'Зелёный' %}
+            {% elseif pai.number == '7' %}
+                {% set name = 'Красный' %}
+            {% endif %}
         {% endif %}
-    {% endif %}
-    <img src="http://tenhou.net/2/t/{{ pai.number }}{{ pai.color }}.gif" alt="{{ name }}" title="{{ name }}"/>
-{% endfor %}
+        <img src="http://tenhou.net/2/t/{{ pai.number }}{{ pai.color }}.gif" alt="{{ name }}" title="{{ name }}"/>
+    {% endfor %}
+{% endspaceless %}

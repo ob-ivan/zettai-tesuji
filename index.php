@@ -266,6 +266,7 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
                 'junme'     => $request->request->get('junme'),
                 'dora'      => $request->request->get('dora'),
                 'mochiten'  => $request->request->get('mochiten'),
+                'tehai'     => $request->request->get('tehai'),
             ],
         ]);
         
