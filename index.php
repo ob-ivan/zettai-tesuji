@@ -71,12 +71,12 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Главная страница.
 $app->get('/{page}', function ($page) use ($app) {
-    $mondaiCount = $app['model']->getMondaiCount();
+    $mondaiCount = $app['model']->getMondaiCount(false);
     $perPage = 20;
     if (($page - 1) * $perPage > $mondaiCount) {
         return $app->redirect($app['url_generator']->generate('main', ['page' => 1]));
     }
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage, false);
     
     return $app->render('main.twig', [
         'mondaiList'  => $mondaiList,
@@ -112,12 +112,12 @@ $app->get('/login', function (Request $request) use ($app) {
 
 // Главная страница админки.
 $app->get('/admin/{page}', function ($page) use ($app) {
-    $mondaiCount = $app['model']->getMondaiCount();
+    $mondaiCount = $app['model']->getMondaiCount(true);
     $perPage = 20;
     if (($page - 1) * $perPage > $mondaiCount) {
         return $app->redirect($app['url_generator']->generate('admin_page', ['page' => 1]));
     }
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage);
+    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage, true);
     
     return $app->render('admin/main.twig', [
         'mondaiList'  => $mondaiList,
@@ -167,6 +167,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     $view = function (
         $mondai_id_new,
         $title      = '',
+        $is_hidden  = true,
         $content    = '',
         $errors     = []
     ) use (
@@ -181,6 +182,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             'csrf'          => $app['csrf']->generate($csrfKey()),
             'mondai_id_new' => $mondai_id_new,
             'title'         => $title,
+            'is_hidden'     => $is_hidden,
             'content'       => $content,
             'errors'        => $errors,
         ]);
@@ -190,6 +192,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     $redirect = function (
         $mondai_id_new,
         $title,
+        $is_hidden,
         $content,
         $errors
     ) use (
@@ -201,6 +204,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
         $app['session']->set($formKey, [
             'mondai_id_new' => $mondai_id_new,
             'title'         => $title,
+            'is_hidden'     => $is_hidden,
             'content'       => $content,
             'errors'        => $errors,
         ]);
@@ -222,6 +226,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
         
         $mondai_id_new = $request->request->get('mondai_id_new');
         $title         = $request->request->get('title');
+        $is_hidden     = intval($request->request->get('is_hidden')) === 1;
         $content       = $request->request->get('content');
             
         if ($request->request->get('save')) {
@@ -256,6 +261,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
                 return $redirect (
                     $mondai_id_new,
                     $title,
+                    $is_hidden,
                     $content,
                     $errors
                 );
@@ -265,6 +271,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
             $app['model']->setMondai([
                 'mondai_id' => $mondai_id_new,
                 'title'     => $title,
+                'is_hidden' => $is_hidden,
                 'content'   => $content,
             ]);
             
@@ -286,6 +293,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
                 return $redirect (
                     $mondai_id_new,
                     $title,
+                    $is_hidden,
                     $content,
                     $errors
                 );
@@ -306,6 +314,7 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
         return $view(
             $data['mondai_id_new'],
             $data['title'],
+            $data['is_hidden'],
             $data['content'],
             $data['errors']
         );
@@ -323,7 +332,12 @@ $app->match('/admin/mondai/edit/{mondai_id_old}', function (Request $request, $m
     }
     
     // Отобразить свежую форму для старой задачи.
-    return $view ($mondai_id_old, $mondai['title'], $mondai['content']);
+    return $view (
+        $mondai_id_old,
+        $mondai['title'],
+        $mondai['is_hidden'],
+        $mondai['content']
+    );
 })
 ->assert('mondai_id_old', '\\d+|new')
 ->convert('mondai_id_old', function ($mondai_id_old) {
