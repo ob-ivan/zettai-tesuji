@@ -1,9 +1,27 @@
 {% extends '_layout.twig' %}
 
-{% block style %}dummy{% endblock %}
+{% block style %}main{% endblock %}
 
 {% block body %}
     <h1>Беспроигрышное мастерство маджонга</h1>
-    <p>Сайт на разработке</p>
-    <p>Разработка на <a target="_blank" href="https://github.com/ob-ivan/zettai-tesuji/">Гитхабе</a></p>
+    <h2>Задачи</h2>
+    {% if mondaiList %}
+        <ul>
+            {% for mondai in mondaiList %}
+                <li>
+                    <a href="{{ path('mondai', { 'mondai_id' : mondai.mondai_id }) }}?page={{ curPage }}">
+                        №{{ mondai.mondai_id|lpad('0', 3) }}. {{ mondai.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% include '_paginator.twig' with {
+            'totalCount'    : mondaiCount,
+            'perPage'       : perPage,
+            'curPage'       : curPage,
+            'linkTemplate'  : 'main'
+        } only %}
+    {% else %}
+        <p class="empty">Нет задач</p>
+    {% endif %}
 {% endblock %}
