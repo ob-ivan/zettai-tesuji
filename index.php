@@ -1,14 +1,20 @@
 <?php
 $time = microtime(true);
 
+// Пути.
+define ('DOCUMENT_ROOT', __DIR__);
+define ('AUTOLOAD_PATH',   DOCUMENT_ROOT . '/vendor/autoload.php');
+define ('DUMMY_LOCK_PATH', DOCUMENT_ROOT . '/dummy.lock');
+define ('TEMPLATE_DIR',    DOCUMENT_ROOT . '/template');
+
 // Зависимости.
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once AUTOLOAD_PATH;
 use Symfony\Component\HttpFoundation\Request;
 
 // Загружаем конфиги.
 
-$config = new Zettai\Config(__DIR__);
+$config = new Zettai\Config(DOCUMENT_ROOT);
 
 // Инициализируем приложение.
 
@@ -53,7 +59,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
 ]);
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\TwigServiceProvider(), [
-    'twig.path' => __DIR__ . '/template',
+    'twig.path' => TEMPLATE_DIR,
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $kazeName = function ($kaze) {
@@ -93,6 +99,16 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());
+
+// Если стоит режим заглушки, выводим её и больше ничего не делаем.
+$app->before(function (Request $request) use ($app) {
+    if (file_exists(DUMMY_LOCK_PATH)) {
+        if ($request->getMethod() === 'GET') {
+            return $app->render('dummy.twig');
+        }
+        // TODO: Обработать POST-запросы.
+    }
+}, Zettai\Application::EARLY_EVENT);
 
 // Задаём рутинг и контроллеры.
 
