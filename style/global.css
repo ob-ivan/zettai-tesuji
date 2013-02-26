@@ -5,19 +5,23 @@ div.mondai {
     width : 560px;
 }
 
+div.mondai br {
+    clear : both;
+}
+
 div.mondai div.row {
     clear : both;
-    padding : 20px 0 10px;
+    padding : 0 0 20px;
 }
 
 div.mondai div.row div.left {
     float : left;
-    width : 45%;
+    width : 50%;
 }
 
 div.mondai div.row div.dora {
     float : right;
-    width : 45%;
+    width : 50%;
     text-align : center;
 }
 
@@ -31,13 +35,14 @@ div.mondai div.row div.tsumo {
     text-align : center;
 }
 
-div.mondai div.row.question {
+div.mondai div.question {
     text-align : center;
+    padding : 0 0 10px;
 }
 
 div.mondai div.row.variants div {
     float : left;
-    width : 30%;
+    width : 33%;
     text-align : center;
 }
 

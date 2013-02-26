@@ -7,12 +7,14 @@
             <div class="mochiten">Очки:    {{ content.mochiten       }}</div>
         </div>
         <div class="dora">Дора:    {{ content.dora  |pai|raw }}</div>
+        <br/>
     </div>
     <div class="row">
         <div class="tehai">Рука:    {{ content.tehai |pai|raw }}</div>
         <div class="tsumo">Набрал:  {{ content.tsumo |pai|raw }}</div>
+        <br/>
     </div>
-    <div class="row question">{{ question }}</div>
+    <div class="question">{{ question }}</div>
     <div class="row variants">
         <div>A. {{ content.kiri_a|pai|raw }}</div>
         <div>B. {{ content.kiri_b|pai|raw }}</div>
