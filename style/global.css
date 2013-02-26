@@ -1,16 +1,48 @@
 
+/* _mondai_content.twig */
+
 div.mondai {
-    width: 600px;
+    width : 560px;
 }
 
-div.mondai br {
+div.mondai div.row {
     clear : both;
+    padding : 20px 0 10px;
 }
 
-div.mondai ol.variants {
-    list-style-type: upper-alpha;
+div.mondai div.row div.left {
+    float : left;
+    width : 45%;
 }
+
+div.mondai div.row div.dora {
+    float : right;
+    width : 45%;
+    text-align : center;
+}
+
+div.mondai div.row div.tehai {
+    float : left;
+    text-align : center;
+}
+
+div.mondai div.row div.tsumo {
+    float : right;
+    text-align : center;
+}
+
+div.mondai div.row.question {
+    text-align : center;
+}
+
+div.mondai div.row.variants div {
+    float : left;
+    width : 30%;
+    text-align : center;
+}
+
+/* _pai.twig */
 
 img.pai {
-    vertical-align: middle;
+    vertical-align : middle;
 }
