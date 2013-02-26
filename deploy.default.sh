@@ -4,16 +4,11 @@
 
 HOME=/work/chome/`whoami`
 PATH=$HOME/bin:$PATH
-TMPDIR=$HOME/tmp
 PHP=/usr/local/php54/bin/php
 COMPOSER="$PHP $HOME/bin/composer.phar --working-dir=$PWD"
 
-LOCKDIR=$TMPDIR
-LOCKFILE=deploy.lock
-LOCKPATH=$LOCKDIR/$LOCKFILE
-
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-DUMMYFILE=$DIR/dummy.lock
+LOCKPATH=$DIR/deploy.lock
 
 # Exit script if something goes wrong.
 set -e
@@ -27,13 +22,11 @@ else
         flock -x -n 200
         
         # Commands to run
-        touch $DUMMYFILE
         git pull
         $COMPOSER update
-        rm $DUMMYFILE
             
     ) 200>$LOCKPATH
     rm -f $LOCKPATH
     
-    echo 'Deployment finished.'
+    echo 'Deployment finished at ['`date`'].'
 fi
