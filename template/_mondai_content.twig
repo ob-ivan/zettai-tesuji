@@ -1,15 +1,24 @@
 <div class="mondai">
-    <div class="kyoku"   >Сдача:   {{ content.kyoku |kyoku   }}</div>
-    <div class="jikaze"  >Позиция: {{ content.jikaze|kaze    }}</div>
-    <div class="junme"   >Ход:     {{ content.junme          }}</div>
-    <div class="dora"    >Дора:    {{ content.dora  |pai|raw }}</div>
-    <div class="mochiten">Очки:    {{ content.mochiten       }}</div>
-    <div class="tehai"   >Рука:    {{ content.tehai |pai|raw }}</div>
-    <div class="tsumo"   >Набрал:  {{ content.tsumo |pai|raw }}</div>
+    <div class="row">
+        <div class="left">
+            <div class="kyoku"   >Сдача:   {{ content.kyoku |kyoku   }}</div>
+            <div class="jikaze"  >Позиция: {{ content.jikaze|kaze    }}</div>
+            <div class="junme"   >Ход:     {{ content.junme          }}</div>
+            <div class="mochiten">Очки:    {{ content.mochiten       }}</div>
+        </div>
+        <div class="dora">Дора:    {{ content.dora  |pai|raw }}</div>
+        <br/>
+    </div>
+    <div class="row">
+        <div class="tehai">Рука:    {{ content.tehai |pai|raw }}</div>
+        <div class="tsumo">Набрал:  {{ content.tsumo |pai|raw }}</div>
+        <br/>
+    </div>
     <div class="question">{{ question }}</div>
-    <ol  class="variants">
-        <li>{{ content.kiri_a|pai|raw }}</li>
-        <li>{{ content.kiri_b|pai|raw }}</li>
-        <li>{{ content.kiri_c|pai|raw }}</li>
-    </ol>
+    <div class="row variants">
+        <div>A. {{ content.kiri_a|pai|raw }}</div>
+        <div>B. {{ content.kiri_b|pai|raw }}</div>
+        <div>C. {{ content.kiri_c|pai|raw }}</div>
+    </div>
+    <div class="row"></div>
 </div>
