@@ -3,9 +3,9 @@ $time = microtime(true);
 
 // Пути.
 define ('DOCUMENT_ROOT', __DIR__);
-define ('AUTOLOAD_PATH',   DOCUMENT_ROOT . '/vendor/autoload.php');
-define ('DUMMY_LOCK_PATH', DOCUMENT_ROOT . '/dummy.lock');
-define ('TEMPLATE_DIR',    DOCUMENT_ROOT . '/template');
+define ('AUTOLOAD_PATH',    DOCUMENT_ROOT . '/vendor/autoload.php');
+define ('DEPLOY_LOCK_PATH', DOCUMENT_ROOT . '/deploy.lock');
+define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 
 // Зависимости.
 
@@ -102,7 +102,7 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Если стоит режим заглушки, выводим её и больше ничего не делаем.
 $app->before(function (Request $request) use ($app) {
-    if (file_exists(DUMMY_LOCK_PATH)) {
+    if (file_exists(DEPLOY_LOCK_PATH)) {
         if ($request->getMethod() === 'GET') {
             return $app->render('dummy.twig');
         }
