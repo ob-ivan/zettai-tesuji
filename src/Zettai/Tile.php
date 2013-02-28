@@ -5,11 +5,11 @@ use ArrayIterator;
 use IteratorAggregate;
 use JsonSerializable;
 
-class Pai implements IteratorAggregate, JsonSerializable
+class Tile implements IteratorAggregate, JsonSerializable
 {
     // const //
     
-    public static $PAIS = [
+    public static $TILES = [
         '1m', '2m', '3m', '4m', '0m', '5m', '6m', '7m', '8m', '9m',
         '1p', '2p', '3p', '4p', '0p', '5p', '6p', '7p', '8p', '9p',
         '1s', '2s', '3s', '4s', '0s', '5s', '6s', '7s', '8s', '9s',
@@ -18,14 +18,14 @@ class Pai implements IteratorAggregate, JsonSerializable
     
     // var //
 
-    private $pais;
+    private $tiles;
 
     // public //
 
     public function __construct ($display)
     {
         // Распознать масти и собрать в массив.
-        $this->pais = [];
+        $this->tiles = [];
         while (strlen($display) > 0) {
             $display = trim ($display);
             if (! preg_match ('/^(\d+)([mpsz])/', $display, $matches)) {
@@ -33,7 +33,7 @@ class Pai implements IteratorAggregate, JsonSerializable
             }
             $display = substr ($display, strlen ($matches[0]));
             for ($i = 0, $c = strlen ($matches[1]); $i < $c; ++$i) {
-                $this->pais[] = [
+                $this->tiles[] = [
                     'number' => $matches[1][$i],
                     'color'  => $matches[2],
                 ];
@@ -50,7 +50,7 @@ class Pai implements IteratorAggregate, JsonSerializable
 
     public function getIterator()
     {
-        return new ArrayIterator($this->pais);
+        return new ArrayIterator($this->tiles);
     }
 
     // JsonSerializable //
@@ -70,8 +70,8 @@ class Pai implements IteratorAggregate, JsonSerializable
             's' => [],
             'z' => [],
         ];
-        foreach ($this->pais as $pai) {
-            $colors[$pai['color']][] = $pai['number'];
+        foreach ($this->tiles as $tile) {
+            $colors[$tile['color']][] = $tile['number'];
         }
         $string = '';
         foreach ($colors as $color => $numbers)  {

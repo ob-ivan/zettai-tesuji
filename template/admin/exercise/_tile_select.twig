@@ -2,18 +2,18 @@
     Селектор фишек для формы редактирования задачи.
     Параметры:
         name
-        PAIS
+        TILES
         value
 #}
 <select name="{{ name }}">
-    {% for pai in PAIS %}
+    {% for tile in TILES %}
         <option
-            value="{{ pai }}"
-            {% if pai == value %}
+            value="{{ tile }}"
+            {% if tile == value %}
                 selected
             {% endif %}
         >
-            {{ pai }}
+            {{ tile }}
         </option>
     {% endfor %}
 </select>

@@ -1,19 +1,19 @@
 {% extends 'admin/_layout.twig' %}
 
 {% block admin_body %}
-    {% if mondai %}
+    {% if exercise %}
         <h2>
-            Задача №{{ mondai.mondai_id|lpad('0', 3) }}.
-            {{ mondai.title }}
-            {% if mondai.is_hidden %}
+            Задача №{{ exercise.exercise_id|lpad('0', 3) }}.
+            {{ exercise.title }}
+            {% if exercise.is_hidden %}
                 (скрыта)
             {% endif %}
         </h2>
-        {% include '_mondai_content.twig' with {
-            'content'  : mondai.content,
+        {% include '_exercise_content.twig' with {
+            'content'  : exercise.content,
             'question' : 'Варианты ответа:',
         } only %}
-        <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : mondai.mondai_id }) }}?page={{ page }}">[редактировать]</a></p>
+        <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}?page={{ page }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}

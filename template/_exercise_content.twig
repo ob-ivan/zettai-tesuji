@@ -1,0 +1,24 @@
+<div class="exercise">
+    <div class="row">
+        <div class="left">
+            <div class="kyoku"   >Сдача:   {{ content.kyoku   |kyoku }}</div>
+            <div class="position">Позиция: {{ content.position|wind  }}</div>
+            <div class="turn"    >Ход:     {{ content.turn           }}</div>
+            <div class="score"   >Очки:    {{ content.score          }}</div>
+        </div>
+        <div class="dora">Дора: {{ content.dora|tile|raw }}</div>
+        <br/>
+    </div>
+    <div class="row">
+        <div class="hand">Рука:   {{ content.hand|tile|raw }}</div>
+        <div class="draw">Набрал: {{ content.draw|tile|raw }}</div>
+        <br/>
+    </div>
+    <div class="question">{{ question }}</div>
+    <div class="row variants">
+        <div>A. {{ content.discard_a|tile|raw }}</div>
+        <div>B. {{ content.discard_b|tile|raw }}</div>
+        <div>C. {{ content.discard_c|tile|raw }}</div>
+    </div>
+    <div class="row"></div>
+</div>
