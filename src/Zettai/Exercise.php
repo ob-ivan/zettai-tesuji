@@ -63,7 +63,7 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_POSITION,
                     self::PROPERTY_DEFAULT => 'ton',
                 ],
-                'junme'     => [
+                'turn'     => [
                     self::PROPERTY_TYPE    => self::TYPE_INTEGER,
                     self::PROPERTY_DEFAULT => '1',
                 ],

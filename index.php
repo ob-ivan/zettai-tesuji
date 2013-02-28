@@ -279,7 +279,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'content'   => [
                 'kyoku'     => $request->request->get('kyoku'),
                 'position'    => $request->request->get('position'),
-                'junme'     => $request->request->get('junme'),
+                'turn'     => $request->request->get('turn'),
                 'dora'      => $request->request->get('dora'),
                 'mochiten'  => $request->request->get('mochiten'),
                 'tehai'     => $request->request->get('tehai'),
