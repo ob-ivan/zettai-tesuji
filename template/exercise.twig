@@ -9,8 +9,9 @@
             {{ exercise.title }}
         </h2>
         {% include '_exercise_content.twig' with {
-            'content'  : exercise.content,
-            'question' : 'Что сбросить?',
+            'content'     : exercise.content,
+            'show_answer' : false,
+            'ABCS'        : ABCS,
         } only %}
     {% else %}
         <p class="empty">Нет такой задачи</p>

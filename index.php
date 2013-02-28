@@ -149,6 +149,7 @@ $app->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) u
     return $app->render('exercise.twig', [
         'exercise' => $exercise,
         'page'     => $page,
+        'ABCS'     => array_keys(Zettai\Exercise::$ABCS),
     ]);
 })
 ->assert('exercise_id', '\\d+')
@@ -203,6 +204,7 @@ $app->get('/admin/exercise/view/{exercise_id}', function (Request $request, $exe
     return $app->render('admin/exercise/view.twig', [
         'exercise' => $exercise,
         'page'     => $page,
+        'ABCS'     => array_keys(Zettai\Exercise::$ABCS),
     ]);
 })
 ->assert('exercise_id', '\\d+')
@@ -277,16 +279,20 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
-                'kyoku'     => $request->request->get('kyoku'),
-                'position'  => $request->request->get('position'),
-                'turn'      => $request->request->get('turn'),
-                'dora'      => $request->request->get('dora'),
-                'score'     => $request->request->get('score'),
-                'hand'      => $request->request->get('hand'),
-                'draw'      => $request->request->get('draw'),
-                'discard_a' => $request->request->get('discard_a'),
-                'discard_b' => $request->request->get('discard_b'),
-                'discard_c' => $request->request->get('discard_c'),
+                'kyoku'         => $request->request->get('kyoku'),
+                'position'      => $request->request->get('position'),
+                'turn'          => $request->request->get('turn'),
+                'dora'          => $request->request->get('dora'),
+                'score'         => $request->request->get('score'),
+                'hand'          => $request->request->get('hand'),
+                'draw'          => $request->request->get('draw'),
+                'discard_a'     => $request->request->get('discard_a'),
+                'answer_a'      => $request->request->get('answer_a'),
+                'discard_b'     => $request->request->get('discard_b'),
+                'answer_b'      => $request->request->get('answer_b'),
+                'discard_c'     => $request->request->get('discard_c'),
+                'answer_c'      => $request->request->get('answer_c'),
+                'best_answer'   => $request->request->get('best_answer'),
             ],
         ]);
         
