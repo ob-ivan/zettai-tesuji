@@ -282,7 +282,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
                 'turn'     => $request->request->get('turn'),
                 'dora'      => $request->request->get('dora'),
                 'mochiten'  => $request->request->get('mochiten'),
-                'tehai'     => $request->request->get('tehai'),
+                'hand'     => $request->request->get('hand'),
                 'tsumo'     => $request->request->get('tsumo'),
                 'kiri_a'    => $request->request->get('kiri_a'),
                 'kiri_b'    => $request->request->get('kiri_b'),

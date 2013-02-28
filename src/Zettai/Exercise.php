@@ -75,7 +75,7 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_STRING,
                     self::PROPERTY_DEFAULT => '25000',
                 ],
-                'tehai'     => [
+                'hand'     => [
                     self::PROPERTY_TYPE    => self::TYPE_PAI,
                     self::PROPERTY_DEFAULT => '',
                 ],
