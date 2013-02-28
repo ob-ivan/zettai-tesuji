@@ -4,7 +4,7 @@
 **/
 namespace Zettai;
 
-class Mondai
+class Exercise
 {
     // const //
     
@@ -16,30 +16,30 @@ class Mondai
     const TYPE_STRING   = __LINE__;
     const TYPE_BOOLEAN  = __LINE__;
     const TYPE_KYOKU    = __LINE__;
-    const TYPE_JIKAZE   = __LINE__;
+    const TYPE_POSITION = __LINE__;
     const TYPE_JSON     = __LINE__;
-    const TYPE_PAI      = __LINE__;
+    const TYPE_TILE     = __LINE__;
 
     public static $KYOKUS = [
-        'ton-1' => 1,
-        'ton-2' => 1,
-        'ton-3' => 1,
-        'ton-4' => 1,
-        'nan-1' => 1,
-        'nan-2' => 1,
-        'nan-3' => 1,
-        'nan-4' => 1,
+        'east-1'  => 1,
+        'east-2'  => 1,
+        'east-3'  => 1,
+        'east-4'  => 1,
+        'south-1' => 1,
+        'south-2' => 1,
+        'south-3' => 1,
+        'south-4' => 1,
     ];
     
-    public static $KAZES = [
-        'ton' => 1,
-        'nan' => 1,
-        'sha' => 1,
-        'pei' => 1,
+    public static $WINDS = [
+        'east'  => 1,
+        'south' => 1,
+        'west'  => 1,
+        'north' => 1,
     ];
     
     private static $FIELD_PROPERTIES = [
-        'mondai_id' => [
+        'exercise_id' => [
             self::PROPERTY_TYPE    => self::TYPE_INTEGER,
             self::PROPERTY_DEFAULT => 0,
         ],
@@ -57,42 +57,42 @@ class Mondai
             self::PROPERTY_SCHEMA  => [
                 'kyoku'     => [
                     self::PROPERTY_TYPE    => self::TYPE_KYOKU,
-                    self::PROPERTY_DEFAULT => 'ton-1',
+                    self::PROPERTY_DEFAULT => 'east-1',
                 ],
-                'jikaze'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_JIKAZE,
-                    self::PROPERTY_DEFAULT => 'ton',
+                'position'  => [
+                    self::PROPERTY_TYPE    => self::TYPE_POSITION,
+                    self::PROPERTY_DEFAULT => 'east',
                 ],
-                'junme'     => [
+                'turn'      => [
                     self::PROPERTY_TYPE    => self::TYPE_INTEGER,
                     self::PROPERTY_DEFAULT => '1',
                 ],
                 'dora'      => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'mochiten'  => [
+                'score'     => [
                     self::PROPERTY_TYPE    => self::TYPE_STRING,
                     self::PROPERTY_DEFAULT => '25000',
                 ],
-                'tehai'     => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                'hand'      => [
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '',
                 ],
-                'tsumo'     => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                'draw'      => [
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'kiri_a'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                'discard_a' => [
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'kiri_b'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                'discard_b' => [
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'kiri_c'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                'discard_c' => [
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
             ],
@@ -124,7 +124,7 @@ class Mondai
         }
         throw new Exception(
             'Unknown field "' . $name . '" for record "' . __CLASS__ . '"',
-            Exception::MONDAI_GET_FIELD_UNKNOWN
+            Exception::EXERCISE_GET_FIELD_UNKNOWN
         );
     }
     
@@ -161,8 +161,8 @@ class Mondai
             case self::TYPE_INTEGER:
                 return intval($value);
                 
-            case self::TYPE_JIKAZE:
-                if (! isset(self::$KAZES[$value])) {
+            case self::TYPE_POSITION:
+                if (! isset(self::$WINDS[$value])) {
                     return $properties[self::PROPERTY_DEFAULT];
                 }
                 return $value;
@@ -189,14 +189,14 @@ class Mondai
                 }
                 return $prepared;
                 
-            case self::TYPE_PAI:
-                return new Pai($value);
+            case self::TYPE_TILE:
+                return new Tile($value);
                 
             case self::TYPE_STRING:
                 return trim(strval($value));
             
             default:
-                throw new Exception('Unknown type "' . $properties[self::PROPERTY_TYPE] . '"', Exception::MONDAI_TYPE_UNKNOWN);
+                throw new Exception('Unknown type "' . $properties[self::PROPERTY_TYPE] . '"', Exception::EXERCISE_TYPE_UNKNOWN);
         }
     }
 }

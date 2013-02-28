@@ -3,13 +3,13 @@
 {% block style %}main{% endblock %}
 
 {% block body %}
-    {% if mondai %}
+    {% if exercise %}
         <h2>
-            Задача №{{ mondai.mondai_id|lpad('0', 3) }}.
-            {{ mondai.title }}
+            Задача №{{ exercise.exercise_id|lpad('0', 3) }}.
+            {{ exercise.title }}
         </h2>
-        {% include '_mondai_content.twig' with {
-            'content'  : mondai.content,
+        {% include '_exercise_content.twig' with {
+            'content'  : exercise.content,
             'question' : 'Что сбросить?',
         } only %}
     {% else %}

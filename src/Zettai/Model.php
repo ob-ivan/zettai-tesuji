@@ -17,52 +17,52 @@ class Model
         $this->db = $db;
     }
 
-    // Mondai //
+    // Exercise //
 
     /**
-     *  @param  integer $mondai_id
-     *  @return Mondai
+     *  @param  integer $exercise_id
+     *  @return Exercise
     **/
-    public function getMondai ($mondai_id)
+    public function getExercise ($exercise_id)
     {
         // prepare
-        $mondai_id  = intval ($mondai_id);
+        $exercise_id  = intval ($exercise_id);
 
         // validate
-        if (! ($mondai_id > 0)) {
-            throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
+        if (! ($exercise_id > 0)) {
+            throw new Exception('Exercise id is empty', Exception::MODEL_EXERCISE_ID_EMPTY);
         }
 
         // execute
         $row = $this->db->fetchAssoc('
             SELECT
-                `mondai_id`,
+                `exercise_id`,
                 `title`,
                 `is_hidden`,
                 `content`
-            FROM `mondai`
-            WHERE `mondai_id` = :mondai_id
+            FROM `exercise`
+            WHERE `exercise_id` = :exercise_id
         ', [
-            'mondai_id' => $mondai_id,
+            'exercise_id' => $exercise_id,
         ]);
 
         // convert to record
         if ($row) {
-            return new Mondai($row);
+            return new Exercise($row);
         }
         return null;
     }
 
-    public function getMondaiCount($includeHidden = false)
+    public function getExerciseCount($includeHidden = false)
     {
         return $this->db->fetchColumn('
-            SELECT COUNT(`mondai_id`)
-            FROM `mondai`
+            SELECT COUNT(`exercise_id`)
+            FROM `exercise`
             ' . ($includeHidden ? '' : ' WHERE `is_hidden` = 0 ') . '
         ');
     }
 
-    public function getMondaiList ($offset = 0, $limit = 20, $includeHidden = false)
+    public function getExerciseList ($offset = 0, $limit = 20, $includeHidden = false)
     {
         // prepare
         $offset = intval ($offset);
@@ -71,58 +71,58 @@ class Model
         // execute
         $rows = $this->db->fetchAll('
             SELECT
-                `mondai_id`,
+                `exercise_id`,
                 `title`,
                 `is_hidden`
-            FROM `mondai`
+            FROM `exercise`
             ' . ($includeHidden ? '' : ' WHERE `is_hidden` = 0 ') . '
-            ORDER BY `mondai_id` ASC
+            ORDER BY `exercise_id` ASC
             LIMIT ' . $offset . ', ' . $limit . '
         ');
 
         // convert to records
         $records = [];
         foreach ($rows as $row) {
-            $records[] = new Mondai ($row);
+            $records[] = new Exercise ($row);
         }
         return $records;
     }
 
-    public function getMondaiNextId()
+    public function getExerciseNextId()
     {
         return $this->db->fetchColumn('
-            SELECT MAX(`mondai_id`) + 1
-            FROM `mondai`
+            SELECT MAX(`exercise_id`) + 1
+            FROM `exercise`
         ');
     }
 
-    public function deleteMondai ($mondai_id)
+    public function deleteExercise ($exercise_id)
     {
         // prepare
-        $mondai_id  = intval ($mondai_id);
+        $exercise_id  = intval ($exercise_id);
 
         // validate
-        if (! ($mondai_id > 0)) {
-            throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
+        if (! ($exercise_id > 0)) {
+            throw new Exception('Exercise id is empty', Exception::MODEL_EXERCISE_ID_EMPTY);
         }
 
         // execute
-        $this->db->delete ('mondai', ['mondai_id' => $mondai_id]);
+        $this->db->delete ('exercise', ['exercise_id' => $exercise_id]);
     }
 
-    public function setMondai (Mondai $mondai)
+    public function setExercise (Exercise $exercise)
     {
         // validate
-        if (! ($mondai->mondai_id > 0)) {
-            throw new Exception('Mondai id is empty', Exception::MODEL_MONDAI_ID_EMPTY);
+        if (! ($exercise->exercise_id > 0)) {
+            throw new Exception('Exercise id is empty', Exception::MODEL_EXERCISE_ID_EMPTY);
         }
-        if (! (strlen($mondai->title) > 0)) {
-            throw new Exception('Mondai title is empty', Exception::MODEL_MONDAI_TITLE_EMPTY);
+        if (! (strlen($exercise->title) > 0)) {
+            throw new Exception('Exercise title is empty', Exception::MODEL_EXERCISE_TITLE_EMPTY);
         }
 
-        if ($this->getMondai($mondai->mondai_id)) {
-            return $this->db->update('mondai', $mondai->getData(), ['mondai_id' => $mondai->mondai_id]);
+        if ($this->getExercise($exercise->exercise_id)) {
+            return $this->db->update('exercise', $exercise->getData(), ['exercise_id' => $exercise->exercise_id]);
         }
-        return $this->db->insert('mondai', $mondai->getData());
+        return $this->db->insert('exercise', $exercise->getData());
     }
 }
