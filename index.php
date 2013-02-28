@@ -278,7 +278,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
                 'kyoku'     => $request->request->get('kyoku'),
-                'jikaze'    => $request->request->get('jikaze'),
+                'position'    => $request->request->get('position'),
                 'junme'     => $request->request->get('junme'),
                 'dora'      => $request->request->get('dora'),
                 'mochiten'  => $request->request->get('mochiten'),

@@ -15,8 +15,6 @@
                         Номер задачи должен быть положительным целым числом.
                     {% elseif error == 'TITLE:EMPTY' %}
                         Заголовок задачи не должен быть пустым.
-                    {% elseif error == 'CONTENT:EMPTY' %}
-                        Описание задачи не должно быть пустым.
                     {% else %}
                         Ошибка {{ error }}.
                     {% endif %}
@@ -65,11 +63,11 @@
         <p>
             <label>
                 Позиция:
-                <select name="jikaze">
+                <select name="position">
                     {% for kaze in KAZES %}
                         <option
                             value="{{ kaze }}"
-                            {% if kaze == exercise.content.jikaze %}
+                            {% if kaze == exercise.content.position %}
                                 selected
                             {% endif %}
                         >

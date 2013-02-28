@@ -16,7 +16,7 @@ class Exercise
     const TYPE_STRING   = __LINE__;
     const TYPE_BOOLEAN  = __LINE__;
     const TYPE_KYOKU    = __LINE__;
-    const TYPE_JIKAZE   = __LINE__;
+    const TYPE_POSITION   = __LINE__;
     const TYPE_JSON     = __LINE__;
     const TYPE_PAI      = __LINE__;
 
@@ -59,8 +59,8 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_KYOKU,
                     self::PROPERTY_DEFAULT => 'ton-1',
                 ],
-                'jikaze'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_JIKAZE,
+                'position'    => [
+                    self::PROPERTY_TYPE    => self::TYPE_POSITION,
                     self::PROPERTY_DEFAULT => 'ton',
                 ],
                 'junme'     => [
@@ -161,7 +161,7 @@ class Exercise
             case self::TYPE_INTEGER:
                 return intval($value);
                 
-            case self::TYPE_JIKAZE:
+            case self::TYPE_POSITION:
                 if (! isset(self::$KAZES[$value])) {
                     return $properties[self::PROPERTY_DEFAULT];
                 }
