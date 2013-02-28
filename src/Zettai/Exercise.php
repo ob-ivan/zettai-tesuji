@@ -79,7 +79,7 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_PAI,
                     self::PROPERTY_DEFAULT => '',
                 ],
-                'tsumo'     => [
+                'draw'     => [
                     self::PROPERTY_TYPE    => self::TYPE_PAI,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
