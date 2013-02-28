@@ -114,16 +114,16 @@ $app->before(function (Request $request) use ($app) {
 
 // Главная страница.
 $app->get('/{page}', function ($page) use ($app) {
-    $mondaiCount = $app['model']->getMondaiCount(false);
+    $exerciseCount = $app['model']->getExerciseCount(false);
     $perPage = 20;
-    if (($page - 1) * $perPage > $mondaiCount) {
+    if (($page - 1) * $perPage > $exerciseCount) {
         return $app->redirect($app['url_generator']->generate('main', ['page' => 1]));
     }
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage, false);
+    $exerciseList = $app['model']->getExerciseList(($page - 1) * $perPage, $perPage, false);
     
     return $app->render('main.twig', [
-        'mondaiList'  => $mondaiList,
-        'mondaiCount' => $mondaiCount,
+        'exerciseList'  => $exerciseList,
+        'exerciseCount' => $exerciseCount,
         'curPage'     => $page,
         'perPage'     => $perPage,
     ]);
@@ -140,26 +140,26 @@ $app->get('/{page}', function ($page) use ($app) {
 ->bind('main');
 
 // Просмотр одной задачи на сайте.
-$app->get('/mondai/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
-    $mondai = $app['model']->getMondai($mondai_id);
-    if ($mondai->is_hidden) {
-        $mondai = null;
+$app->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) use ($app) {
+    $exercise = $app['model']->getExercise($exercise_id);
+    if ($exercise->is_hidden) {
+        $exercise = null;
     }
     $page = $request->query->get('page');
-    return $app->render('mondai.twig', [
-        'mondai' => $mondai,
+    return $app->render('exercise.twig', [
+        'exercise' => $exercise,
         'page'   => $page,
     ]);
 })
-->assert('mondai_id', '\\d+')
-->convert('mondai_id', function ($mondai_id) {
-    $mondai_id = intval ($mondai_id);
-    if ($mondai_id < 1) {
-        throw new Exception('Mondai id must be positive integer');
+->assert('exercise_id', '\\d+')
+->convert('exercise_id', function ($exercise_id) {
+    $exercise_id = intval ($exercise_id);
+    if ($exercise_id < 1) {
+        throw new Exception('Exercise id must be positive integer');
     }
-    return $mondai_id;
+    return $exercise_id;
 })
-->bind('mondai');
+->bind('exercise');
 
 // Вход в админку.
 $app->get('/login', function (Request $request) use ($app) {
@@ -171,16 +171,16 @@ $app->get('/login', function (Request $request) use ($app) {
 
 // Главная страница админки.
 $app->get('/admin/{page}', function ($page) use ($app) {
-    $mondaiCount = $app['model']->getMondaiCount(true);
+    $exerciseCount = $app['model']->getExerciseCount(true);
     $perPage = 20;
-    if (($page - 1) * $perPage > $mondaiCount) {
+    if (($page - 1) * $perPage > $exerciseCount) {
         return $app->redirect($app['url_generator']->generate('admin_page', ['page' => 1]));
     }
-    $mondaiList = $app['model']->getMondaiList(($page - 1) * $perPage, $perPage, true);
+    $exerciseList = $app['model']->getExerciseList(($page - 1) * $perPage, $perPage, true);
     
     return $app->render('admin/main.twig', [
-        'mondaiList'  => $mondaiList,
-        'mondaiCount' => $mondaiCount,
+        'exerciseList'  => $exerciseList,
+        'exerciseCount' => $exerciseCount,
         'curPage'     => $page,
         'perPage'     => $perPage,
     ]);
@@ -197,67 +197,67 @@ $app->get('/admin/{page}', function ($page) use ($app) {
 ->bind('admin_page');
 
 // Страница просмотра задачи в админке.
-$app->get('/admin/mondai/view/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
-    $mondai = $app['model']->getMondai($mondai_id);
+$app->get('/admin/exercise/view/{exercise_id}', function (Request $request, $exercise_id) use ($app) {
+    $exercise = $app['model']->getExercise($exercise_id);
     $page = $request->query->get('page');
-    return $app->render('admin/mondai/view.twig', [
-        'mondai' => $mondai,
+    return $app->render('admin/exercise/view.twig', [
+        'exercise' => $exercise,
         'page'   => $page,
     ]);
 })
-->assert('mondai_id', '\\d+')
-->convert('mondai_id', function ($mondai_id) {
-    $mondai_id = intval ($mondai_id);
-    if ($mondai_id < 1) {
-        throw new Exception('Mondai id must be positive integer');
+->assert('exercise_id', '\\d+')
+->convert('exercise_id', function ($exercise_id) {
+    $exercise_id = intval ($exercise_id);
+    if ($exercise_id < 1) {
+        throw new Exception('Exercise id must be positive integer');
     }
-    return $mondai_id;
+    return $exercise_id;
 })
-->bind('admin_mondai_view');
+->bind('admin_exercise_view');
 
 // Страница редактирования задачи в админке.
-$app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $mondai_id) use ($app) {
+$app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $exercise_id) use ($app) {
 
-    $csrfKey = 'admin_mondai_edit_' . $mondai_id;
+    $csrfKey = 'admin_exercise_edit_' . $exercise_id;
 
     // Процедура отображения формы с задачей.
     $view = function (
-        $mondai,
+        $exercise,
         $errors = []
     ) use (
         $app,
         $request,
-        $mondai_id,
+        $exercise_id,
         $csrfKey
     ) {
-        return $app->render('admin/mondai/edit.twig', [
+        return $app->render('admin/exercise/edit.twig', [
             'page'      => $request->query->get('page'),
-            'mondai_id' => $mondai_id,
+            'exercise_id' => $exercise_id,
             'csrf'      => $app['csrf']->generate($csrfKey),
-            'mondai'    => $mondai,
+            'exercise'    => $exercise,
             'errors'    => $errors,
-            'KYOKUS'    => array_keys(Zettai\Mondai::$KYOKUS),
-            'KAZES'     => array_keys(Zettai\Mondai::$KAZES),
+            'KYOKUS'    => array_keys(Zettai\Exercise::$KYOKUS),
+            'KAZES'     => array_keys(Zettai\Exercise::$KAZES),
             'PAIS'      => Zettai\Pai::$PAIS,
         ]);
     };
     
     // Процедура редиректа на старую форму с сохранением полей и выводом ошибок.
     $redirect = function (
-        $mondai,
+        $exercise,
         $errors
     ) use (
         $app,
         $request,
-        $mondai_id
+        $exercise_id
     ) {
         $formKey = md5(microtime(true));
         $app['session']->set($formKey, [
-            'mondai' => $mondai,
+            'exercise' => $exercise,
             'errors' => $errors,
         ]);
         return $app->redirect(
-            $app['url_generator']->generate('admin_mondai_edit', ['mondai_id' => $mondai_id]) .
+            $app['url_generator']->generate('admin_exercise_edit', ['exercise_id' => $exercise_id]) .
             '?page='    . $request->query->get('page') .
             '&formKey=' . $formKey
         );
@@ -272,8 +272,8 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             $errors[] = 'CSRF';
         }
         
-        $mondai = new Zettai\Mondai ([
-            'mondai_id' => $request->request->get('mondai_id'),
+        $exercise = new Zettai\Exercise ([
+            'exercise_id' => $request->request->get('exercise_id'),
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
@@ -295,38 +295,38 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             
             // Проверить поля.
             // TODO: Прикрутить валидатор.
-            if (! preg_match ('/\\d{1,3}/', $mondai->mondai_id)) {
-                $errors[] = 'MONDAI_ID:NOT_A_NUMBER';
+            if (! preg_match ('/\\d{1,3}/', $exercise->exercise_id)) {
+                $errors[] = 'EXERCISE_ID:NOT_A_NUMBER';
             } else {
-                if (! ($mondai->mondai_id > 0)) {
-                    $errors[] = 'MONDAI_ID:NOT_POSITIVE';
+                if (! ($exercise->exercise_id > 0)) {
+                    $errors[] = 'EXERCISE_ID:NOT_POSITIVE';
                 } else {
                     // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
-                    if ($mondai_id !== $mondai->mondai_id && $app['model']->getMondai($mondai->mondai_id)) {
-                        $errors[] = 'MONDAI_ID:ALREADY_EXISTS';
+                    if ($exercise_id !== $exercise->exercise_id && $app['model']->getExercise($exercise->exercise_id)) {
+                        $errors[] = 'EXERCISE_ID:ALREADY_EXISTS';
                     }
                 }
             }
-            if (empty ($mondai->title)) {
+            if (empty ($exercise->title)) {
                 $errors[] = 'TITLE:EMPTY';
             }
             
             // Если есть ошибки, редиректнуть на форму и показать ошибки.
             if (! empty ($errors)) {
-                return $redirect ($mondai, $errors);
+                return $redirect ($exercise, $errors);
             }
             
             // Создать задачу.
-            $app['model']->setMondai($mondai);
+            $app['model']->setExercise($exercise);
             
             // Если старый номер не равен new, то после создания нового надо удалить старое.
-            if ($mondai_id !== 'new' && $mondai_id !== $mondai->mondai_id) {
-                $app['model']->deleteMondai($mondai_id);
+            if ($exercise_id !== 'new' && $exercise_id !== $exercise->exercise_id) {
+                $app['model']->deleteExercise($exercise_id);
             }
             
             // Показать новую задачу в админке.
             return $app->redirect(
-                $app['url_generator']->generate('admin_mondai_view', ['mondai_id' => $mondai->mondai_id]) .
+                $app['url_generator']->generate('admin_exercise_view', ['exercise_id' => $exercise->exercise_id]) .
                 '?page=' . $request->query->get('page')
             );
         } elseif ($request->request->get('delete')) {
@@ -334,11 +334,11 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
             
             // Если есть ошибки, редиректнуть на форму и показать ошибки.
             if (! empty ($errors)) {
-                return $redirect ($mondai, $errors);
+                return $redirect ($exercise, $errors);
             }
             
             // Удалить задачу.
-            $app['model']->deleteMondai($mondai_id);
+            $app['model']->deleteExercise($exercise_id);
             
             // Показать список задач.
             return $app->redirect($app['url_generator']->generate('admin_page', ['page' => $request->query->get('page')]));
@@ -349,36 +349,36 @@ $app->match('/admin/mondai/edit/{mondai_id}', function (Request $request, $monda
     $formKey = $request->query->get('formKey');
     if ($formKey) {
         $data = $app['session']->get($formKey);
-        return $view($data['mondai'], $data['errors']);
+        return $view($data['exercise'], $data['errors']);
     }
     
     // Отобразить свежую форму для новой задачи.
-    if ($mondai_id === 'new') {
-        return $view (new Zettai\Mondai (['mondai_id' => $app['model']->getMondaiNextId()]));
+    if ($exercise_id === 'new') {
+        return $view (new Zettai\Exercise (['exercise_id' => $app['model']->getExerciseNextId()]));
     }
     
     // Существует ли запрошенная задача?
-    $mondai = $app['model']->getMondai($mondai_id);
-    if (! $mondai) {
-        return $view (null, ['MONDAI:DOES_NOT_EXIST']);
+    $exercise = $app['model']->getExercise($exercise_id);
+    if (! $exercise) {
+        return $view (null, ['EXERCISE:DOES_NOT_EXIST']);
     }
     
     // Отобразить свежую форму для старой задачи.
-    return $view ($mondai);
+    return $view ($exercise);
 })
-->assert('mondai_id', '\\d+|new')
-->convert('mondai_id', function ($mondai_id) {
-    if ($mondai_id === 'new') {
-        return $mondai_id;
+->assert('exercise_id', '\\d+|new')
+->convert('exercise_id', function ($exercise_id) {
+    if ($exercise_id === 'new') {
+        return $exercise_id;
     }
-    $mondai_id = intval ($mondai_id);
-    if ($mondai_id < 1) {
-        throw new Exception('Mondai id must be "new" or positive integer');
+    $exercise_id = intval ($exercise_id);
+    if ($exercise_id < 1) {
+        throw new Exception('Exercise id must be "new" or positive integer');
     }
-    return $mondai_id;
+    return $exercise_id;
 })
 ->method('GET|POST')
-->bind('admin_mondai_edit');
+->bind('admin_exercise_edit');
 
 // На дев-хосте добавляем генератор паролей.
 if ($config->debug) {

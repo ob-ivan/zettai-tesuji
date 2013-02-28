@@ -4,7 +4,7 @@
 **/
 namespace Zettai;
 
-class Mondai
+class Exercise
 {
     // const //
     
@@ -39,7 +39,7 @@ class Mondai
     ];
     
     private static $FIELD_PROPERTIES = [
-        'mondai_id' => [
+        'exercise_id' => [
             self::PROPERTY_TYPE    => self::TYPE_INTEGER,
             self::PROPERTY_DEFAULT => 0,
         ],
@@ -124,7 +124,7 @@ class Mondai
         }
         throw new Exception(
             'Unknown field "' . $name . '" for record "' . __CLASS__ . '"',
-            Exception::MONDAI_GET_FIELD_UNKNOWN
+            Exception::EXERCISE_GET_FIELD_UNKNOWN
         );
     }
     
@@ -196,7 +196,7 @@ class Mondai
                 return trim(strval($value));
             
             default:
-                throw new Exception('Unknown type "' . $properties[self::PROPERTY_TYPE] . '"', Exception::MONDAI_TYPE_UNKNOWN);
+                throw new Exception('Unknown type "' . $properties[self::PROPERTY_TYPE] . '"', Exception::EXERCISE_TYPE_UNKNOWN);
         }
     }
 }

@@ -9,9 +9,9 @@
                 <li>
                     {% if error == 'CSRF' %}
                         Попытка взлома.
-                    {% elseif error == 'MONDAI_ID:ALREADY_EXISTS' %}
-                        Задача №{{ mondai.mondai_id }} уже существует.
-                    {% elseif error == 'MONDAI_ID:NOT_A_NUMBER' %}
+                    {% elseif error == 'EXERCISE_ID:ALREADY_EXISTS' %}
+                        Задача №{{ exercise.exercise_id }} уже существует.
+                    {% elseif error == 'EXERCISE_ID:NOT_A_NUMBER' %}
                         Номер задачи должен быть положительным целым числом.
                     {% elseif error == 'TITLE:EMPTY' %}
                         Заголовок задачи не должен быть пустым.
@@ -25,20 +25,20 @@
         </ul>
     {% endif %}
     <form
-        id="admin_mondai_edit"
-        action="{{ path('admin_mondai_edit', { 'mondai_id' : mondai_id }) }}?page={{ page }}"
+        id="admin_exercise_edit"
+        action="{{ path('admin_exercise_edit', { 'exercise_id' : exercise_id }) }}?page={{ page }}"
         method="post"
     >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
         <p>
-            <label>№<input name="mondai_id" required value="{{ mondai.mondai_id }}" maxlength="3"/>.</label>
-            <input name="title"     required value="{{ mondai.title }}"/>
+            <label>№<input name="exercise_id" required value="{{ exercise.exercise_id }}" maxlength="3"/>.</label>
+            <input name="title"     required value="{{ exercise.title }}"/>
             <label>
                 <input
                     type="checkbox"
                     name="is_hidden"
                     value="1"
-                    {% if mondai.is_hidden == 1 %}
+                    {% if exercise.is_hidden == 1 %}
                         checked
                     {% endif %}
                 />
@@ -52,7 +52,7 @@
                     {% for kyoku in KYOKUS %}
                         <option
                             value="{{ kyoku }}"
-                            {% if kyoku == mondai.content.kyoku %}
+                            {% if kyoku == exercise.content.kyoku %}
                                 selected
                             {% endif %}
                         >
@@ -69,7 +69,7 @@
                     {% for kaze in KAZES %}
                         <option
                             value="{{ kaze }}"
-                            {% if kaze == mondai.content.jikaze %}
+                            {% if kaze == exercise.content.jikaze %}
                                 selected
                             {% endif %}
                         >
@@ -79,26 +79,26 @@
                 </select>
             </label>
         </p>
-        <p><label>Ход: <input name="junme" required value="{{ mondai.content.junme }}" maxlength="2"/></label></p>
+        <p><label>Ход: <input name="junme" required value="{{ exercise.content.junme }}" maxlength="2"/></label></p>
         <p>
             <label>
                 Дора:
-                {% include 'admin/mondai/_pai_select.twig' with {
+                {% include 'admin/exercise/_pai_select.twig' with {
                     'name'  : 'dora',
                     'PAIS'  : PAIS,
-                    'value' : mondai.content.dora,
+                    'value' : exercise.content.dora,
                 } only %}
             </label>
         </p>
-        <p><label>Очки: <input name="mochiten" required value="{{ mondai.content.mochiten }}"/></label></p>
-        <p><label>Рука: <input name="tehai"    required value="{{ mondai.content.tehai }}"/></label></p>
+        <p><label>Очки: <input name="mochiten" required value="{{ exercise.content.mochiten }}"/></label></p>
+        <p><label>Рука: <input name="tehai"    required value="{{ exercise.content.tehai }}"/></label></p>
         <p>
             <label>
                 Набрал:
-                {% include 'admin/mondai/_pai_select.twig' with {
+                {% include 'admin/exercise/_pai_select.twig' with {
                     'name'  : 'tsumo',
                     'PAIS'  : PAIS,
-                    'value' : mondai.content.tsumo,
+                    'value' : exercise.content.tsumo,
                 } only %}
             </label>
         </p>
@@ -106,23 +106,23 @@
             <p>
                 <label>
                     Вариант {{ letter|upper }}:
-                    {% include 'admin/mondai/_pai_select.twig' with {
+                    {% include 'admin/exercise/_pai_select.twig' with {
                         'name'  : 'kiri_' ~ letter,
                         'PAIS'  : PAIS,
-                        'value' : attribute(mondai.content, 'kiri_' ~ letter),
+                        'value' : attribute(exercise.content, 'kiri_' ~ letter),
                     } only %}
                 </label>
             </p>
         {% endfor %}
         <p>
             <input type="submit" name="save" value="Сохранить"/>
-            {% if mondai_id == 'new' %}
+            {% if exercise_id == 'new' %}
                 {% set cancel = path('admin_page', { 'page' : page }) %}
             {% else %}
-                {% set cancel = path('admin_mondai_view', { 'mondai_id' : mondai_id }) ~ '?page=' ~ page %}
+                {% set cancel = path('admin_exercise_view', { 'exercise_id' : exercise_id }) ~ '?page=' ~ page %}
             {% endif %}
             <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
-            {% if mondai_id != 'new' %}
+            {% if exercise_id != 'new' %}
                 <input
                     type="submit" name="delete"  value="Удалить"
                     onclick="return window.confirm('После удаления задача не может быть восстановлена.\n\nУдалить задачу?')"
@@ -131,13 +131,13 @@
         </p>
     </form>
     <script>
-        $('#admin_mondai_edit').isHappy({
+        $('#admin_exercise_edit').isHappy({
             fields : {
-                'input[name=mondai_id]' : {
+                'input[name=exercise_id]' : {
                     required : true,
                     message  : 'Номер должен быть целым положительным числом',
-                    test : function checkMondaiId(mondaiId) {
-                        return !! (mondaiId + '').match(/^\d{1,3}$/) && parseInt(mondaiId, 10) > 0;
+                    test : function checkExerciseId(exerciseId) {
+                        return !! (exerciseId + '').match(/^\d{1,3}$/) && parseInt(exerciseId, 10) > 0;
                     }
                 },
                 'input[name=junme]' : {

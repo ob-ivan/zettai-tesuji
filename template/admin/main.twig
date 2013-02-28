@@ -2,21 +2,21 @@
 
 {% block admin_body %}
     <h2>Задачи</h2>
-    {% if mondaiList %}
+    {% if exerciseList %}
         <ul>
-            {% for mondai in mondaiList %}
+            {% for exercise in exerciseList %}
                 <li>
-                    <a href="{{ path('admin_mondai_view', { 'mondai_id' : mondai.mondai_id }) }}?page={{ curPage }}">
-                        №{{ mondai.mondai_id|lpad('0', 3) }}. {{ mondai.title }}
+                    <a href="{{ path('admin_exercise_view', { 'exercise_id' : exercise.exercise_id }) }}?page={{ curPage }}">
+                        №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
                     </a>
-                    {% if mondai.is_hidden %}
+                    {% if exercise.is_hidden %}
                         (скрыта)
                     {% endif %}
                 </li>
             {% endfor %}
         </ul>
         {% include '_paginator.twig' with {
-            'totalCount'    : mondaiCount,
+            'totalCount'    : exerciseCount,
             'perPage'       : perPage,
             'curPage'       : curPage,
             'linkTemplate'  : 'admin_page'
@@ -24,5 +24,5 @@
     {% else %}
         <p class="empty">Нет задач</p>
     {% endif %}
-    <p><a href="{{ path('admin_mondai_edit', { 'mondai_id' : 'new' }) }}?page={{ curPage }}">[Создать задачу]</a></p>
+    <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : 'new' }) }}?page={{ curPage }}">[Создать задачу]</a></p>
 {% endblock %}

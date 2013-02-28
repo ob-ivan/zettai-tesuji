@@ -1,46 +1,46 @@
 
-/* _mondai_content.twig */
+/* _exercise_content.twig */
 
-div.mondai {
+div.exercise {
     width : 560px;
 }
 
-div.mondai br {
+div.exercise br {
     clear : both;
 }
 
-div.mondai div.row {
+div.exercise div.row {
     clear : both;
     padding : 0 0 20px;
 }
 
-div.mondai div.row div.left {
+div.exercise div.row div.left {
     float : left;
     width : 50%;
 }
 
-div.mondai div.row div.dora {
+div.exercise div.row div.dora {
     float : right;
     width : 50%;
     text-align : center;
 }
 
-div.mondai div.row div.tehai {
+div.exercise div.row div.tehai {
     float : left;
     text-align : center;
 }
 
-div.mondai div.row div.tsumo {
+div.exercise div.row div.tsumo {
     float : right;
     text-align : center;
 }
 
-div.mondai div.question {
+div.exercise div.question {
     text-align : center;
     padding : 0 0 10px;
 }
 
-div.mondai div.row.variants div {
+div.exercise div.row.variants div {
     float : left;
     width : 33%;
     text-align : center;

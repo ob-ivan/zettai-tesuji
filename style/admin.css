@@ -7,7 +7,7 @@ div.welcome {
 
 /* Редактирование задачи */
 
-input[name=mondai_id] {
+input[name=exercise_id] {
     width: 3.5ex;
 }
 input[name=junme] {
