@@ -105,9 +105,9 @@
                 <label>
                     Вариант {{ letter|upper }}:
                     {% include 'admin/exercise/_tile_select.twig' with {
-                        'name'  : 'kiri_' ~ letter,
+                        'name'  : 'discard_' ~ letter,
                         'TILES'  : TILES,
-                        'value' : attribute(exercise.content, 'kiri_' ~ letter),
+                        'value' : attribute(exercise.content, 'discard_' ~ letter),
                     } only %}
                 </label>
             </p>

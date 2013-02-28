@@ -64,10 +64,10 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $windName = function ($wind) {
         switch ($wind) {
-            case 'ton': return 'восток';
-            case 'nan': return 'юг';
-            case 'sha': return 'запад';
-            case 'pei': return 'север';
+            case 'east': return 'восток';
+            case 'south': return 'юг';
+            case 'west': return 'запад';
+            case 'north': return 'север';
         }
         return $wind;
     };
@@ -284,9 +284,9 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
                 'score'  => $request->request->get('score'),
                 'hand'     => $request->request->get('hand'),
                 'draw'     => $request->request->get('draw'),
-                'kiri_a'    => $request->request->get('kiri_a'),
-                'kiri_b'    => $request->request->get('kiri_b'),
-                'kiri_c'    => $request->request->get('kiri_c'),
+                'discard_a'    => $request->request->get('discard_a'),
+                'discard_b'    => $request->request->get('discard_b'),
+                'discard_c'    => $request->request->get('discard_c'),
             ],
         ]);
         

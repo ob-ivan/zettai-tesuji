@@ -21,21 +21,21 @@ class Exercise
     const TYPE_TILE      = __LINE__;
 
     public static $KYOKUS = [
-        'ton-1' => 1,
-        'ton-2' => 1,
-        'ton-3' => 1,
-        'ton-4' => 1,
-        'nan-1' => 1,
-        'nan-2' => 1,
-        'nan-3' => 1,
-        'nan-4' => 1,
+        'east-1' => 1,
+        'east-2' => 1,
+        'east-3' => 1,
+        'east-4' => 1,
+        'south-1' => 1,
+        'south-2' => 1,
+        'south-3' => 1,
+        'south-4' => 1,
     ];
     
     public static $WINDS = [
-        'ton' => 1,
-        'nan' => 1,
-        'sha' => 1,
-        'pei' => 1,
+        'east' => 1,
+        'south' => 1,
+        'west' => 1,
+        'north' => 1,
     ];
     
     private static $FIELD_PROPERTIES = [
@@ -57,11 +57,11 @@ class Exercise
             self::PROPERTY_SCHEMA  => [
                 'kyoku'     => [
                     self::PROPERTY_TYPE    => self::TYPE_KYOKU,
-                    self::PROPERTY_DEFAULT => 'ton-1',
+                    self::PROPERTY_DEFAULT => 'east-1',
                 ],
                 'position'    => [
                     self::PROPERTY_TYPE    => self::TYPE_POSITION,
-                    self::PROPERTY_DEFAULT => 'ton',
+                    self::PROPERTY_DEFAULT => 'east',
                 ],
                 'turn'     => [
                     self::PROPERTY_TYPE    => self::TYPE_INTEGER,
@@ -83,15 +83,15 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'kiri_a'    => [
+                'discard_a'    => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'kiri_b'    => [
+                'discard_b'    => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'kiri_c'    => [
+                'discard_c'    => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
