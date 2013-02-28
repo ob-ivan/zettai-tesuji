@@ -3,23 +3,31 @@ div.welcome {
     float : right;
 }
 
-/* Просмотр задачи */
-
 /* Редактирование задачи */
 
 input[name=exercise_id] {
     width: 3.5ex;
 }
+
 input[name=turn] {
     width: 2.5ex;
 }
+
 input[name=title] {
     width: 30ex;
 }
 
+textarea.answer {
+    width : 560px;
+    height: 7em;
+}
+
+/* happy.js */
+
 input.unhappy {
     box-shadow : #f00 0px 0px 1.5px 1px;
 }
+
 span.unhappyMessage {
     background : white;
     border   : 1px solid red;
