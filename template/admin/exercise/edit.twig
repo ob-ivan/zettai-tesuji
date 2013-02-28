@@ -64,14 +64,14 @@
             <label>
                 Позиция:
                 <select name="position">
-                    {% for kaze in KAZES %}
+                    {% for wind in WINDS %}
                         <option
-                            value="{{ kaze }}"
-                            {% if kaze == exercise.content.position %}
+                            value="{{ wind }}"
+                            {% if wind == exercise.content.position %}
                                 selected
                             {% endif %}
                         >
-                            {{ kaze|kaze }}
+                            {{ wind|wind }}
                         </option>
                     {% endfor %}
                 </select>

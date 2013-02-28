@@ -31,7 +31,7 @@ class Exercise
         'nan-4' => 1,
     ];
     
-    public static $KAZES = [
+    public static $WINDS = [
         'ton' => 1,
         'nan' => 1,
         'sha' => 1,
@@ -162,7 +162,7 @@ class Exercise
                 return intval($value);
                 
             case self::TYPE_POSITION:
-                if (! isset(self::$KAZES[$value])) {
+                if (! isset(self::$WINDS[$value])) {
                     return $properties[self::PROPERTY_DEFAULT];
                 }
                 return $value;

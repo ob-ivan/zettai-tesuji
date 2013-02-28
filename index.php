@@ -62,26 +62,26 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => TEMPLATE_DIR,
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
-    $kazeName = function ($kaze) {
-        switch ($kaze) {
+    $windName = function ($wind) {
+        switch ($wind) {
             case 'ton': return 'восток';
             case 'nan': return 'юг';
             case 'sha': return 'запад';
             case 'pei': return 'север';
         }
-        return $kaze;
+        return $wind;
     };
     
     // фильтры //
     
-    $twig->addFilter('kaze', new \Twig_Filter_Function(function ($kaze) use ($app, $kazeName) {
-        return $kazeName($kaze);
+    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app, $windName) {
+        return $windName($wind);
     }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $kazeName) {
+    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $windName) {
         if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
             return $kyoku;
         }
-        return $kazeName($matches[1]) . '-' . $matches[2];
+        return $windName($matches[1]) . '-' . $matches[2];
     }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
@@ -237,7 +237,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'exercise'    => $exercise,
             'errors'    => $errors,
             'KYOKUS'    => array_keys(Zettai\Exercise::$KYOKUS),
-            'KAZES'     => array_keys(Zettai\Exercise::$KAZES),
+            'WINDS'     => array_keys(Zettai\Exercise::$WINDS),
             'TILES'      => Zettai\Tile::$TILES,
         ]);
     };
