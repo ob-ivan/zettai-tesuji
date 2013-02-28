@@ -281,7 +281,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
                 'position'    => $request->request->get('position'),
                 'turn'     => $request->request->get('turn'),
                 'dora'      => $request->request->get('dora'),
-                'mochiten'  => $request->request->get('mochiten'),
+                'score'  => $request->request->get('score'),
                 'hand'     => $request->request->get('hand'),
                 'draw'     => $request->request->get('draw'),
                 'kiri_a'    => $request->request->get('kiri_a'),

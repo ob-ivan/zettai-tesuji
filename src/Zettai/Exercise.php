@@ -71,7 +71,7 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'mochiten'  => [
+                'score'  => [
                     self::PROPERTY_TYPE    => self::TYPE_STRING,
                     self::PROPERTY_DEFAULT => '25000',
                 ],
