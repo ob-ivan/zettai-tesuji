@@ -81,9 +81,9 @@
         <p>
             <label>
                 Дора:
-                {% include 'admin/exercise/_pai_select.twig' with {
+                {% include 'admin/exercise/_tile_select.twig' with {
                     'name'  : 'dora',
-                    'PAIS'  : PAIS,
+                    'TILES'  : TILES,
                     'value' : exercise.content.dora,
                 } only %}
             </label>
@@ -93,9 +93,9 @@
         <p>
             <label>
                 Набрал:
-                {% include 'admin/exercise/_pai_select.twig' with {
+                {% include 'admin/exercise/_tile_select.twig' with {
                     'name'  : 'draw',
-                    'PAIS'  : PAIS,
+                    'TILES'  : TILES,
                     'value' : exercise.content.draw,
                 } only %}
             </label>
@@ -104,9 +104,9 @@
             <p>
                 <label>
                     Вариант {{ letter|upper }}:
-                    {% include 'admin/exercise/_pai_select.twig' with {
+                    {% include 'admin/exercise/_tile_select.twig' with {
                         'name'  : 'kiri_' ~ letter,
-                        'PAIS'  : PAIS,
+                        'TILES'  : TILES,
                         'value' : attribute(exercise.content, 'kiri_' ~ letter),
                     } only %}
                 </label>

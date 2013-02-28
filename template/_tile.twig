@@ -1,0 +1,33 @@
+{% spaceless %}
+    {% for tile in tiles %}
+        {% if tile.color == 'm' %}
+            {% set name = tile.number ~ 'ман' %}
+        {% elseif tile.color == 'p' %}
+            {% set name = tile.number ~ 'пин' %}
+        {% elseif tile.color == 's' %}
+            {% set name = tile.number ~ 'со' %}
+        {% elseif tile.color == 'z' %}
+            {% if tile.number == '1' %}
+                {% set name = 'восток' %}
+            {% elseif tile.number == '2' %}
+                {% set name = 'юг' %}
+            {% elseif tile.number == '3' %}
+                {% set name = 'запад' %}
+            {% elseif tile.number == '4' %}
+                {% set name = 'север' %}
+            {% elseif tile.number == '5' %}
+                {% set name = 'Белый' %}
+            {% elseif tile.number == '6' %}
+                {% set name = 'Зелёный' %}
+            {% elseif tile.number == '7' %}
+                {% set name = 'Красный' %}
+            {% endif %}
+        {% endif %}
+        <img
+            src="http://tenhou.net/2/t/{{ tile.number }}{{ tile.color }}.gif" 
+            alt="{{ name }}"
+            title="{{ name }}"
+            class="tile"
+        />
+    {% endfor %}
+{% endspaceless %}

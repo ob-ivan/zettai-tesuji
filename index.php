@@ -86,8 +86,8 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
     }));
-    $twig->addFilter('pai', new \Twig_Filter_Function(function ($pais) use ($app) {
-        return $app['twig']->render('_pai.twig', ['pais' => $pais]);
+    $twig->addFilter('tile', new \Twig_Filter_Function(function ($tiles) use ($app) {
+        return $app['twig']->render('_tile.twig', ['tiles' => $tiles]);
     }));
     
     // функции //
@@ -238,7 +238,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'errors'    => $errors,
             'KYOKUS'    => array_keys(Zettai\Exercise::$KYOKUS),
             'KAZES'     => array_keys(Zettai\Exercise::$KAZES),
-            'PAIS'      => Zettai\Pai::$PAIS,
+            'TILES'      => Zettai\Tile::$TILES,
         ]);
     };
     

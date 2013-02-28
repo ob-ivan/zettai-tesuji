@@ -18,7 +18,7 @@ class Exercise
     const TYPE_KYOKU    = __LINE__;
     const TYPE_POSITION   = __LINE__;
     const TYPE_JSON     = __LINE__;
-    const TYPE_PAI      = __LINE__;
+    const TYPE_TILE      = __LINE__;
 
     public static $KYOKUS = [
         'ton-1' => 1,
@@ -68,7 +68,7 @@ class Exercise
                     self::PROPERTY_DEFAULT => '1',
                 ],
                 'dora'      => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
                 'mochiten'  => [
@@ -76,23 +76,23 @@ class Exercise
                     self::PROPERTY_DEFAULT => '25000',
                 ],
                 'hand'     => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '',
                 ],
                 'draw'     => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
                 'kiri_a'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
                 'kiri_b'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
                 'kiri_c'    => [
-                    self::PROPERTY_TYPE    => self::TYPE_PAI,
+                    self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
             ],
@@ -189,8 +189,8 @@ class Exercise
                 }
                 return $prepared;
                 
-            case self::TYPE_PAI:
-                return new Pai($value);
+            case self::TYPE_TILE:
+                return new Tile($value);
                 
             case self::TYPE_STRING:
                 return trim(strval($value));

@@ -46,8 +46,8 @@ div.exercise div.row.variants div {
     text-align : center;
 }
 
-/* _pai.twig */
+/* _tile.twig */
 
-img.pai {
+img.tile {
     vertical-align : middle;
 }
