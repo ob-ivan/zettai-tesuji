@@ -16,15 +16,15 @@ class Exercise
     const TYPE_STRING   = __LINE__;
     const TYPE_BOOLEAN  = __LINE__;
     const TYPE_KYOKU    = __LINE__;
-    const TYPE_POSITION   = __LINE__;
+    const TYPE_POSITION = __LINE__;
     const TYPE_JSON     = __LINE__;
-    const TYPE_TILE      = __LINE__;
+    const TYPE_TILE     = __LINE__;
 
     public static $KYOKUS = [
-        'east-1' => 1,
-        'east-2' => 1,
-        'east-3' => 1,
-        'east-4' => 1,
+        'east-1'  => 1,
+        'east-2'  => 1,
+        'east-3'  => 1,
+        'east-4'  => 1,
         'south-1' => 1,
         'south-2' => 1,
         'south-3' => 1,
@@ -32,9 +32,9 @@ class Exercise
     ];
     
     public static $WINDS = [
-        'east' => 1,
+        'east'  => 1,
         'south' => 1,
-        'west' => 1,
+        'west'  => 1,
         'north' => 1,
     ];
     
@@ -59,11 +59,11 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_KYOKU,
                     self::PROPERTY_DEFAULT => 'east-1',
                 ],
-                'position'    => [
+                'position'  => [
                     self::PROPERTY_TYPE    => self::TYPE_POSITION,
                     self::PROPERTY_DEFAULT => 'east',
                 ],
-                'turn'     => [
+                'turn'      => [
                     self::PROPERTY_TYPE    => self::TYPE_INTEGER,
                     self::PROPERTY_DEFAULT => '1',
                 ],
@@ -71,27 +71,27 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'score'  => [
+                'score'     => [
                     self::PROPERTY_TYPE    => self::TYPE_STRING,
                     self::PROPERTY_DEFAULT => '25000',
                 ],
-                'hand'     => [
+                'hand'      => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '',
                 ],
-                'draw'     => [
+                'draw'      => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'discard_a'    => [
+                'discard_a' => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'discard_b'    => [
+                'discard_b' => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
-                'discard_c'    => [
+                'discard_c' => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],

@@ -89,13 +89,13 @@
             </label>
         </p>
         <p><label>Очки: <input name="score" required value="{{ exercise.content.score }}"/></label></p>
-        <p><label>Рука: <input name="hand"    required value="{{ exercise.content.hand }}"/></label></p>
+        <p><label>Рука: <input name="hand"  required value="{{ exercise.content.hand }}" /></label></p>
         <p>
             <label>
                 Набрал:
                 {% include 'admin/exercise/_tile_select.twig' with {
                     'name'  : 'draw',
-                    'TILES'  : TILES,
+                    'TILES' : TILES,
                     'value' : exercise.content.draw,
                 } only %}
             </label>
@@ -106,7 +106,7 @@
                     Вариант {{ letter|upper }}:
                     {% include 'admin/exercise/_tile_select.twig' with {
                         'name'  : 'discard_' ~ letter,
-                        'TILES'  : TILES,
+                        'TILES' : TILES,
                         'value' : attribute(exercise.content, 'discard_' ~ letter),
                     } only %}
                 </label>
@@ -122,7 +122,7 @@
             <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
             {% if exercise_id != 'new' %}
                 <input
-                    type="submit" name="delete"  value="Удалить"
+                    type="submit" name="delete" value="Удалить"
                     onclick="return window.confirm('После удаления задача не может быть восстановлена.\n\nУдалить задачу?')"
                 />
             {% endif %}

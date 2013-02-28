@@ -64,9 +64,9 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $windName = function ($wind) {
         switch ($wind) {
-            case 'east': return 'восток';
+            case 'east':  return 'восток';
             case 'south': return 'юг';
-            case 'west': return 'запад';
+            case 'west':  return 'запад';
             case 'north': return 'север';
         }
         return $wind;
@@ -124,8 +124,8 @@ $app->get('/{page}', function ($page) use ($app) {
     return $app->render('main.twig', [
         'exerciseList'  => $exerciseList,
         'exerciseCount' => $exerciseCount,
-        'curPage'     => $page,
-        'perPage'     => $perPage,
+        'curPage'       => $page,
+        'perPage'       => $perPage,
     ]);
 })
 ->assert ('page', '\\d*')
@@ -148,7 +148,7 @@ $app->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) u
     $page = $request->query->get('page');
     return $app->render('exercise.twig', [
         'exercise' => $exercise,
-        'page'   => $page,
+        'page'     => $page,
     ]);
 })
 ->assert('exercise_id', '\\d+')
@@ -181,8 +181,8 @@ $app->get('/admin/{page}', function ($page) use ($app) {
     return $app->render('admin/main.twig', [
         'exerciseList'  => $exerciseList,
         'exerciseCount' => $exerciseCount,
-        'curPage'     => $page,
-        'perPage'     => $perPage,
+        'curPage'       => $page,
+        'perPage'       => $perPage,
     ]);
 })
 ->assert ('page', '\\d*')
@@ -202,7 +202,7 @@ $app->get('/admin/exercise/view/{exercise_id}', function (Request $request, $exe
     $page = $request->query->get('page');
     return $app->render('admin/exercise/view.twig', [
         'exercise' => $exercise,
-        'page'   => $page,
+        'page'     => $page,
     ]);
 })
 ->assert('exercise_id', '\\d+')
@@ -231,14 +231,14 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
         $csrfKey
     ) {
         return $app->render('admin/exercise/edit.twig', [
-            'page'      => $request->query->get('page'),
+            'page'        => $request->query->get('page'),
             'exercise_id' => $exercise_id,
-            'csrf'      => $app['csrf']->generate($csrfKey),
+            'csrf'        => $app['csrf']->generate($csrfKey),
             'exercise'    => $exercise,
-            'errors'    => $errors,
-            'KYOKUS'    => array_keys(Zettai\Exercise::$KYOKUS),
-            'WINDS'     => array_keys(Zettai\Exercise::$WINDS),
-            'TILES'      => Zettai\Tile::$TILES,
+            'errors'      => $errors,
+            'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
+            'WINDS'       => array_keys(Zettai\Exercise::$WINDS),
+            'TILES'       => Zettai\Tile::$TILES,
         ]);
     };
     
@@ -278,15 +278,15 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
                 'kyoku'     => $request->request->get('kyoku'),
-                'position'    => $request->request->get('position'),
-                'turn'     => $request->request->get('turn'),
+                'position'  => $request->request->get('position'),
+                'turn'      => $request->request->get('turn'),
                 'dora'      => $request->request->get('dora'),
-                'score'  => $request->request->get('score'),
-                'hand'     => $request->request->get('hand'),
-                'draw'     => $request->request->get('draw'),
-                'discard_a'    => $request->request->get('discard_a'),
-                'discard_b'    => $request->request->get('discard_b'),
-                'discard_c'    => $request->request->get('discard_c'),
+                'score'     => $request->request->get('score'),
+                'hand'      => $request->request->get('hand'),
+                'draw'      => $request->request->get('draw'),
+                'discard_a' => $request->request->get('discard_a'),
+                'discard_b' => $request->request->get('discard_b'),
+                'discard_c' => $request->request->get('discard_c'),
             ],
         ]);
         

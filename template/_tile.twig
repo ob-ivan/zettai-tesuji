@@ -1,3 +1,8 @@
+{#
+    Превращает тайлы, переданные массивами типа {number : '5', color : 'z'} в картинки.
+    Параметры:
+        tiles
+#}
 {% spaceless %}
     {% for tile in tiles %}
         {% if tile.color == 'm' %}

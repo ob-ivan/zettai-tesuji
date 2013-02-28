@@ -1,17 +1,17 @@
 <div class="exercise">
     <div class="row">
         <div class="left">
-            <div class="kyoku"   >Сдача:   {{ content.kyoku |kyoku   }}</div>
-            <div class="position"  >Позиция: {{ content.position|wind    }}</div>
-            <div class="turn"   >Ход:     {{ content.turn          }}</div>
-            <div class="score">Очки:    {{ content.score       }}</div>
+            <div class="kyoku"   >Сдача:   {{ content.kyoku   |kyoku }}</div>
+            <div class="position">Позиция: {{ content.position|wind  }}</div>
+            <div class="turn"    >Ход:     {{ content.turn           }}</div>
+            <div class="score"   >Очки:    {{ content.score          }}</div>
         </div>
-        <div class="dora">Дора:    {{ content.dora  |tile|raw }}</div>
+        <div class="dora">Дора: {{ content.dora|tile|raw }}</div>
         <br/>
     </div>
     <div class="row">
-        <div class="hand">Рука:    {{ content.hand |tile|raw }}</div>
-        <div class="draw">Набрал:  {{ content.draw |tile|raw }}</div>
+        <div class="hand">Рука:   {{ content.hand|tile|raw }}</div>
+        <div class="draw">Набрал: {{ content.draw|tile|raw }}</div>
         <br/>
     </div>
     <div class="question">{{ question }}</div>
