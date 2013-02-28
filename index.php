@@ -62,6 +62,13 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => TEMPLATE_DIR,
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+
+    // константы //
+    
+    $twig->addGlobal('ABCS', array_keys(Zettai\Exercise::$ABCS));
+
+    // фильтры //
+    
     $windName = function ($wind) {
         switch ($wind) {
             case 'east':  return 'восток';
@@ -71,8 +78,6 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
         }
         return $wind;
     };
-    
-    // фильтры //
     
     $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app, $windName) {
         return $windName($wind);
@@ -149,7 +154,6 @@ $app->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) u
     return $app->render('exercise.twig', [
         'exercise' => $exercise,
         'page'     => $page,
-        'ABCS'     => array_keys(Zettai\Exercise::$ABCS),
     ]);
 })
 ->assert('exercise_id', '\\d+')
@@ -204,7 +208,6 @@ $app->get('/admin/exercise/view/{exercise_id}', function (Request $request, $exe
     return $app->render('admin/exercise/view.twig', [
         'exercise' => $exercise,
         'page'     => $page,
-        'ABCS'     => array_keys(Zettai\Exercise::$ABCS),
     ]);
 })
 ->assert('exercise_id', '\\d+')
@@ -238,7 +241,6 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'csrf'        => $app['csrf']->generate($csrfKey),
             'exercise'    => $exercise,
             'errors'      => $errors,
-            'ABCS'        => array_keys(Zettai\Exercise::$ABCS),
             'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
             'WINDS'       => array_keys(Zettai\Exercise::$WINDS),
             'TILES'       => Zettai\Tile::$TILES,
