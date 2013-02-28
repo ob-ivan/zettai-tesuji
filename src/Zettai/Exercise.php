@@ -12,14 +12,21 @@ class Exercise
     const PROPERTY_DEFAULT = __LINE__;
     const PROPERTY_SCHEMA  = __LINE__;
     
-    const TYPE_INTEGER  = __LINE__;
-    const TYPE_STRING   = __LINE__;
+    const TYPE_ABC      = __LINE__;
     const TYPE_BOOLEAN  = __LINE__;
+    const TYPE_INTEGER  = __LINE__;
+    const TYPE_JSON     = __LINE__;
     const TYPE_KYOKU    = __LINE__;
     const TYPE_POSITION = __LINE__;
-    const TYPE_JSON     = __LINE__;
+    const TYPE_STRING   = __LINE__;
     const TYPE_TILE     = __LINE__;
 
+    public static $ABCS = [
+        'a' => 1,
+        'b' => 1,
+        'c' => 1,
+    ];
+    
     public static $KYOKUS = [
         'east-1'  => 1,
         'east-2'  => 1,
@@ -87,13 +94,29 @@ class Exercise
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
+                'answer_a' => [
+                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                    self::PROPERTY_DEFAULT => '',
+                ],
                 'discard_b' => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
                 ],
+                'answer_b' => [
+                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                    self::PROPERTY_DEFAULT => '',
+                ],
                 'discard_c' => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                     self::PROPERTY_DEFAULT => '5z',
+                ],
+                'answer_c' => [
+                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                    self::PROPERTY_DEFAULT => '',
+                ],
+                'best_answer' => [
+                    self::PROPERTY_TYPE    => self::TYPE_ABC,
+                    self::PROPERTY_DEFAULT => 'a',
                 ],
             ],
         ],
@@ -149,6 +172,12 @@ class Exercise
     private function prepare ($value, $properties)
     {
         switch ($properties[self::PROPERTY_TYPE]) {
+            case self::TYPE_ABC:
+                if (! isset(self::$ABCS[$value])) {
+                    return $properties[self::PROPERTY_DEFAULT];
+                }
+                return $value;
+                
             case self::TYPE_BOOLEAN:
                 return !! $value;
                 

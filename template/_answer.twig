@@ -1,0 +1,23 @@
+{#
+    Вывод ответов к задаче.
+    Параметры:
+        answer <abc>
+        content
+            discard_a
+            answer_a
+            discard_b
+            answer_b
+            discard_c
+            answer_c
+        is_best <boolean>
+#}
+<div class="answer">
+    {% if is_best %}
+        Правильный ответ:
+    {% endif %}
+    {{ answer|upper }}.
+    {{ attribute(content, 'discard_' ~ answer)|tile|raw }}
+</div>
+<div class="row">
+    {{ attribute(content, 'answer_' ~ answer) }}
+</div>

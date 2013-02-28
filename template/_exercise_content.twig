@@ -1,3 +1,24 @@
+{#
+    Красивый вывод задачи.
+    Параметры:
+        content
+            kyoku
+            position
+            turn
+            score
+            dora
+            hand
+            draw
+            discard_a
+            answer_a
+            discard_b
+            answer_b
+            discard_c
+            answer_c
+            best_answer
+        question    <string>
+        show_answer <boolean>
+#}
 <div class="exercise">
     <div class="row">
         <div class="left">
@@ -14,11 +35,29 @@
         <div class="draw">Набрал: {{ content.draw|tile|raw }}</div>
         <br/>
     </div>
-    <div class="question">{{ question }}</div>
-    <div class="row variants">
-        <div>A. {{ content.discard_a|tile|raw }}</div>
-        <div>B. {{ content.discard_b|tile|raw }}</div>
-        <div>C. {{ content.discard_c|tile|raw }}</div>
-    </div>
-    <div class="row"></div>
+    {% if show_answer %}
+        <hr/>
+        {% include '_answer.twig' with {
+            answer  : content.best_answer,
+            content : content,
+            is_best : true,
+        } only %}
+        <div class="row">Другие ответы:</div>
+        {% for answer in ABCS %}
+            {% if answer != content.best_answer %}
+                {% include '_answer.twig' with {
+                    answer  : answer,
+                    content : content,
+                    is_best : false,
+                } only %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <div class="question">Что сбросить?</div>
+        <div class="row variants">
+            <div>A. {{ content.discard_a|tile|raw }}</div>
+            <div>B. {{ content.discard_b|tile|raw }}</div>
+            <div>C. {{ content.discard_c|tile|raw }}</div>
+        </div>
+    {% endif %}
 </div>
