@@ -100,7 +100,7 @@
                 } only %}
             </label>
         </p>
-        {% for letter in ['a', 'b', 'c'] %}
+        {% for letter in ABCS %}
             <p>
                 <label>
                     Вариант {{ letter|upper }}:
@@ -110,7 +110,19 @@
                         'value' : attribute(exercise.content, 'discard_' ~ letter),
                     } only %}
                 </label>
+                <label>
+                    <input
+                        type="radio"
+                        name="best_answer"
+                        value="{{ letter }}"
+                        {% if exercise.content.best_answer == letter %}
+                            checked
+                        {% endif %}
+                    />
+                    Правильный ответ
+                </label>
             </p>
+            <p><textarea class="answer" name="answer_{{ letter }}">{{ attribute(exercise.content, 'answer_' ~ letter) }}</textarea></p>
         {% endfor %}
         <p>
             <input type="submit" name="save" value="Сохранить"/>

@@ -238,6 +238,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'csrf'        => $app['csrf']->generate($csrfKey),
             'exercise'    => $exercise,
             'errors'      => $errors,
+            'ABCS'        => array_keys(Zettai\Exercise::$ABCS),
             'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
             'WINDS'       => array_keys(Zettai\Exercise::$WINDS),
             'TILES'       => Zettai\Tile::$TILES,
