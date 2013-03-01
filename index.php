@@ -23,6 +23,9 @@ $app = new Zettai\Application();
 if ($config->debug) {
     $app['debug'] = true;
 }
+$app['answer_compiler'] = $app->share(function () {
+    return new Zettai\AnswerCompiler();
+});
 $app['config'] = $app->share(function () use ($config) {
     return $config;
 });
@@ -79,10 +82,10 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
         return $wind;
     };
     
-    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app, $windName) {
-        return $windName($wind);
+    $twig->addFilter(new Twig_SimpleFilter('answer', function ($source) use ($app) {
+        return $app['answer_compiler']->compile($source);
     }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $windName) {
+    $twig->addFilter(new Twig_SimpleFilter('kyoku', function ($kyoku) use ($windName) {
         if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
             return $kyoku;
         }
@@ -91,8 +94,11 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
     }));
-    $twig->addFilter('tile', new \Twig_Filter_Function(function ($tiles) use ($app) {
+    $twig->addFilter(new Twig_SimpleFilter('tile', function ($tiles) use ($app) {
         return $app['twig']->render('_tile.twig', ['tiles' => $tiles]);
+    }));
+    $twig->addFilter(new Twig_SimpleFilter('wind', function ($wind) use ($windName) {
+        return $windName($wind);
     }));
     
     // функции //
