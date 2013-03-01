@@ -8,8 +8,12 @@
 **/
 namespace Zettai;
 
+use Zettai\AnswerCompiler\Token;
+
 class AnswerCompiler
 {
+    // public //
+    
     public function compile($source)
     {
         return $this->build($this->tokenize($source));
@@ -24,6 +28,13 @@ class AnswerCompiler
     
     private function tokenize($source)
     {
-        // TODO
+        $tokens = [];
+        while (strlen($source) > 0) {
+            if (preg_match('/\s*\(\*([^)]*)\)/', $source, $matches)) {
+                $tokens[] = new Token(Token::TYPE_ANNOTATION, $matches[1]);
+                $source = substr($source, strlen($matches[0]));
+                continue;
+            }
+        }
     }
 }
