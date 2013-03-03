@@ -18,15 +18,10 @@ $config = new Zettai\Config(DOCUMENT_ROOT);
 
 // Инициализируем приложение.
 
-$app = new Zettai\Application();
+$app = new Zettai\Application($config);
 
-$app->registerConfig($config);
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
-});
-$app->registerDatabase();
-$app['model'] = $app->share(function () use ($app) {
-    return new Zettai\Model($app['db']);
 });
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
@@ -376,8 +371,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
 ->bind('admin_exercise_edit');
 
 // На дев-хосте добавляем генератор паролей.
-if ($config->debug) {
-// if ($app['debug']) {
+if ($app['debug']) {
     $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
         return $app['security.encoder.digest']->encodePassword($password, $salt);
     })

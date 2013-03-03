@@ -13,7 +13,19 @@ class Application extends BaseApplication
     
     // public //
     
-    public function registerConfig (Config $config)
+    public function __construct(Config $config)
+    {
+        parent::__construct();
+        
+        // Зарегистрировать стандартные для zettai-приложения компоненты.
+        $this->registerConfig($config);
+        $this->registerDatabase();
+        $this->registerModel();
+    }
+    
+    // private //
+    
+    private function registerConfig (Config $config)
     {
         // Запомнить конфиг.
         $this['config'] = $config;
@@ -24,7 +36,7 @@ class Application extends BaseApplication
         }
     }
     
-    public function registerDatabase ()
+    private function registerDatabase ()
     {
         $this->register(new DoctrineServiceProvider(), [
             'db.options' => [
@@ -36,5 +48,13 @@ class Application extends BaseApplication
                 'charset'   => 'utf8',
             ],
         ]);
+    }
+    
+    private function registerModel()
+    {
+        $app = $this;
+        $this['model'] = $this->share(function () use ($app) {
+            return new Model($app['db']);
+        });
     }
 }
