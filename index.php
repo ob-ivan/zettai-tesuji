@@ -24,17 +24,7 @@ $app->registerConfig($config);
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
-$app->register(new Silex\Provider\DoctrineServiceProvider(), [
-    'db.options' => [
-        'driver'    => 'pdo_mysql',
-        'host'      => $config->db->host,
-        'dbname'    => $config->db->dbname,
-        'user'      => $config->db->user,
-        'password'  => $config->db->password,
-        'charset'   => 'utf8',
-    ],
-]);
-// $app->registerDatabase();
+$app->registerDatabase();
 $app['model'] = $app->share(function () use ($app) {
     return new Zettai\Model($app['db']);
 });
