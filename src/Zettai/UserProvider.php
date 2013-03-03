@@ -28,8 +28,7 @@ class UserProvider implements UserProviderInterface
         }
         $userdata = $this->config->security[$username];
         // $userdata = $this->userlist[$username];
-        return new User($username, $userdata->password, $userdata->roles->getArrayCopy());
-        // return new User($username, $userdata->password, $userdata->roles->toArray());
+        return new User($username, $userdata->password, $userdata->roles->toArray());
     }
  
     public function refreshUser(UserInterface $user)

@@ -56,8 +56,6 @@ class Config implements ArrayAccess
             $this->load();
         }
         if (isset($this->configValues[$name])) {
-            return $this->configValues[$name];
-            /*
             $value = $this->configValues[$name];
             if (is_array($value) || is_object($value)) {
                 $subconfig = new Config(null);
@@ -66,7 +64,6 @@ class Config implements ArrayAccess
                 return $subconfig;
             }
             return $value;
-            */
         }
         throw new Exception('Config variable "' . $name . '" is unknown', Exception::CONFIG_VARIABLE_UNKNOWN);
     }
@@ -94,8 +91,7 @@ class Config implements ArrayAccess
         }
         $locator = new FileLocator($this->rootDirectory . '/config');
         $resource = $locator->locate('config.yml');
-        $this->configValues = new ArrayObject (Yaml::parse($resource), ArrayObject::READ_ONLY);
-        // $this->configValues = Yaml::parse($resource);
+        $this->configValues = Yaml::parse($resource);
         $this->isLoaded = true;
     }
 }
