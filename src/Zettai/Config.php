@@ -1,6 +1,7 @@
 <?php
 namespace Zettai;
 
+use ArrayAccess;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 
@@ -12,7 +13,7 @@ use Symfony\Component\Yaml\Yaml;
  * Если переменная не определена в конфиге, бросается исключение
  * Zettai\Exception::CONFIG_VARIABLE_UNKNOWN.
 **/
-class Config
+class Config implements ArrayAccess
 {
     // var //
     
@@ -20,7 +21,29 @@ class Config
     private $isLoaded = false;
     private $configValues = null;
     
-    // public //
+    // public : ArrayAccess //
+
+    public function offsetExists($offset)
+    {
+        return isset($this->configValues[$offset]);
+    }
+    
+    public function offsetGet($offset)
+    {
+        return $this->$offset;
+    }
+    
+    public function offsetSet ($offset, $value)
+    {
+        throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
+    }
+    
+    public function offsetUnset ($offset)
+    {
+        throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
+    }
+    
+    // public : Config //
     
     public function __construct ($rootDirectory)
     {
@@ -32,8 +55,18 @@ class Config
         if (! $this->isLoaded) {
             $this->load();
         }
-        if (isset ($this->configValues[$name])) {
+        if (isset($this->configValues[$name])) {
             return $this->configValues[$name];
+            /*
+            $value = $this->configValues[$name];
+            if (is_array($value) || is_object($value)) {
+                $subconfig = new Config(null);
+                $subconfig->configValues = $value;
+                $subconfig->isLoaded = true;
+                return $subconfig;
+            }
+            return $value;
+            */
         }
         throw new Exception('Config variable "' . $name . '" is unknown', Exception::CONFIG_VARIABLE_UNKNOWN);
     }
@@ -41,6 +74,15 @@ class Config
     public function __set ($name, $value)
     {
         throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
+    }
+    
+    public function toArray()
+    {
+        $return = [];
+        foreach ($this->configValues as $field => $value) {
+            $return[$field] = $value;
+        }
+        return $return;
     }
     
     // private //
@@ -53,6 +95,7 @@ class Config
         $locator = new FileLocator($this->rootDirectory . '/config');
         $resource = $locator->locate('config.yml');
         $this->configValues = new ArrayObject (Yaml::parse($resource), ArrayObject::READ_ONLY);
+        // $this->configValues = Yaml::parse($resource);
         $this->isLoaded = true;
     }
 }

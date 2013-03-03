@@ -26,6 +26,7 @@ if ($config->debug) {
 $app['config'] = $app->share(function () use ($config) {
     return $config;
 });
+// $app->registerConfig($config);
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
@@ -39,6 +40,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), [
         'charset'   => 'utf8',
     ],
 ]);
+// $app->registerDatabase();
 $app['model'] = $app->share(function () use ($app) {
     return new Zettai\Model($app['db']);
 });
@@ -50,6 +52,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
             'logout' => ['logout_path' => '/admin/logout'],
             'users' => $app->share(function() use ($app) {
                 return new Zettai\UserProvider($app['config']);
+                // return new Zettai\UserProvider($app['config']->security);
             }),
         ],
     ],
@@ -105,7 +108,7 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());
 
-// Если стоит режим заглушки, выводим её и больше ничего не делаем.
+// Если стоит режим заглушки, то выводим её и больше ничего не делаем.
 $app->before(function (Request $request) use ($app) {
     if (file_exists(DEPLOY_LOCK_PATH)) {
         if ($request->getMethod() === 'GET') {
@@ -391,6 +394,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
 
 // На дев-хосте добавляем генератор паролей.
 if ($config->debug) {
+// if ($app['debug']) {
     $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
         return $app['security.encoder.digest']->encodePassword($password, $salt);
     })
