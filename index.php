@@ -20,13 +20,7 @@ $config = new Zettai\Config(DOCUMENT_ROOT);
 
 $app = new Zettai\Application();
 
-if ($config->debug) {
-    $app['debug'] = true;
-}
-$app['config'] = $app->share(function () use ($config) {
-    return $config;
-});
-// $app->registerConfig($config);
+$app->registerConfig($config);
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
