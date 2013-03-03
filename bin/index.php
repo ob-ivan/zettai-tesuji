@@ -15,18 +15,19 @@ $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
 // Задаём рутинг и контроллеры.
 
+$app->get('/import', function (Request $request) use ($app) {
+    // TODO: Прочитать либо имя файла, либо адрес треда из $request->query->get(0).
+    return 'done';
+});
+
 // Запускаем приложение с параметрами командной строки.
 
-$request = Request::create('/' . $argv[1]);
-/*
-$commandLine = new Zettai\CommandLine();
-$request = Request::create($commandLine->get());
-*/
+$request = Request::create('/' . $argv[1], 'GET', array_slice($argv, 2));
 try {
-$response = $app->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
+    $response = $app->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
 } catch (Exception $e) {
     print 'Uncaught exception ' . get_class($e) . ' (' . $e->getCode() . '): "' . $e->getMessage() . '"' . "\n" .
         $e->getTraceAsString() . "\n";
     die;
 }
-print $response->getContent();
+print $response->getContent() . "\n";
