@@ -51,8 +51,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
             'form' => ['login_path' => '/login', 'check_path' => '/admin/login_check'],
             'logout' => ['logout_path' => '/admin/logout'],
             'users' => $app->share(function() use ($app) {
-                return new Zettai\UserProvider($app['config']);
-                // return new Zettai\UserProvider($app['config']->security);
+                return new Zettai\UserProvider($app['config']->security);
             }),
         ],
     ],
