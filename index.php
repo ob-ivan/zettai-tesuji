@@ -12,13 +12,9 @@ define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 require_once AUTOLOAD_PATH;
 use Symfony\Component\HttpFoundation\Request;
 
-// Загружаем конфиги.
-
-$config = new Zettai\Config(DOCUMENT_ROOT);
-
 // Инициализируем приложение.
 
-$app = new Zettai\Application($config);
+$app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
