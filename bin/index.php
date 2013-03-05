@@ -27,6 +27,7 @@ $app->get('/import', function (Request $request) use ($app) {
             'USAGE: run.sh import FILENAME' . "\n" .
             'OR:    run.sh import URL';
     }
+    
     // Достать содержимое.
     try {
         $contents = file_get_contents($filepath);
@@ -35,7 +36,49 @@ $app->get('/import', function (Request $request) use ($app) {
             get_class($e) . ' (' . $e->getCode() . ') "' . $e->getMessage() . '"';
     }
     unset($filepath);
-    // Разобрать содержимое.
+    
+    // Загрузить содержимое в документ.
+    libxml_use_internal_errors(true);
+    $document = new DomDocument();
+    $document->loadHTML($contents);
+    $xpath = new DomXPath($document);
+    $posts = $xpath->query('/html/body/form[@id="delete_form"]/div[@class="thread"]/table[substring(@id,1,5)="post_"]');
+    
+    // Найти посты с задачами и ответами.
+    /**
+     * [<postId> => ['exerciseId' => <exerciseid>, 'messageNode' => <messageNode>]]
+    **/
+    $excerciseMessages = [];
+    $answerMessages = [];
+    foreach ($posts as $post) {
+        // Выбрать айдишник поста.
+        if (! preg_matches('/^post_(\d+)$/', $post->attributes->getNamedItem('id'), $matches)) {
+            continue;
+        }
+        $postId = intval($matches[1]);
+        
+        // Выбрать узел с сообщением.
+        $messageNodes = $xpath->query('tbody/tr/td[@class="reply"]/div[@class="postbody"]/div[@class="message"]', $post);
+        if ($messageNodes->length !== 1) {
+            continue;
+        }
+        $messageNode = $messageNodes->item(0);
+        
+        // Определить задачу или ответ.
+        if (preg_match('/^\s*Задача №(\d{3})/', $messageNode->textContent, $matches)) {
+            $excerciseMessages[$postId] = [
+                'exerciseId'  => intval($matches[1]),
+                'messageNode' => $messageNode,
+            ];
+        } elseif (preg_match('/^\s*>>(\d+)/', $messageNode->textContent, $matches)) {
+            $parentPostId = intval($matches);
+            if (isset($excerciseMessages[$parentPostId])) {
+                // Пост, отвечающий на задачу, может не быть ответом из учебника.
+                // Надо ещё проверить формат текста.
+                // TODO
+            }
+        }
+    }
     return 'done';
 });
 
