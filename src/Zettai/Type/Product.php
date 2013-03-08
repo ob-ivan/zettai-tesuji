@@ -40,16 +40,38 @@ class Product extends Type
         $return = [];
         for ($seed = 0; $seed < $totalCount; ++$seed) {
             $primitive = $this->getKey($seed, $counts);
-            $return[implode('-', $primitive)] = $this->fromPrimitive($primitive);
+            $return[$primitive] = $this->fromPrimitive($primitive);
         }
         return $return;
+    }
+    
+    public function equals ($a, $b)
+    {
+        foreach ($a as $index => $value) {
+            if (! isset($b[$index])) {
+                return false;
+            }
+            if (! $value->equals($b[$index])) {
+                return false;
+            }
+        }
+        foreach ($b as $index => $value) {
+            if (! isset($a[$index])) {
+                return false;
+            }
+            if (! $value->equals($a[$index])) {
+                return false;
+            }
+        }
+        return true;
     }
     
     public function fromPrimitive($primitive)
     {
         $values = [];
+        $primitives = json_decode($primitive);
         foreach ($this->multipliers as $index => $multiplier) {
-            $value = $multiplier->fromPrimitive($primitive[$index]);
+            $value = $multiplier->fromPrimitive($primitives[$index]);
             if (! $value) {
                 return null;
             }
@@ -94,6 +116,7 @@ class Product extends Type
             $seed -= $key[$i];
             $seed /= $counts[$i];
         }
-        return $key;
+        ksort($key, SORT_NUMERIC);
+        return json_encode($key);
     }
 }

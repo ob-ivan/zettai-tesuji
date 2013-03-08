@@ -3,7 +3,7 @@ namespace Zettai\Type;
 
 class Singleton extends Type
 {
-    const PRIMITIVE = 1;
+    const PRIMITIVE = 0;
     
     private $value;
     
@@ -17,14 +17,14 @@ class Singleton extends Type
     public function each()
     {
         $return = [];
-        $return[self::PRIMITIVE] = $this->fromPrimitive();
+        $return[self::PRIMITIVE] = $this->fromPrimitive(self::PRIMITIVE);
         return $return;
     }
     
     public function fromView($view, $presentation)
     {
-        if ($presentation === $this->value) {
-            return $this->fromPrimitive();
+        if (0 === strpos($presentation, $this->value)) {
+            return $this->fromPrimitive(self::PRIMITIVE);
         }
         return null;
     }

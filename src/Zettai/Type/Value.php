@@ -32,7 +32,7 @@ class Value implements ValueInterface
         if ($this->type !== $operand->type) {
             return false;
         }
-        return $this->primitive === $operand->primitive;
+        return $this->type->equals($this->primitive, $operand->primitive);
     }
     
     public function is(TypeInterface $type)

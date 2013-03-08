@@ -26,11 +26,12 @@ class Enum extends Type
     
     public function fromView($view, $presentation)
     {
-        $index = array_search($presentation, $this->values);
-        if (false === $index) {
-            return null;
+        foreach ($this->values as $index => $value) {
+            if (0 === strpos($presentation, strval($value))) {
+                return $this->fromPrimitive($index);
+            }
         }
-        return $this->fromPrimitive($index);
+        return null;
     }
     
     public function fromPrimitive($primitive)

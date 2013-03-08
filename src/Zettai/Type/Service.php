@@ -11,16 +11,16 @@ class Service implements ArrayAccess, ServiceInterface
     // cosnt //
     
     // TODO: Заменить на перечисление, передаваемое в конструктор.
-    const ENG       = __LINE__;
     const ENGLISH   = __LINE__;
-    const RUS       = __LINE__;
+    const ENG       = __LINE__;
     const RUSSIAN   = __LINE__;
+    const RUS       = __LINE__;
     
     private static $VIEWS = [
-        self::ENG,
         self::ENGLISH,
-        self::RUS,
+        self::ENG,
         self::RUSSIAN,
+        self::RUS,
     ];
     
     // var //

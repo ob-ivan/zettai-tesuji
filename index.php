@@ -67,7 +67,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 }));
 $app['types'] = $app->share(function () {
     $service = new Zettai\Type\Service();
-    $service['wind'] = $service->enum([
+    $service['wind'] = $service->viewable([
         $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
     ], [
         ['e', 'east',  'в', 'восток'],
@@ -77,14 +77,14 @@ $app['types'] = $app->share(function () {
     ]);
     $service['kyoku'] = $service->product($service['wind'], '-', range(1, 4));
     /*
-    $service['suit'] = $service->enum([
+    $service['suit'] = $service->viewable([
         $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
     ], [
         ['m', 'man', 'м', 'ман'],
         ['p', 'pin', 'п', 'пин'],
         ['s', 'sou', 'с', 'со'],
     ]);
-    $service['dragon'] = $service->enum([
+    $service['dragon'] = $service->viewable([
         $service::ENG, $service::RUS, $service::RUSSIAN,
     ], [
         ['5z', 'Б', 'Белый'],

@@ -43,6 +43,11 @@ abstract class Type implements TypeInterface
         return $this->from($name);
     }
     
+    public function equals($a, $b)
+    {
+        return $a === $b;
+    }
+    
     /**
      * Пытается распознать в аргументе какое-либо из значений.
      *
