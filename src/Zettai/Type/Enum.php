@@ -81,6 +81,10 @@ class Enum extends Type
     **/
     public function from($input)
     {
+        // Проверить, вдруг, уже правильного типа.
+        if ($this->has($input)) {
+            return $input;
+        }
         // Попробовать примитивное значение.
         $fromPrimitive = $this->fromPrimitive($input);
         if ($fromPrimitive) {
@@ -99,14 +103,14 @@ class Enum extends Type
     /**
      * TODO: Кэшировать отображение.
     **/
-    public function fromView($view, $input)
+    public function fromView($view, $presentation)
     {
         $viewIndex = $this->getViewIndex($view);
         if (false === $viewIndex) {
             return null;
         }
         foreach ($this->values as $primitive => $views) {
-            if ($views[$viewIndex] === $input) {
+            if ($views[$viewIndex] === $presentation) {
                 return $this->fromPrimitive($primitive);
             }
         }
@@ -137,8 +141,6 @@ class Enum extends Type
         }
         $viewIndex = $this->getViewIndex($view);
         if (false === $viewIndex) {
-            print '<pre>view = ' . $view . '</pre>'; // debug
-            print '<pre>this->views = ' . print_r($this->views, true) . '</pre>'; // debug
             throw new Exception('View "' . $viewName . '" is not supported by this type', Exception::ENUM_TO_VIEW_UNSUPPORTED_VIEW);
         }
         if (! isset($this->values[$primitive][$viewIndex])) {

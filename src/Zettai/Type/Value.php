@@ -29,7 +29,10 @@ class Value implements ValueInterface
         if (! $operand instanceof self) {
             $operand = $this->type->from($operand);
         }
-        return $this->type === $operand->type && $this->primitive === $operand->primitive;
+        if ($this->type !== $operand->type) {
+            return false;
+        }
+        return $this->primitive === $operand->primitive;
     }
     
     public function is(TypeInterface $type)

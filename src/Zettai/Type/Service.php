@@ -10,6 +10,7 @@ class Service implements ArrayAccess, ServiceInterface
 {
     // cosnt //
     
+    // TODO: Заменить на перечисление, передаваемое в конструктор.
     const ENG       = __LINE__;
     const ENGLISH   = __LINE__;
     const RUS       = __LINE__;
