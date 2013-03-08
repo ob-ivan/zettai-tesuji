@@ -15,6 +15,13 @@ class Service implements ArrayAccess, ServiceInterface
     const RUS       = __LINE__;
     const RUSSIAN   = __LINE__;
     
+    private static $VIEWS = [
+        self::ENG,
+        self::ENGLISH,
+        self::RUS,
+        self::RUSSIAN,
+    ];
+    
     // var //
     
     /**
@@ -48,6 +55,22 @@ class Service implements ArrayAccess, ServiceInterface
     public function offsetUnset($offset)
     {
         throw new Exception('Unsetting types is unsupported', Exception::SERVICE_UNSET_UNSUPPORTED);
+    }
+    
+    // public : ServiceInterface //
+    
+    public function getViewByName($viewName)
+    {
+        $constant = __CLASS__ . '::' . strtoupper($viewName);
+        if (! defined($constant)) {
+            return null;
+        }
+        return constant($constant);
+    }
+    
+    public function getViews()
+    {
+        return self::$VIEWS;
     }
     
     // public : Service //
