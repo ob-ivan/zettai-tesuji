@@ -6,7 +6,7 @@ namespace Zettai\Type;
 
 use ArrayAccess;
 
-class Service implements ArrayAccess
+class Service implements ArrayAccess, ServiceInterface
 {
     // cosnt //
     
@@ -18,7 +18,7 @@ class Service implements ArrayAccess
     // var //
     
     /**
-     * @var [<name> => <Type>]
+     * @var [<name> => <TypeInterface>]
     **/
     private $types = [];
     
@@ -39,8 +39,8 @@ class Service implements ArrayAccess
         if (isset($this->types[$offset])) {
             throw new Exception('Type "' . $offset . '" already exists', Exception::SERVICE_SET_OFFSET_ALREADY_EXISTS);
         }
-        if (! $value instanceof Type) {
-            throw new Exception('Value must be of type Type for offset "' . $offset . '"', Exception::SERVICE_SET_VALUE_WRONG_TYPE);
+        if (! $value instanceof TypeInterface) {
+            throw new Exception('Value must implement TypeInterface for offset "' . $offset . '"', Exception::SERVICE_SET_VALUE_WRONG_TYPE);
         }
         return $this->types[$offset];
     }
@@ -57,45 +57,50 @@ class Service implements ArrayAccess
      *
      *  @param  [<viewIndex> => <viewValue>]                        $views
      *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
+     *
      *  @return Enum
     **/
-    public function enum($views, $values)
+    public function enum(array $views, array $values)
     {
-        return new Enum($views, $values);
+        return new Enum($this, $views, $values);
     }
     
     /**
      * Создаёт новый тип, применяя звёздочку Клини к заданному типу.
      *
-     *  @param  Type    $type
+     *  @param  TypeInterface   $type
      *  @return Iteration
     **/
-    public function iteration($type)
+    public function iteration(TypeInterface $type)
     {
-        return new Iteration($type);
+        return new Iteration($this, $type);
     }
     
     /**
      * Создаёт новый тип декартова произведения.
      *
-     *  @param  Type    Использует переданный тип как координату.
-     *  @param  array   Использует перечисленные значения (во всех видах) как координату.
-     *  @param  string  Вставляет разделитель в представления (кроме примитивного).
+     * Может быть сколько угодно параметров:
+     *  @param  TypeInterface   Использует переданный тип как координату.
+     *  @param  array           Использует перечисленные значения (во всех видах) как координату.
+     *  @param  string          Вставляет разделитель в представления (кроме примитивного).
+     *
      *  @return Product
     **/
     public function product()
     {
-        return new Product(func_get_args());
+        return new Product($this, func_get_args());
     }
     
     /**
      * Создаёт новый тип объединения.
      *
-     *  @param  Type    Вариант значений.
+     * Может быть сколько угодно параметров:
+     *  @param  TypeInterface   Вариант значений.
+     *
      *  @return Union
     **/
     public function union()
     {
-        return new Union(func_get_args());
+        return new Union($this, func_get_args());
     }
 }
