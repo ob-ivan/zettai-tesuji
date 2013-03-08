@@ -49,7 +49,7 @@ class Enum extends Type
             return null;
         }
         foreach ($this->values as $primitive => $views) {
-            if ($views[$viewIndex] === $presentation) {
+            if (0 === strpos($presentation, $views[$viewIndex])) {
                 return $this->fromPrimitive($primitive);
             }
         }

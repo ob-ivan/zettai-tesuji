@@ -39,4 +39,9 @@ class Value implements ValueInterface
     {
         return $this->type === $type;
     }
+    
+    public function toView($view)
+    {
+        return $this->type->toView($view, $this->primitive);
+    }
 }

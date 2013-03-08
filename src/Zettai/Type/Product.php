@@ -6,7 +6,7 @@ class Product extends Type
     // var //
     
     /**
-     *  @var [<multiplierIndex> => <TypeInterface>]
+     *  @var [<index> => <TypeInterface>]
     **/
     private $multipliers = [];
     
@@ -22,18 +22,18 @@ class Product extends Type
     public function each()
     {
         /**
-         * [<multiplierIndex> => [<primitive>]]
+         * [<index> => [<primitive>]]
         **/
         $primitives = [];
         /**
-         * [<multiplierIndex> => <primitive values count>]
+         * [<index> => <primitive values count>]
         **/
         $counts = [];
         $totalCount = 1;
-        foreach ($this->multipliers as $multiplierIndex => $multiplier) {
-            $primitives[$multiplierIndex] = array_keys($multiplier->each());
-            $counts[$multiplierIndex] = count($primitives[$multiplierIndex]);
-            $totalCount *= $counts[$multiplierIndex];
+        foreach ($this->multipliers as $index => $multiplier) {
+            $primitives[$index] = array_keys($multiplier->each());
+            $counts[$index] = count($primitives[$index]);
+            $totalCount *= $counts[$index];
         }
         $return = [];
         for ($seed = 0; $seed < $totalCount; ++$seed) {
@@ -45,24 +45,36 @@ class Product extends Type
     
     public function fromPrimitive($primitive)
     {
-        foreach ($this->multipliers as $multiplierIndex => $multiplier) {
-            if (! $multiplier->fromPrimitive($primitive[$multiplierIndex])) {
+        $values = [];
+        foreach ($this->multipliers as $index => $multiplier) {
+            $value = $multiplier->fromPrimitive($primitive[$index]);
+            if (! $value) {
                 return null;
             }
+            $values[$index] = $value;
         }
-        return new Value($this, $primitive);
+        return new Value($this, $values);
     }
     
     public function fromView($view, $presentation)
     {
-        // TODO: Научить типы откусывать от представления столько, сколько надо.
+        $values = [];
+        foreach ($this->multipliers as $index => $multiplier) {
+            $value = $multiplier->fromView($view, $presentation);
+            if (! $value) {
+                return null;
+            }
+            $values[$index] = $value;
+            $presentation = substr($presentation, $multiplier->toView($view, $value));
+        }
+        return new Value($this, $values);
     }
     
-    public function toView($view, $primitive)
+    public function toView($view, $values)
     {
         $presentation = [];
-        foreach ($this->multipliers as $multiplierIndex => $multiplier) {
-            $presentation[] = $multiplier->toView($view, $primitive[$multiplierIndex]);
+        foreach ($values as $index => $value) {
+            $presentation[] = $value->toView($view);
         }
         return implode('', $presentation);
     }
