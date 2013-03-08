@@ -1,6 +1,8 @@
 <?php
 namespace Zettai\Controller;
 
+use DomDocument;
+use DomXPath;
 use Exception as AnyException;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -21,7 +23,7 @@ class Import implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $controllers = $app['controllers_factory'];
-        $controller->error(function (Exception $exception) {
+        $app->error(function (Exception $exception) {
             return $this->error($exception);
         });
         $controllers->get('/', function (Request $request) {
@@ -34,6 +36,7 @@ class Import implements ControllerProviderInterface
     
     private function error(Exception $exception)
     {
+        // TODO: Разобраться, почему сюда не заходит.
         switch ($exception->getCode()) {
             case Exception::IMPORT_FILENAME_EMPTY:
                 return
@@ -49,71 +52,20 @@ class Import implements ControllerProviderInterface
     
     private function import (Request $request)
     {
-        $nodes = $this->getExerciseNodes($this->getXPath($this->getContents($request)));
+        $exercises = $this->getExercises(
+            $this->getExerciseNodes(
+                $this->getXPath(
+                    $this->getContents($request)
+                )
+            )
+        );
         
-        // Разобрать тексты задач и ответов.
-        /**
-         * [<postId> => <Zettai\Exercise>]
-        **/
-        $exercises = [];
-        foreach ($excerciseMessages as $postId => $exerciseMessage) {
-            /*
-                Задача №001. Где будет голова?
-                Сдача: Юг-1
-                Позиция: Север
-                Ход: 5
-                Дора: 9пин
-                Очки: 28000
-                Рука: 35ман 23599пин 122344со
-                Набрал: 6пин
-                Что сбросить?
-                А. 5ман
-                В. 1со
-                С. 2со
-            */
-            if (preg_match('~^ \s*
-                Задача          \s+ №\d+. \s+ (?<title>.*)  \s+
-                Сдача:          \s+ (?<kyoku>\S+-\d)        \s+
-                Поз[иц]{2}ия:   \s+ (?<position>\S+)        \s+
-                Ход:            \s+ (?<turn>\d+)            \s+
-                Дора:           \s+ (?<dora>\S+)            \s+
-                Очк(?:и|ов):    \s+ (?<score>\S.*\S+)       \s+
-                Рука:           \s+ (?<hand>\S.*\S)         \s+
-                Набрал:         \s+ (?<draw>\S+)            \s+
-                Что \s+ сбросить\? \s+
-                А.              \s+ (?<discard_a>\S+)       \s+
-                В.              \s+ (?<discard_b>\S+)       \s+
-                С.              \s+ (?<discard_c>\S+)       \s*
-            $~sxu', $exerciseMessage['messageNode']->textContent, $matches)) {
-                $data = [
-                    'exercise_id'   => $exerciseMessage['exerciseId'],
-                    'title'         => $matches['title'],
-                    'is_hidden'     => true,
-                    'content'       => [
-                        // TODO: Конвертировать все поля из текстового формата в формат базы!
-                        'kyoku'     => $matches['kyoku'],
-                        'position'  => $matches['position'],
-                        'turn'      => $matches['turn'],
-                        'dora'      => $matches['dora'],
-                        'score'     => $matches['score'],
-                        'hand'      => $matches['hand'],
-                        'draw'      => $matches['draw'],
-                        'discard_a' => $matches['discard_a'],
-                        'discard_b' => $matches['discard_b'],
-                        'discard_c' => $matches['discard_c'],
-                    ],
-                ];
-                // TODO: Разобрать ответы.
-            } else {
-                print 'Could not recognize format in post ' . $postId . ': ' . $exerciseMessage['messageNode']->textContent . "\n\n";
-            }
-        }
         return 'done';
     }
     
     // private : helpers //
     
-    private function getXPath(Request $request)
+    private function getContents(Request $request)
     {
         // Прочитать либо имя файла, либо адрес треда из параметров.
         $filepath = $request->query->get(0);
@@ -135,6 +87,7 @@ class Import implements ControllerProviderInterface
      * Загружает содержимое в документ и возвращает объект выборки по xpath.
     **/
     private function getXPath($contents)
+    {
         libxml_use_internal_errors(true);
         $document = new DomDocument();
         $document->loadHTML($contents);
@@ -148,7 +101,7 @@ class Import implements ControllerProviderInterface
      *      self::IMPORT_KEY_ANSWER   => <answerNode>,
      *  ]]
     **/
-    private function getExerciseNodes($xpath)
+    private function getExerciseNodes(DomXPath $xpath)
     {
         $exerciseNodes = [];
         foreach ($xpath->query(self::IMPORT_XPATH_POSTS) as $post) {
@@ -184,5 +137,68 @@ class Import implements ControllerProviderInterface
             unset ($messageNode, $matches, $postId, $parentPostId);
         }
         return $exerciseNodes;
+    }
+
+    /**
+     * Разбирает тексты задач и ответов.
+     *
+     *  @return [<postId> => <Zettai\Exercise>]
+    **/
+    private function getExercises(array $nodes)
+    {
+        $exercises = [];
+        foreach ($nodes as $postId => $node) {
+            /*
+                Задача №001. Где будет голова?
+                Сдача: Юг-1
+                Позиция: Север
+                Ход: 5
+                Дора: 9пин
+                Очки: 28000
+                Рука: 35ман 23599пин 122344со
+                Набрал: 6пин
+                Что сбросить?
+                А. 5ман
+                В. 1со
+                С. 2со
+            */
+            if (preg_match('~^ \s*
+                Задача          \s+ №\d+. \s+ (?<title>.*)  \s+
+                Сдача:          \s+ (?<kyoku>\S+-\d)        \s+
+                Поз[иц]{2}ия:   \s+ (?<position>\S+)        \s+
+                Ход:            \s+ (?<turn>\d+)            \s+
+                Дора:           \s+ (?<dora>\S+)            \s+
+                Очк(?:и|ов):    \s+ (?<score>\S.*\S+)       \s+
+                Рука:           \s+ (?<hand>\S.*\S)         \s+
+                Набрал:         \s+ (?<draw>\S+)            \s+
+                Что \s+ сбросить\? \s+
+                А.              \s+ (?<discard_a>\S+)       \s+
+                В.              \s+ (?<discard_b>\S+)       \s+
+                С.              \s+ (?<discard_c>\S+)       \s*
+            $~sxu', $node[self::IMPORT_KEY_EXERCISE]->textContent, $matches)) {
+                $data = [
+                    'exercise_id'   => $node[self::IMPORT_KEY_ID],
+                    'title'         => $matches['title'],
+                    'is_hidden'     => true,
+                    'content'       => [
+                        // TODO: Конвертировать все поля из текстового формата в формат базы!
+                        'kyoku'     => $matches['kyoku'],
+                        'position'  => $matches['position'],
+                        'turn'      => $matches['turn'],
+                        'dora'      => $matches['dora'],
+                        'score'     => $matches['score'],
+                        'hand'      => $matches['hand'],
+                        'draw'      => $matches['draw'],
+                        'discard_a' => $matches['discard_a'],
+                        'discard_b' => $matches['discard_b'],
+                        'discard_c' => $matches['discard_c'],
+                    ],
+                ];
+                // TODO: Разобрать ответы.
+            } else {
+                print 'Could not recognize format in post ' . $postId . ': ' . $node[self::IMPORT_KEY_EXERCISE]->textContent . "\n\n";
+            }
+        }
+        return $exercises;
     }
 }

@@ -27,8 +27,11 @@ $request = Request::create('/' . $argv[1] . '/', 'GET', array_slice($argv, 2));
 try {
     $response = $app->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
 } catch (Exception $e) {
-    print 'Uncaught exception ' . get_class($e) . ' (' . $e->getCode() . '): "' . $e->getMessage() . '"' . "\n" .
-        $e->getTraceAsString() . "\n";
+    print 'Uncaught exception:' . "\n";
+    for (; $e instanceof Exception; $e = $e->getPrevious()) {
+        print get_class($e) . ' (' . $e->getCode() . '): "' . $e->getMessage() . '"' . "\n" .
+            $e->getTraceAsString() . "\n\n";
+    }
     die;
 }
 print $response->getContent() . "\n";
