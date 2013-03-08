@@ -14,8 +14,9 @@ class Product extends Type
     
     public function __construct (Service $service, array $multipliers)
     {
-        $this->service      = $service;
-        $this->multipliers  = $multipliers;
+        parent::__construct($service);
+        
+        $this->multipliers = $multipliers;
     }
     
     public function each()
@@ -44,19 +45,26 @@ class Product extends Type
     
     public function fromPrimitive($primitive)
     {
-        $values = [];
         foreach ($this->multipliers as $multiplierIndex => $multiplier) {
-            $value = $multiplier->fromPrimitive($primitive[$multiplierIndex]);
-            if (! $value) {
+            if (! $multiplier->fromPrimitive($primitive[$multiplierIndex])) {
                 return null;
             }
-            $values[$multiplierIndex] = $value;
         }
-        return new Value($this, $values);
+        return new Value($this, $primitive);
     }
     
     public function fromView($view, $presentation)
     {
+        // TODO: Научить типы откусывать от представления столько, сколько надо.
+    }
+    
+    public function toView($view, $primitive)
+    {
+        $presentation = [];
+        foreach ($this->multipliers as $multiplierIndex => $multiplier) {
+            $presentation[] = $multiplier->toView($view, $primitive[$multiplierIndex]);
+        }
+        return implode('', $presentation);
     }
     
     // private //
