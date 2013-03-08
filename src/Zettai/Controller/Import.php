@@ -8,88 +8,48 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Import implements ControllerProviderInterface
 {
+    // const //
+    
+    const IMPORT_XPATH_POSTS   = '/html/body/form[@id="delete_form"]/div[@class="thread"]/table[substring(@id,1,5)="post_"]';
+    const IMPORT_XPATH_MESSAGE = 'tbody/tr/td[@class="reply"]/div[@class="postbody"]/div[@class="message"]';
+    const IMPORT_KEY_ID       = __LINE__;
+    const IMPORT_KEY_EXERCISE = __LINE__;
+    const IMPORT_KEY_ANSWER   = __LINE__;
+    
     // public : ControllerProviderInterface //
     
     public function connect(Application $app)
     {
-        $this->app = $app;
         $controllers = $app['controllers_factory'];
-        $controllers->get('/', function (Request $request) use  {
+        $controller->error(function (Exception $exception) {
+            return $this->error($exception);
+        });
+        $controllers->get('/', function (Request $request) {
             return $this->import($request);
         });
         return $controllers;
     }
     
-    // private //
+    // private : error handlers //
+    
+    private function error(Exception $exception)
+    {
+        switch ($exception->getCode()) {
+            case Exception::IMPORT_FILENAME_EMPTY:
+                return
+                    'USAGE: run.sh import FILENAME' . "\n" .
+                    'OR:    run.sh import URL';
+            case Exception::IMPORT_FILE_UNREACHABLE:
+                return 'File is unreachable: ' . $exception->getMessage();
+        }
+        throw $exception;
+    }
+    
+    // private : controllers //
     
     private function import (Request $request)
     {
-        // Прочитать либо имя файла, либо адрес треда из параметров.
-        $filepath = $request->query->get(0);
-        if (empty ($filepath)) {
-            return
-                'USAGE: run.sh import FILENAME' . "\n" .
-                'OR:    run.sh import URL';
-        }
-        
-        // Достать содержимое.
-        try {
-            $contents = file_get_contents($filepath);
-        } catch (AnyException $e) {
-            throw new Exception('Could not get contents of "' . $filepath . '"', Exception::IMPORT_FILE_UNREACHABLE, $e);
-        }
-        unset($filepath);
-        
-        // Загрузить содержимое в документ.
-        libxml_use_internal_errors(true);
-        $document = new DomDocument();
-        $document->loadHTML($contents);
-        $xpath = new DomXPath($document);
-        $posts = $xpath->query('/html/body/form[@id="delete_form"]/div[@class="thread"]/table[substring(@id,1,5)="post_"]');
-        unset($document);
-        
-        // Найти посты с задачами и ответами.
-        /**
-         * [<postId> => ['exerciseId' => <exerciseId>, 'messageNode' => <messageNode>]]
-        **/
-        $excerciseMessages = [];
-        /**
-         * [<exerciseId> => <messageNode>]
-        **/
-        $answerMessages = [];
-        foreach ($posts as $post) {
-            // Выбрать айдишник поста.
-            if (! preg_match('/^post_(\d+)$/', $post->attributes->getNamedItem('id')->nodeValue, $matches)) {
-                continue;
-            }
-            $postId = intval($matches[1]);
-            unset ($matches);
-            
-            // Выбрать узел с сообщением.
-            $messageNodes = $xpath->query('tbody/tr/td[@class="reply"]/div[@class="postbody"]/div[@class="message"]', $post);
-            if ($messageNodes->length !== 1) {
-                continue;
-            }
-            $messageNode = $messageNodes->item(0);
-            unset ($messageNodes);
-            
-            // Определить задачу или ответ.
-            if (preg_match('/^\s*Задача №(\d{3})/', $messageNode->textContent, $matches)) {
-                $excerciseMessages[$postId] = [
-                    'exerciseId'  => intval($matches[1]),
-                    'messageNode' => $messageNode,
-                ];
-            } else {
-                if (preg_match('/^\s*>>(\d+)\s*Правильный ответ:/s', $messageNode->textContent, $matches)) {
-                    $parentPostId = intval($matches[1]);
-                    if (isset($excerciseMessages[$parentPostId])) {
-                        $answerMessages[$excerciseMessages[$parentPostId]['exerciseId']] = $messageNode;
-                    }
-                }
-            }
-            unset ($messageNode, $matches, $postId, $parentPostId);
-        }
-        unset($xpath, $posts, $post);
+        $nodes = $this->getExerciseNodes($this->getXPath($this->getContents($request)));
         
         // Разобрать тексты задач и ответов.
         /**
@@ -149,5 +109,80 @@ class Import implements ControllerProviderInterface
             }
         }
         return 'done';
+    }
+    
+    // private : helpers //
+    
+    private function getXPath(Request $request)
+    {
+        // Прочитать либо имя файла, либо адрес треда из параметров.
+        $filepath = $request->query->get(0);
+        if (empty ($filepath)) {
+            throw new Exception('Filename is empty', Exception::IMPORT_FILENAME_EMPTY);
+        }
+        
+        // Достать содержимое.
+        try {
+            $contents = file_get_contents($filepath);
+        } catch (AnyException $exception) {
+            throw new Exception('Could not get contents of "' . $filepath . '"', Exception::IMPORT_FILE_UNREACHABLE, $exception);
+        }
+        
+        return $contents;
+    }
+    
+    /**
+     * Загружает содержимое в документ и возвращает объект выборки по xpath.
+    **/
+    private function getXPath($contents)
+        libxml_use_internal_errors(true);
+        $document = new DomDocument();
+        $document->loadHTML($contents);
+        return new DomXPath($document);
+    }
+
+    /**
+     *  @return [<postId> => [
+     *      self::IMPORT_KEY_ID       => <exerciseId>,
+     *      self::IMPORT_KEY_EXERCISE => <exerciseNode>,
+     *      self::IMPORT_KEY_ANSWER   => <answerNode>,
+     *  ]]
+    **/
+    private function getExerciseNodes($xpath)
+    {
+        $exerciseNodes = [];
+        foreach ($xpath->query(self::IMPORT_XPATH_POSTS) as $post) {
+            // Выбрать айдишник поста.
+            if (! preg_match('/^post_(\d+)$/', $post->attributes->getNamedItem('id')->nodeValue, $matches)) {
+                continue;
+            }
+            $postId = intval($matches[1]);
+            unset ($matches);
+            
+            // Выбрать узел с сообщением.
+            $messageNodes = $xpath->query(self::IMPORT_XPATH_MESSAGE, $post);
+            if ($messageNodes->length !== 1) {
+                continue;
+            }
+            $messageNode = $messageNodes->item(0);
+            unset ($messageNodes);
+            
+            // Определить задачу или ответ.
+            if (preg_match('/^\s*Задача №(\d{3})/', $messageNode->textContent, $matches)) {
+                $excerciseMessages[$postId] = [
+                    self::IMPORT_KEY_ID       => intval($matches[1]),
+                    self::IMPORT_KEY_EXERCISE => $messageNode,
+                ];
+            } else {
+                if (preg_match('/^\s*>>(\d+)\s*Правильный ответ:/s', $messageNode->textContent, $matches)) {
+                    $parentPostId = intval($matches[1]);
+                    if (isset($excerciseMessages[$parentPostId])) {
+                        $excerciseMessages[$parentPostId][self::IMPORT_KEY_ANSWER] = $messageNode;
+                    }
+                }
+            }
+            unset ($messageNode, $matches, $postId, $parentPostId);
+        }
+        return $exerciseNodes;
     }
 }
