@@ -16,7 +16,9 @@ class Product extends Type
     {
         parent::__construct($service);
         
-        $this->multipliers = $multipliers;
+        foreach ($multipliers as $index => $multiplier) {
+            $this->multipliers[$index] = $service->type($multiplier);
+        }
     }
     
     public function each()
@@ -65,7 +67,7 @@ class Product extends Type
                 return null;
             }
             $values[$index] = $value;
-            $presentation = substr($presentation, $multiplier->toView($view, $value));
+            $presentation = substr($presentation, strlen($value->toView($view)));
         }
         return new Value($this, $values);
     }

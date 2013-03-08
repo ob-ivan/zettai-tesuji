@@ -81,17 +81,9 @@ class Service implements ArrayAccess, ServiceInterface
         return $this[$name];
     }
     
-    /**
-     * Создаёт новый перечислимый тип.
-     *
-     *  @param  [<viewIndex> => <viewValue>]                        $views
-     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
-     *
-     *  @return Enum
-    **/
-    public function enum(array $views, array $values)
+    public function enum(array $values)
     {
-        return new Enum($this, $views, $values);
+        return new Enum($this, $values);
     }
     
     /**
@@ -120,6 +112,22 @@ class Service implements ArrayAccess, ServiceInterface
         return new Product($this, func_get_args());
     }
     
+    public function singleton($value)
+    {
+        return new Singleton($this, $value);
+    }
+    
+    public function type($candidate)
+    {
+        if ($candidate instanceof TypeInterface) {
+            return $candidate;
+        }
+        if (is_array($candidate)) {
+            return $this->enum($candidate);
+        }
+        return $this->singleton($candidate);
+    }
+    
     /**
      * Создаёт новый тип объединения.
      *
@@ -131,5 +139,18 @@ class Service implements ArrayAccess, ServiceInterface
     public function union()
     {
         return new Union($this, func_get_args());
+    }
+    
+    /**
+     * Создаёт новый перечислимый тип с настраиваемым представлением.
+     *
+     *  @param  [<viewIndex> => <viewValue>]                        $views
+     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
+     *
+     *  @return Viewable
+    **/
+    public function viewable(array $views, array $values)
+    {
+        return new Viewable($this, $views, $values);
     }
 }

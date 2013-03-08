@@ -47,14 +47,14 @@
             <label>
                 Сдача:
                 <select name="kyoku">
-                    {% for kyoku in KYOKUS %}
+                    {% for primitive, kyoku in app.types.kyoku.each %}
                         <option
-                            value="{{ kyoku }}"
-                            {% if kyoku == exercise.content.kyoku %}
+                            value="{{ primitive }}"
+                            {% if kyoku.equals(exercise.content.kyoku) %}
                                 selected
                             {% endif %}
                         >
-                            {{ kyoku|kyoku }}
+                            {{ kyoku.toRussian }}
                         </option>
                     {% endfor %}
                 </select>

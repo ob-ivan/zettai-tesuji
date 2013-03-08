@@ -50,10 +50,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
         return $app['types']->wind->from($wind)->toRussian();
     }));
     $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app) {
-        if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
-            return $kyoku;
-        }
-        return $app['types']->wind->from($matches[1])->toRussian() . '-' . $matches[2];
+        return $app['types']->kyoku->from($kyoku)->toRussian();
     }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
@@ -78,8 +75,8 @@ $app['types'] = $app->share(function () {
         ['w', 'west',  'з', 'запад'],
         ['n', 'north', 'с', 'север'],
     ]);
+    $service['kyoku'] = $service->product($service['wind'], '-', range(1, 4));
     /*
-    $service['kyoku'] = $service->product($service['wind'], '-', array_range(1, 4));
     $service['suit'] = $service->enum([
         $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
     ], [
@@ -252,7 +249,6 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'csrf'        => $app['csrf']->generate($csrfKey),
             'exercise'    => $exercise,
             'errors'      => $errors,
-            'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
             'TILES'       => Zettai\Tile::$TILES,
         ]);
     };
@@ -292,7 +288,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
-                'kyoku'         => $request->request->get('kyoku'),
+                'kyoku'         => $app['types']->kyoku->from($request->request->get('kyoku'))->toEnglish(),
                 'position'      => $app['types']->wind->from($request->request->get('position'))->toEnglish(),
                 'turn'          => $request->request->get('turn'),
                 'dora'          => $request->request->get('dora'),

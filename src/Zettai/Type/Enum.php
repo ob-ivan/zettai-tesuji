@@ -3,33 +3,18 @@ namespace Zettai\Type;
 
 class Enum extends Type
 {
-    // var //
-    
-    private $views  = [];
-    private $values = [];
-    
-    // public //
-    
     /**
-     *  @param  [<viewIndex> => <viewValue>]                        $views
-     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
+     *  @var [<index> => <value>]
     **/
-    public function __construct(Service $service, array $views, array $values)
+    private $values;
+    
+    public function __construct (Service $service, array $values)
     {
         parent::__construct($service);
         
-        $this->views   = $views;
-        $this->values  = $values;
+        $this->values = $values;
     }
     
-    /**
-     * Возвращает список значений как объектов.
-     *
-     * TODO: Добавить обработку коллбэком.
-     * TODO: Кэшировать отдачу.
-     *
-     *  @return [Value]
-    **/
     public function each()
     {
         $return = [];
@@ -39,21 +24,13 @@ class Enum extends Type
         return $return;
     }
     
-    /**
-     * TODO: Кэшировать отображение.
-    **/
     public function fromView($view, $presentation)
     {
-        $viewIndex = $this->getViewIndex($view);
-        if (false === $viewIndex) {
+        $index = array_search($presentation, $this->values);
+        if (false === $index) {
             return null;
         }
-        foreach ($this->values as $primitive => $views) {
-            if (0 === strpos($presentation, $views[$viewIndex])) {
-                return $this->fromPrimitive($primitive);
-            }
-        }
-        return null;
+        return $this->fromPrimitive($index);
     }
     
     public function fromPrimitive($primitive)
@@ -66,21 +43,12 @@ class Enum extends Type
     
     public function toView($view, $primitive)
     {
-        $viewIndex = $this->getViewIndex($view);
-        if (false === $viewIndex) {
-            throw new Exception('View "' . $viewName . '" is not supported by this type', Exception::ENUM_TO_VIEW_UNSUPPORTED_VIEW);
+        if (! isset($this->values[$primitive])) {
+            throw new Exception(
+                'Unknown value "' . $primitive . '"',
+                Exception::ENUM_TO_VIEW_UNSUPPORTED_PRIMITIVE
+            );
         }
-        if (! isset($this->values[$primitive][$viewIndex])) {
-            throw new Exception('View "' . $viewName . '" is not supported for this value', Exception::ENUM_TO_VIEW_UNSUPPORTED_PRIMITIVE);
-        }
-        return $this->values[$primitive][$viewIndex];
-    }
-    
-    // private //
-    
-    private function getViewIndex($view)
-    {
-        // TODO: Кэшировать отдачу.
-        return array_search($view, $this->views);
+        return $this->values[$primitive];
     }
 }
