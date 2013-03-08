@@ -46,24 +46,14 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
     // фильтры //
     
-    $windName = function ($wind) {
-        switch ($wind) {
-            case 'east':  return 'восток';
-            case 'south': return 'юг';
-            case 'west':  return 'запад';
-            case 'north': return 'север';
-        }
-        return $wind;
-    };
-    
-    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app, $windName) {
-        return $windName($wind);
+    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app) {
+        return $app['types']->wind->from($wind)->toRussian();
     }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $windName) {
+    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app) {
         if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
             return $kyoku;
         }
-        return $windName($matches[1]) . '-' . $matches[2];
+        return $app['types']->wind->from($matches[1])->toRussian() . '-' . $matches[2];
     }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
@@ -88,6 +78,7 @@ $app['types'] = $app->share(function () {
         ['w', 'west',  'з', 'запад'],
         ['n', 'north', 'с', 'север'],
     ]);
+    /*
     $service['kyoku'] = $service->product($service['wind'], '-', array_range(1, 4));
     $service['suit'] = $service->enum([
         $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
@@ -118,6 +109,7 @@ $app['types'] = $app->share(function () {
     ->setToView(function ($view, $primitive) {
         // Описываем алгоритм построения представления заданного вида из примитивного значения.
     });
+    */
     return $service;
 });
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
@@ -261,7 +253,6 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'exercise'    => $exercise,
             'errors'      => $errors,
             'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
-            'WINDS'       => array_keys(Zettai\Exercise::$WINDS),
             'TILES'       => Zettai\Tile::$TILES,
         ]);
     };
@@ -302,7 +293,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
                 'kyoku'         => $request->request->get('kyoku'),
-                'position'      => $request->request->get('position'),
+                'position'      => $app['types']->wind->from($request->request->get('position'))->toEnglish(),
                 'turn'          => $request->request->get('turn'),
                 'dora'          => $request->request->get('dora'),
                 'score'         => $request->request->get('score'),

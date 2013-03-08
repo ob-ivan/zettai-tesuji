@@ -49,7 +49,7 @@ class Service implements ArrayAccess, ServiceInterface
         if (! $value instanceof TypeInterface) {
             throw new Exception('Value must implement TypeInterface for offset "' . $offset . '"', Exception::SERVICE_SET_VALUE_WRONG_TYPE);
         }
-        return $this->types[$offset];
+        $this->types[$offset] = $value;
     }
     
     public function offsetUnset($offset)
@@ -74,6 +74,11 @@ class Service implements ArrayAccess, ServiceInterface
     }
     
     // public : Service //
+    
+    public function __get($name)
+    {
+        return $this[$name];
+    }
     
     /**
      * Создаёт новый перечислимый тип.

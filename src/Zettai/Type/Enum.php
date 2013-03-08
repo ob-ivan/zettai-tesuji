@@ -34,7 +34,7 @@ class Enum extends Type
                     Exception::ENUM_FROM_VIEW_ARGUMENT_ABSENT
                 );
             }
-            $view = $service->getViewByName($matches[1]);
+            $view = $this->service->getViewByName($matches[1]);
             if (! $view) {
                 throw new Exception(
                     'Unknown view "' . $matches[1] . '"',
@@ -81,6 +81,12 @@ class Enum extends Type
     **/
     public function from($input)
     {
+        // Попробовать примитивное значение.
+        $fromPrimitive = $this->fromPrimitive($input);
+        if ($fromPrimitive) {
+            return $fromPrimitive;
+        }
+        // Поискать среди представлений.
         foreach ($this->service->getViews() as $view) {
             $candidate = $this->fromView($view, $input);
             if ($candidate) {
@@ -96,11 +102,11 @@ class Enum extends Type
     public function fromView($view, $input)
     {
         $viewIndex = $this->getViewIndex($view);
-        if (! $viewIndex) {
+        if (false === $viewIndex) {
             return null;
         }
         foreach ($this->values as $primitive => $views) {
-            if ($views[$viewIndex] === $args[0]) {
+            if ($views[$viewIndex] === $input) {
                 return $this->fromPrimitive($primitive);
             }
         }
@@ -115,14 +121,24 @@ class Enum extends Type
         return new Value($this, $primitive);
     }
     
+    public function has($value)
+    {
+        if (! $value instanceof ValueInterface) {
+            return false;
+        }
+        return $value->is($this);
+    }
+    
     public function toViewByName($viewName, $primitive)
     {
-        $view = $service->getViewByName($viewName);
+        $view = $this->service->getViewByName($viewName);
         if (! $view) {
             throw new Exception('Unknown view name "' . $viewName . '"', Exception::ENUM_TO_VIEW_NAME_UNKNOWN);
         }
         $viewIndex = $this->getViewIndex($view);
-        if (! $viewIndex) {
+        if (false === $viewIndex) {
+            print '<pre>view = ' . $view . '</pre>'; // debug
+            print '<pre>this->views = ' . print_r($this->views, true) . '</pre>'; // debug
             throw new Exception('View "' . $viewName . '" is not supported by this type', Exception::ENUM_TO_VIEW_UNSUPPORTED_VIEW);
         }
         if (! isset($this->values[$primitive][$viewIndex])) {

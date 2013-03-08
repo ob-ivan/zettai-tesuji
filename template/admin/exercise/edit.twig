@@ -64,14 +64,14 @@
             <label>
                 Позиция:
                 <select name="position">
-                    {% for wind in WINDS %}
+                    {% for primitive, wind in app.types.wind.each %}
                         <option
-                            value="{{ wind }}"
-                            {% if wind == exercise.content.position %}
+                            value="{{ primitive }}"
+                            {% if wind.equals(exercise.content.position) %}
                                 selected
                             {% endif %}
                         >
-                            {{ wind|wind }}
+                            {{ wind.toRussian }}
                         </option>
                     {% endfor %}
                 </select>
