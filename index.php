@@ -78,6 +78,48 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;
 }));
+$app['types'] = $app->share(function () {
+    $service = new Zettai\Type\Service();
+    $service['wind'] = $service->enum([
+        $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
+    ], [
+        ['e', 'east',  'в', 'восток'],
+        ['s', 'south', 'ю', 'юг'],
+        ['w', 'west',  'з', 'запад'],
+        ['n', 'north', 'с', 'север'],
+    ]);
+    $service['kyoku'] = $service->product($service['wind'], '-', array_range(1, 4));
+    $service['suit'] = $service->enum([
+        $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
+    ], [
+        ['m', 'man', 'м', 'ман'],
+        ['p', 'pin', 'п', 'пин'],
+        ['s', 'sou', 'с', 'со'],
+    ]);
+    $service['dragon'] = $service->enum([
+        $service::ENG, $service::RUS, $service::RUSSIAN,
+    ], [
+        ['5z', 'Б', 'Белый'],
+        ['6z', 'З', 'Зелёный'],
+        ['7z', 'К', 'Красный'],
+    ]);
+    $service['tile'] = $service->union(
+        $service->product(
+            [1, 2, 3, 4, 0, 5, 6, 7, 8, 9],
+            $service['suit']
+        ),
+        $service['wind'],
+        $service['dragon']
+    );
+    $service['hand'] = $service->iteration($service['tile'])
+    ->setFromView(function ($view, $primitive) {
+        // Описываем алгоритм построения примитивного значения из представления.
+    })
+    ->setToView(function ($view, $primitive) {
+        // Описываем алгоритм построения представления заданного вида из примитивного значения.
+    });
+    return $service;
+});
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());
