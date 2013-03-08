@@ -24,7 +24,6 @@ class Enum extends Type
     /**
      * Волшебные методы:
      *  - from<View>($presentation)
-     *  - new<Primitive>()
     **/
     public function __call($name, $args)
     {
@@ -44,7 +43,7 @@ class Enum extends Type
             }
             return $this->fromView($view, $args[0]);
         }
-        // TODO: new<Primitive>
+        throw new Exception('Method "' . $name . '" is unknown', Exception::ENUM_CALL_METHOD_UNKNOWN);
     }
     
     /**
@@ -96,7 +95,7 @@ class Enum extends Type
     **/
     public function fromView($view, $input)
     {
-        $viewIndex = array_search($view, $this->views);
+        $viewIndex = $this->getViewIndex($view);
         if (! $viewIndex) {
             return null;
         }
@@ -114,5 +113,29 @@ class Enum extends Type
             return null;
         }
         return new Value($this, $primitive);
+    }
+    
+    public function toViewByName($viewName, $primitive)
+    {
+        $view = $service->getViewByName($viewName);
+        if (! $view) {
+            throw new Exception('Unknown view name "' . $viewName . '"', Exception::ENUM_TO_VIEW_NAME_UNKNOWN);
+        }
+        $viewIndex = $this->getViewIndex($view);
+        if (! $viewIndex) {
+            throw new Exception('View "' . $viewName . '" is not supported by this type', Exception::ENUM_TO_VIEW_UNSUPPORTED_VIEW);
+        }
+        if (! isset($this->values[$primitive][$viewIndex])) {
+            throw new Exception('View "' . $viewName . '" is not supported for this value', Exception::ENUM_TO_VIEW_UNSUPPORTED_PRIMITIVE);
+        }
+        return $this->values[$primitive][$viewIndex];
+    }
+    
+    // private //
+    
+    private function getViewIndex($view)
+    {
+        // TODO: Кэшировать отдачу.
+        return array_search($view, $this->views);
     }
 }
