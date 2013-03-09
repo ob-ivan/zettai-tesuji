@@ -91,11 +91,11 @@ $app['types'] = $app->share(function () {
         ['s', 'sou', 's', 'со',  'с'],
     ]);
     $dragon = $service->viewable([
-        'Tile', 'Russian', 'Rus',
+        'Tile', 'English', 'Eng', 'Russian', 'Rus',
     ], [
-        ['5z', 'Белый',   'Б'],
-        ['6z', 'Зелёный', 'З'],
-        ['7z', 'Красный', 'К'],
+        ['5z', 'White', 'W', 'Белый',   'Б'],
+        ['6z', 'Green', 'G', 'Зелёный', 'З'],
+        ['7z', 'Red',   'R', 'Красный', 'К'],
     ]);
     $service['tile'] = $service->union(
         $service->product(
@@ -106,7 +106,7 @@ $app['types'] = $app->share(function () {
         $dragon
     );
     /*
-    $service['hand'] = $service->iteration($service['tile'])
+    $service['hand'] = $service->sequence($service['tile'])
     ->setFromView(function ($view, $presentation) {
         // Описываем алгоритм построения примитивного значения из представления.
     })

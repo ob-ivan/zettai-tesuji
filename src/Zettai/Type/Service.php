@@ -75,17 +75,6 @@ class Service implements ArrayAccess, ServiceInterface
     }
     
     /**
-     * Создаёт новый тип, применяя звёздочку Клини к заданному типу.
-     *
-     *  @param  TypeInterface   $type
-     *  @return Iteration
-    **/
-    public function iteration(TypeInterface $type)
-    {
-        return new Iteration($this, $type);
-    }
-    
-    /**
      * Создаёт новый тип декартова произведения.
      *
      * Может быть сколько угодно параметров:
@@ -98,6 +87,17 @@ class Service implements ArrayAccess, ServiceInterface
     public function product()
     {
         return new Product($this, func_get_args());
+    }
+    
+    /**
+     * Создаёт новый тип конечных последовательностей из элементов указанного типа.
+     *
+     *  @param  TypeInterface   $type
+     *  @return Sequence
+    **/
+    public function sequence(TypeInterface $type)
+    {
+        return new Sequence($this, $type);
     }
     
     public function singleton($value)
