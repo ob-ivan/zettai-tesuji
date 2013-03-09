@@ -48,7 +48,7 @@ class Product extends Type
         }
         $return = [];
         for ($seed = 0; $seed < $totalCount; ++$seed) {
-            $primitive = $this->pack($seed, $counts);
+            $primitive = $this->pack($seed, $counts, $primitives);
             $return[$primitive] = $this->fromPrimitive($primitive);
         }
         return $return;
@@ -115,13 +115,14 @@ class Product extends Type
     // private //
     
     /**
-     *  @return [<index> => <0 .. counts[index]>]
+     *  @return [<index> => primitives[index][0 .. counts[index]]]
     **/
-    private function pack($seed, $counts)
+    private function pack($seed, $counts, $primitives)
     {
         $key = [];
         for ($i = count($counts) - 1; $i >= 0; --$i) {
-            $key[$i] = $seed % $counts[$i];
+            $rem = $seed % $counts[$i];
+            $key[$i] = $primitives[$i][$rem];
             $seed -= $key[$i];
             $seed /= $counts[$i];
         }

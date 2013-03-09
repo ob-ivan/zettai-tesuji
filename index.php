@@ -80,7 +80,7 @@ $app['types'] = $app->share(function () {
         ['n', 'north', 'с', 'север'],
     ]);
     $service['wind'] = $service->union($roundWind, $squareWind);
-    $service['kyoku'] = $service->product($service['wind'], '-', range(1, 4));
+    $service['kyoku'] = $service->product($roundWind, '-', range(1, 4));
     /*
     $service['suit'] = $service->viewable([
         $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,

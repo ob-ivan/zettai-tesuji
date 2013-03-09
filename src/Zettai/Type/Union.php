@@ -30,23 +30,67 @@ class Union extends Type
     {
         $return = [];
         foreach ($this->variants as $index => $variant) {
-            foreach ($variant->each as $subprimitive => $value) {
-                $primitive = $this->pack($index, $subprimitive);
-                $return[$primitive] = $this->fromPrimitive($primitive);
+            foreach ($variant->each() as $primitive => $value) {
+                $external = $this->pack($index, $primitive);
+                $return[$external] = $this->fromPrimitive($external);
             }
         }
         return $return;
     }
     
-    public function fromPrimitive($primitive)
+    public function equals($a, $b)
     {
-        $map = json_decode($primitive);
-        foreach ($map as $index => $subprimitive) {
+        foreach ($a as $index => $value) {
+            if (! isset($b[$index])) {
+                return false;
+            }
+            if (! $value->equals($b[$index])) {
+                return false;
+            }
+        }
+        foreach ($b as $index => $value) {
+            if (! isset($a[$index])) {
+                return false;
+            }
+            if (! $value->equals($a[$index])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public function fromPrimitive($external)
+    {
+        $map = json_decode($external);
+        if (! (is_array($map) || is_object($map))) {
+            return null;
+        }
+        foreach ($map as $index => $primitive) {
             if (isset($this->variants[$index])) {
-                return new Value($this, [$index => $this->variants->fromPrimitive($subprimitive)]);
+                $internal = [$index => $this->variants[$index]->fromPrimitive($primitive)];
+                return new Value($this, $internal);
             }
         }
         return null;
+    }
+    
+    public function fromView($view, $presentation)
+    {
+        foreach ($this->variants as $index => $variant) {
+            $candidate = $variant->fromView($view, $presentation);
+            if ($candidate) {
+                $internal = [$index => $candidate];
+                return new Value($this, $internal);
+            }
+        }
+        return null;
+    }
+    
+    public function toView($view, $internal)
+    {
+        foreach ($internal as $index => $value) {
+            return $value->toView($view);
+        }
     }
     
     // private //
