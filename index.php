@@ -84,14 +84,14 @@ $app['types'] = $app->share(function () {
     $service['wind'] = $service->union($roundWind, $squareWind);
     $service['kyoku'] = $service->product($roundWind, '-', range(1, 4));
     /*
-    $service['suit'] = $service->viewable([
+    $suit = $service->viewable([
         $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
     ], [
         ['m', 'man', 'м', 'ман'],
         ['p', 'pin', 'п', 'пин'],
         ['s', 'sou', 'с', 'со'],
     ]);
-    $service['dragon'] = $service->viewable([
+    $dragon = $service->viewable([
         $service::ENG, $service::RUS, $service::RUSSIAN,
     ], [
         ['5z', 'Б', 'Белый'],
@@ -101,10 +101,10 @@ $app['types'] = $app->share(function () {
     $service['tile'] = $service->union(
         $service->product(
             [1, 2, 3, 4, 0, 5, 6, 7, 8, 9],
-            $service['suit']
+            $suit
         ),
         $service['wind'],
-        $service['dragon']
+        $dragon
     );
     $service['hand'] = $service->iteration($service['tile'])
     ->setFromView(function ($view, $primitive) {
