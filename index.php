@@ -105,13 +105,25 @@ $app['types'] = $app->share(function () {
         $service['wind'],
         $dragon
     );
-    $tileSequence = $service->sequence($service['tile']);
+    $service['tileSequence'] = $service->sequence($service['tile'])
+    ->beforeFromView(function ($presentation) {
+        $prepared = [];
+        while (! empty($presentation)) {
+            $presentation = trim($presentation);
+            if (preg_match('/(\d+)(\D*)/', $presentation, $matches)) {
+                for ($i = 0, $count = strlen($matches[1]); $i < $count; ++$i) {
+                    $prepared[] = $matches[1][$i] . $matches[2];
+                }
+                $presentation = substr($presentation, strlen($matches[0]));
+            } elseif (preg_match('/\D+/', $presentation, $matches)) {
+                $prepared[] = $matches[0];
+                $presentation = substr($presentation, strlen($matches[0]));
+            }
+        }
+        return preg_replace('/\s+/', '', implode('', $prepared));
+    });
     /*
-    ->setFromView(function ($view, $presentation) {
-        // Описываем алгоритм построения примитивного значения из представления.
-    })
-    ->setToView(function ($view, $primitive) {
-        // Описываем алгоритм построения представления заданного вида из примитивного значения.
+    ->afterToView(function ($presentation) {
     });
     */
     return $service;

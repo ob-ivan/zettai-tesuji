@@ -18,11 +18,27 @@ class Sequence extends Type
     **/
     private $element;
     
+    /**
+     * Разнообразные внедряемые обработчики.
+     *
+     *  @var [<string eventName> => [<callable Hook>]]
+    **/
+    private $hooks = [];
+    
     public function __construct(Service $service, $element)
     {
         parent::__construct($service);
         
         $this->element = $service->type($element);
+    }
+    
+    public function beforeFromView($hook)
+    {
+        if (! isset($this->hooks['beforeFromView'])) {
+            $this->hooks['beforeFromView'] = [];
+        }
+        $this->hooks['beforeFromView'][] = $hook;
+        return $this;
     }
     
     public function equals($a, $b)
@@ -53,6 +69,9 @@ class Sequence extends Type
     
     public function fromView($view, $presentation)
     {
+        foreach ($this->getHooks('beforeFromView') as $hook) {
+            $presentation = $hook($presentation);
+        }
         $internal = [];
         while (! empty($presentation)) {
             $candidate = $this->element->fromView($view, $presentation);
@@ -76,5 +95,15 @@ class Sequence extends Type
             $presentation[] = $value->toView($view);
         }
         return implode('', $presentation);
+    }
+    
+    // private //
+    
+    private function getHooks($eventName)
+    {
+        if (! isset($this->hooks[$eventName])) {
+            return [];
+        }
+        return $this->hooks[$eventName];
     }
 }
