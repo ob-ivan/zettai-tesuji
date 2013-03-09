@@ -41,10 +41,40 @@ class Sequence extends Type
     public function fromPrimitive($external)
     {
         $primitives = json_decode($external);
+        if (! (is_array($primitives) || is_object($primitives))) {
+            return null;
+        }
         $internal = [];
         foreach ($primitives as $index => $primitive) {
             $internal[$index] = $this->element->fromPrimitive($primitive);
         }
         return new Value($this, $internal);
+    }
+    
+    public function fromView($view, $presentation)
+    {
+        $internal = [];
+        while (! empty($presentation)) {
+            $candidate = $this->element->fromView($view, $presentation);
+            if (! $candidate) {
+                break;
+            }
+            $internal[] = $candidate;
+            $prevLength = strlen($presentation);
+            $presentation = substr($presentation, strlen($candidate->toView($view)));
+            if ($prevLength >= strlen($presentation)) {
+                break;
+            }
+        }
+        return new Value($this, $internal);
+    }
+    
+    public function toView($view, $internal)
+    {
+        $presentation = [];
+        foreach ($internal as $index => $value) {
+            $presentation[] = $value->toView($view);
+        }
+        return implode('', $presentation);
     }
 }

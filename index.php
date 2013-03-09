@@ -105,8 +105,8 @@ $app['types'] = $app->share(function () {
         $service['wind'],
         $dragon
     );
+    $tileSequence = $service->sequence($service['tile']);
     /*
-    $service['hand'] = $service->sequence($service['tile'])
     ->setFromView(function ($view, $presentation) {
         // Описываем алгоритм построения примитивного значения из представления.
     })
