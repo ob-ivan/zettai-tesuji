@@ -8,27 +8,14 @@ use ArrayAccess;
 
 class Service implements ArrayAccess, ServiceInterface
 {
-    // cosnt //
-    
-    // TODO: Заменить на перечисление, передаваемое в конструктор.
-    const ENGLISH   = __LINE__;
-    const ENG       = __LINE__;
-    const RUSSIAN   = __LINE__;
-    const RUS       = __LINE__;
-    
-    private static $VIEWS = [
-        self::ENGLISH,
-        self::ENG,
-        self::RUSSIAN,
-        self::RUS,
-    ];
-    
     // var //
     
     /**
      * @var [<name> => <TypeInterface>]
     **/
     private $types = [];
+    
+    private $views;
     
     // public : ArrayAccess //
     
@@ -60,18 +47,19 @@ class Service implements ArrayAccess, ServiceInterface
     
     // public : ServiceInterface //
     
-    public function getViewByName($viewName)
+    public function __construct(array $views)
     {
-        $constant = __CLASS__ . '::' . strtoupper($viewName);
-        if (! defined($constant)) {
-            return null;
-        }
-        return constant($constant);
+        $this->views = $this->type($views);
     }
     
     public function getViews()
     {
-        return self::$VIEWS;
+        return $this->views->each();
+    }
+    
+    public function getViewByName($name)
+    {
+        return $this->views->from($name);
     }
     
     // public : Service //

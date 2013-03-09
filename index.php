@@ -66,18 +66,20 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     return $twig;
 }));
 $app['types'] = $app->share(function () {
-    $service = new Zettai\Type\Service();
+    $service = new Zettai\Type\Service([
+        'English', 'Eng', 'Russian', 'Rus'
+    ]);
     $roundWind = $service->viewable([
-        $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
+        'English', 'Eng', 'Russian', 'Rus'
     ], [
-        ['e', 'east',  'в', 'восток'],
-        ['s', 'south', 'ю', 'юг'],
+        ['east',  'e', 'восток', 'в'],
+        ['south', 's', 'юг',     'ю'],
     ]);
     $squareWind = $service->viewable([
-        $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
+        'English', 'Eng', 'Russian', 'Rus'
     ], [
-        ['w', 'west',  'з', 'запад'],
-        ['n', 'north', 'с', 'север'],
+        ['west',  'w', 'запад', 'з'],
+        ['north', 'n', 'север', 'с'],
     ]);
     $service['wind'] = $service->union($roundWind, $squareWind);
     $service['kyoku'] = $service->product($roundWind, '-', range(1, 4));

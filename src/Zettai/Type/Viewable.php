@@ -11,7 +11,7 @@ class Viewable extends Type
     // public //
     
     /**
-     *  @param  [<viewIndex> => <viewValue>]                        $views
+     *  @param  [<viewIndex> => <viewName>]                         $views
      *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
     **/
     public function __construct(Service $service, array $views, array $values)
@@ -87,6 +87,6 @@ class Viewable extends Type
     private function getViewIndex($view)
     {
         // TODO: Кэшировать отдачу.
-        return array_search($view, $this->views);
+        return array_search($view->toView('whatever'), $this->views);
     }
 }
