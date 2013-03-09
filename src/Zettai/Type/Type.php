@@ -97,4 +97,9 @@ abstract class Type implements TypeInterface
         }
         return $this->toView($view, $primitive);
     }
+    
+    public function value($internal)
+    {
+        return new Value($this, $internal);
+    }
 }

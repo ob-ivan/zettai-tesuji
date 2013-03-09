@@ -68,7 +68,7 @@ class Union extends Type
         foreach ($map as $index => $primitive) {
             if (isset($this->variants[$index])) {
                 $internal = [$index => $this->variants[$index]->fromPrimitive($primitive)];
-                return new Value($this, $internal);
+                return $this->value($internal);
             }
         }
         return null;
@@ -80,7 +80,7 @@ class Union extends Type
             $candidate = $variant->fromView($view, $presentation);
             if ($candidate) {
                 $internal = [$index => $candidate];
-                return new Value($this, $internal);
+                return $this->value($internal);
             }
         }
         return null;

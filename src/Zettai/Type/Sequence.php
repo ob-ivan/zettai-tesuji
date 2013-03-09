@@ -48,7 +48,7 @@ class Sequence extends Type
         foreach ($primitives as $index => $primitive) {
             $internal[$index] = $this->element->fromPrimitive($primitive);
         }
-        return new Value($this, $internal);
+        return $this->value($internal);
     }
     
     public function fromView($view, $presentation)
@@ -66,7 +66,7 @@ class Sequence extends Type
                 break;
             }
         }
-        return new Value($this, $internal);
+        return $this->value($internal);
     }
     
     public function toView($view, $internal)

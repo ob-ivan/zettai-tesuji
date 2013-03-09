@@ -31,7 +31,7 @@ class Singleton extends Type
     
     public function fromPrimitive($primitive)
     {
-        return new Value($this, $primitive);
+        return $this->value(self::PRIMITIVE);
     }
     
     public function toView($view, $primitive)

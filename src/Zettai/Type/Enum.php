@@ -39,7 +39,7 @@ class Enum extends Type
         if (! isset($this->values[$primitive])) {
             return null;
         }
-        return new Value($this, $primitive);
+        return $this->value($primitive);
     }
     
     public function toView($view, $primitive)

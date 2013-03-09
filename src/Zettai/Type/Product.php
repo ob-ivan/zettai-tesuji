@@ -86,7 +86,7 @@ class Product extends Type
             }
             $values[$index] = $value;
         }
-        return new Value($this, $values);
+        return $this->value($values);
     }
     
     public function fromView($view, $presentation)
@@ -100,7 +100,7 @@ class Product extends Type
             $values[$index] = $value;
             $presentation = substr($presentation, strlen($value->toView($view)));
         }
-        return new Value($this, $values);
+        return $this->value($values);
     }
     
     public function toView($view, $values)
