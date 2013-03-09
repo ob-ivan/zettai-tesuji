@@ -67,36 +67,35 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 }));
 $app['types'] = $app->share(function () {
     $service = new Zettai\Type\Service([
-        'English', 'Eng', 'Russian', 'Rus'
+        'Tile', 'English', 'Eng', 'Russian', 'Rus'
     ]);
     $roundWind = $service->viewable([
-        'English', 'Eng', 'Russian', 'Rus'
+        'Tile', 'English', 'Eng', 'Russian', 'Rus'
     ], [
-        ['east',  'e', 'восток', 'в'],
-        ['south', 's', 'юг',     'ю'],
+        ['1z', 'east',  'e', 'восток', 'в'],
+        ['2z', 'south', 's', 'юг',     'ю'],
     ]);
     $squareWind = $service->viewable([
-        'English', 'Eng', 'Russian', 'Rus'
+        'Tile', 'English', 'Eng', 'Russian', 'Rus'
     ], [
-        ['west',  'w', 'запад', 'з'],
-        ['north', 'n', 'север', 'с'],
+        ['3z', 'west',  'w', 'запад', 'з'],
+        ['4z', 'north', 'n', 'север', 'с'],
     ]);
     $service['wind'] = $service->union($roundWind, $squareWind);
     $service['kyoku'] = $service->product($roundWind, '-', range(1, 4));
-    /*
     $suit = $service->viewable([
-        $service::ENG, $service::ENGLISH, $service::RUS, $service::RUSSIAN,
+        'Tile', 'English', 'Eng', 'Russian', 'Rus',
     ], [
-        ['m', 'man', 'м', 'ман'],
-        ['p', 'pin', 'п', 'пин'],
-        ['s', 'sou', 'с', 'со'],
+        ['m', 'man', 'm', 'ман', 'м'],
+        ['p', 'pin', 'p', 'пин', 'п'],
+        ['s', 'sou', 's', 'со',  'с'],
     ]);
     $dragon = $service->viewable([
-        $service::ENG, $service::RUS, $service::RUSSIAN,
+        'Tile', 'Russian', 'Rus',
     ], [
-        ['5z', 'Б', 'Белый'],
-        ['6z', 'З', 'Зелёный'],
-        ['7z', 'К', 'Красный'],
+        ['5z', 'Белый',   'Б'],
+        ['6z', 'Зелёный', 'З'],
+        ['7z', 'Красный', 'К'],
     ]);
     $service['tile'] = $service->union(
         $service->product(
@@ -106,8 +105,9 @@ $app['types'] = $app->share(function () {
         $service['wind'],
         $dragon
     );
+    /*
     $service['hand'] = $service->iteration($service['tile'])
-    ->setFromView(function ($view, $primitive) {
+    ->setFromView(function ($view, $presentation) {
         // Описываем алгоритм построения примитивного значения из представления.
     })
     ->setToView(function ($view, $primitive) {
