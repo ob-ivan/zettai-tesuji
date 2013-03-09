@@ -11,6 +11,8 @@ namespace Zettai\Type;
 
 class Sequence extends Type
 {
+    // var //
+    
     /**
      * Тип элемента последовательности.
      *
@@ -18,27 +20,13 @@ class Sequence extends Type
     **/
     private $element;
     
-    /**
-     * Разнообразные внедряемые обработчики.
-     *
-     *  @var [<string eventName> => [<callable Hook>]]
-    **/
-    private $hooks = [];
+    // public //
     
     public function __construct(Service $service, $element)
     {
         parent::__construct($service);
         
         $this->element = $service->type($element);
-    }
-    
-    public function beforeFromView($hook)
-    {
-        if (! isset($this->hooks['beforeFromView'])) {
-            $this->hooks['beforeFromView'] = [];
-        }
-        $this->hooks['beforeFromView'][] = $hook;
-        return $this;
     }
     
     public function equals($a, $b)
@@ -70,8 +58,9 @@ class Sequence extends Type
     public function fromView($view, $presentation)
     {
         foreach ($this->getHooks('beforeFromView') as $hook) {
-            $presentation = $hook($presentation);
+            $presentation = $hook($view, $presentation);
         }
+        
         $internal = [];
         while (! empty($presentation)) {
             $candidate = $this->element->fromView($view, $presentation);
@@ -81,7 +70,7 @@ class Sequence extends Type
             $internal[] = $candidate;
             $prevLength = strlen($presentation);
             $presentation = substr($presentation, strlen($candidate->toView($view)));
-            if ($prevLength >= strlen($presentation)) {
+            if ($prevLength <= strlen($presentation)) {
                 break;
             }
         }
@@ -90,20 +79,14 @@ class Sequence extends Type
     
     public function toView($view, $internal)
     {
-        $presentation = [];
+        $presentations = [];
         foreach ($internal as $index => $value) {
-            $presentation[] = $value->toView($view);
+            $presentations[] = $value->toView($view);
         }
-        return implode('', $presentation);
-    }
-    
-    // private //
-    
-    private function getHooks($eventName)
-    {
-        if (! isset($this->hooks[$eventName])) {
-            return [];
+        $presentation = implode('', $presentations);
+        foreach ($this->getHooks('afterToView') as $hook) {
+            $presentation = $hook($view, $presentation);
         }
-        return $this->hooks[$eventName];
+        return $presentation;
     }
 }

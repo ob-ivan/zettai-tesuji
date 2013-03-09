@@ -106,11 +106,13 @@ $app['types'] = $app->share(function () {
         $dragon
     );
     $service['tileSequence'] = $service->sequence($service['tile'])
-    ->beforeFromView(function ($presentation) {
+    ->addEvent('beforeFromView')
+    ->beforeFromView(function ($view, $presentation) {
         $prepared = [];
         while (! empty($presentation)) {
+            $oldLength = strlen($presentation);
             $presentation = trim($presentation);
-            if (preg_match('/(\d+)(\D*)/', $presentation, $matches)) {
+            if (preg_match('/^(\d+)(\D*)/', $presentation, $matches)) {
                 for ($i = 0, $count = strlen($matches[1]); $i < $count; ++$i) {
                     $prepared[] = $matches[1][$i] . $matches[2];
                 }
@@ -119,13 +121,28 @@ $app['types'] = $app->share(function () {
                 $prepared[] = $matches[0];
                 $presentation = substr($presentation, strlen($matches[0]));
             }
+            if ($oldLength <= strlen($presentation)) {
+                break;
+            }
         }
         return preg_replace('/\s+/', '', implode('', $prepared));
+    })
+    ->addEvent('afterToView')
+    ->afterToView(function ($view, $presentation) {
+        $prepared = [];
+        while (! empty($presentation)) {
+            $oldLength = strlen($presentation);
+            $presentation = trim($presentation);
+            if (preg_match_all('/^\d(\D+)/', $presentation, $matches)) {
+                print '<pre>matches = ' . print_r($matches, true) . '</pre>'; die; // debug
+                $presentation = substr($presentation, strlen($matches[0]));
+            }
+            if ($oldLength <= strlen($presentation)) {
+                break;
+            }
+        }
+        return implode('', $prepared);
     });
-    /*
-    ->afterToView(function ($presentation) {
-    });
-    */
     return $service;
 });
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
@@ -134,6 +151,9 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Если стоит режим заглушки, то выводим её и больше ничего не делаем.
 $app->before(function (Request $request) use ($app) {
+
+    print_r ($app['types']->tileSequence->fromRussian('1235699ман 99пин 3378со')->toTile()); die; // debug
+
     if (file_exists(DEPLOY_LOCK_PATH)) {
         if ($request->getMethod() === 'GET') {
             return $app->render('dummy.twig');

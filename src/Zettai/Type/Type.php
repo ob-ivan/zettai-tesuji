@@ -3,7 +3,18 @@ namespace Zettai\Type;
 
 abstract class Type implements TypeInterface
 {
+    // private var //
+    
+    /**
+     * Разнообразные внедряемые обработчики.
+     *
+     *  @var [<string eventName> => [<callable Hook>]]
+    **/
+    private $hooks = [];
+    
     private $service;
+    
+    // public //
     
     public function __construct(Service $service)
     {
@@ -13,6 +24,7 @@ abstract class Type implements TypeInterface
     /**
      * Волшебные методы:
      *  - from<View>($presentation)
+     *  - <eventName>($hook)
     **/
     public function __call($name, $args)
     {
@@ -32,6 +44,10 @@ abstract class Type implements TypeInterface
             }
             return $this->fromView($view, $args[0]);
         }
+        if (isset($this->hooks[$name])) {
+            $this->hooks[$name][] = $args[0];
+            return $this;
+        }
         throw new Exception('Method "' . $name . '" is unknown', Exception::TYPE_CALL_METHOD_UNKNOWN);
     }
     
@@ -41,6 +57,14 @@ abstract class Type implements TypeInterface
     public function __get($name)
     {
         return $this->from($name);
+    }
+    
+    public function addEvent($eventName)
+    {
+        if (! isset($this->hooks[$eventName])) {
+            $this->hooks[$eventName] = [];
+        }
+        return $this;
     }
     
     public function equals($a, $b)
@@ -101,5 +125,15 @@ abstract class Type implements TypeInterface
     public function value($internal)
     {
         return new Value($this, $internal);
+    }
+    
+    // protected //
+    
+    protected function getHooks($eventName)
+    {
+        if (! isset($this->hooks[$eventName])) {
+            return [];
+        }
+        return $this->hooks[$eventName];
     }
 }
