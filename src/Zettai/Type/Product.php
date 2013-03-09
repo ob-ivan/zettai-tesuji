@@ -1,4 +1,13 @@
 <?php
+/**
+ * Декартово произведение типов.
+ *
+ * Внешним примитивным значением (ключами в each и на входе fromPrimitive)
+ * являются строки вида '[X,Y,Z]', где X, Y, X - примитивные значения координат.
+ *
+ * Внутренним примитивным значением (хранимым в Value) является массив
+ * [<index> => <Value>].
+**/
 namespace Zettai\Type;
 
 class Product extends Type
@@ -39,7 +48,7 @@ class Product extends Type
         }
         $return = [];
         for ($seed = 0; $seed < $totalCount; ++$seed) {
-            $primitive = $this->getKey($seed, $counts);
+            $primitive = $this->pack($seed, $counts);
             $return[$primitive] = $this->fromPrimitive($primitive);
         }
         return $return;
@@ -108,7 +117,7 @@ class Product extends Type
     /**
      *  @return [<index> => <0 .. counts[index]>]
     **/
-    private function getKey($seed, $counts)
+    private function pack($seed, $counts)
     {
         $key = [];
         for ($i = count($counts) - 1; $i >= 0; --$i) {
