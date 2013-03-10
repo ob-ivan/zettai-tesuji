@@ -40,30 +40,13 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
-    // константы //
-    
-    $twig->addGlobal('ABCS', array_keys(Zettai\Exercise::$ABCS));
-
     // фильтры //
     
-    $windName = function ($wind) {
-        switch ($wind) {
-            case 'east':  return 'восток';
-            case 'south': return 'юг';
-            case 'west':  return 'запад';
-            case 'north': return 'север';
-        }
-        return $wind;
-    };
-    
-    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app, $windName) {
-        return $windName($wind);
+    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app) {
+        return $app['types']->wind->from($wind)->toRussian();
     }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $windName) {
-        if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
-            return $kyoku;
-        }
-        return $windName($matches[1]) . '-' . $matches[2];
+    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app) {
+        return $app['types']->kyoku->from($kyoku)->toRussian();
     }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
@@ -78,6 +61,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;
 }));
+$app->register(new Zettai\Provider\TypeServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());
@@ -218,8 +202,6 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'csrf'        => $app['csrf']->generate($csrfKey),
             'exercise'    => $exercise,
             'errors'      => $errors,
-            'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
-            'WINDS'       => array_keys(Zettai\Exercise::$WINDS),
             'TILES'       => Zettai\Tile::$TILES,
         ]);
     };
@@ -259,10 +241,10 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
-                'kyoku'         => $request->request->get('kyoku'),
-                'position'      => $request->request->get('position'),
+                'kyoku'         => $app['types']->kyoku->from($request->request->get('kyoku'))->toEnglish(),
+                'position'      => $app['types']->wind->from($request->request->get('position'))->toEnglish(),
                 'turn'          => $request->request->get('turn'),
-                'dora'          => $request->request->get('dora'),
+                'dora'          => $app['types']->tile->from($request->request->get('dora'))->toTile(),
                 'score'         => $request->request->get('score'),
                 'hand'          => $request->request->get('hand'),
                 'draw'          => $request->request->get('draw'),
