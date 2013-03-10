@@ -3,14 +3,7 @@ namespace Zettai\Type;
 
 abstract class Type implements TypeInterface
 {
-    // private var //
-    
-    /**
-     * Разнообразные внедряемые обработчики.
-     *
-     *  @var [<string hookName> => <callable Hook>]
-    **/
-    private $hooks = [];
+    // var //
     
     private $service;
     
@@ -98,12 +91,6 @@ abstract class Type implements TypeInterface
         return $value->is($this);
     }
     
-    public function setHook($hookName, callable $hook)
-    {
-        $this->hooks[$hookName] = $hook;
-        return $this;
-    }
-    
     public function toString($internal)
     {
         foreach ($this->service['view']->each() as $view) {
@@ -125,15 +112,5 @@ abstract class Type implements TypeInterface
     public function value($internal)
     {
         return new Value($this, $internal);
-    }
-    
-    // protected //
-    
-    protected function getHook($hookName)
-    {
-        if (! isset($this->hooks[$hookName])) {
-            return null;
-        }
-        return $this->hooks[$hookName];
     }
 }

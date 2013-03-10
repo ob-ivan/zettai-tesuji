@@ -68,7 +68,6 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 // Если стоит режим заглушки, то выводим её и больше ничего не делаем.
 $app->before(function (Request $request) use ($app) {
-
     if (file_exists(DEPLOY_LOCK_PATH)) {
         if ($request->getMethod() === 'GET') {
             return $app->render('dummy.twig');

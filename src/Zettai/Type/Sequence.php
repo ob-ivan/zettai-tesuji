@@ -9,10 +9,12 @@
 **/
 namespace Zettai\Type;
 
-use Closure;
-
 class Sequence extends Type implements ProjectiveInterface
 {
+    // include //
+    
+    use HookTrait;
+    
     // var //
     
     /**
@@ -59,9 +61,8 @@ class Sequence extends Type implements ProjectiveInterface
     
     public function fromView($view, $presentation)
     {
-        $hook = $this->getHook(__FUNCTION__);
-        if ($hook) {
-            return $this->callHook($hook, func_get_args());
+        if ($this->hasHook(__FUNCTION__)) {
+            return $this->callHook(__FUNCTION__, func_get_args());
         }
         
         $internal = [];
@@ -90,9 +91,8 @@ class Sequence extends Type implements ProjectiveInterface
     
     public function toView($view, $internal)
     {
-        $hook = $this->getHook(__FUNCTION__);
-        if ($hook) {
-            return $this->callHook($hook, func_get_args());
+        if ($this->hasHook(__FUNCTION__)) {
+            return $this->callHook(__FUNCTION__, func_get_args());
         }
         
         $presentations = [];
@@ -101,12 +101,5 @@ class Sequence extends Type implements ProjectiveInterface
         }
         $presentation = implode('', $presentations);
         return $presentation;
-    }
-    
-    // private //
-    
-    private function callHook($hook, $args)
-    {
-        return call_user_func_array(Closure::bind($hook, $this, $this), $args);
     }
 }
