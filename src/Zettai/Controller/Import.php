@@ -271,12 +271,12 @@ class Import implements ControllerProviderInterface
                         }
                     }
                     if ($bestAnswer && count($answers) === 3) {
-                        foreach ($app['types']->abc->each() as $letter) {
-                            $content['answer'][$letter]['comment'] = implode (' ', $answers[$letter]);
+                        foreach ($this->app['types']->abc->each() as $letter) {
+                            $content['answer'][$letter.'']['comment'] = implode (' ', $answers[$letter.'']);
                         }
                         $content['best_answer'] = $bestAnswer;
                         
-                        $exercises[$postId] = $app['types']->exercise->from($data + ['content' => $content]);
+                        $exercises[$postId] = $this->app['types']->exercise->from($data + ['content' => $content]);
                     } else {
                         print 'Could not recognize answers in post #' . $postId . ': ' . print_r($node[self::IMPORT_KEY_ANSWER], true) . "\n\n";
                     }

@@ -165,7 +165,10 @@ class TypeServiceProvider implements ServiceProviderInterface
         });
         $service->register('exercise', function ($service) {
             return $service->record([
-                'exercise_id' => $service->integer(),
+                'exercise_id'   => $service->integer(),
+                'title'         => $service->text(),
+                'is_hidden'     => $service->boolean(),
+                'content'       => $service['exerciseContent'],
             ]);
         });
     }

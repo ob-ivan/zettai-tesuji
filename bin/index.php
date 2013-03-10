@@ -17,7 +17,9 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
-// Подключаем контроллеры из провайдеров.
+$app->register(new Zettai\Provider\TypeServiceProvider());
+
+// Подключаем контроллеры.
 
 $app->mount('/import', new Zettai\Controller\Import());
 

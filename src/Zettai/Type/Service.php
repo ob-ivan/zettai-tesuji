@@ -58,6 +58,13 @@ class Service implements ServiceInterface
     {
         $this['view'] = $this->type($views);
         
+        // predefined types //
+        $this->register('boolean', function () {
+            return $this->enum(['true', 'false']);
+        });
+        $this->register('integer', function () {
+            return new Integer($this);
+        });
         $this->register('text', function () {
             return new Text($this);
         });
@@ -82,7 +89,24 @@ class Service implements ServiceInterface
         $this->registry[$name] = $factory;
     }
     
-    // public : type factories //
+    // public : predefined types //
+    
+    public function boolean()
+    {
+        return $this['boolean'];
+    }
+    
+    public function integer()
+    {
+        return $this['integer'];
+    }
+    
+    public function text()
+    {
+        return $this['text'];
+    }
+    
+    // public : complex type factories //
     
     public function enum(array $values)
     {
@@ -123,11 +147,6 @@ class Service implements ServiceInterface
     public function singleton($value)
     {
         return new Singleton($this, $value);
-    }
-    
-    public function text()
-    {
-        return $this['text'];
     }
     
     public function type($candidate)

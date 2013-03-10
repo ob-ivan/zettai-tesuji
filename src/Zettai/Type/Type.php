@@ -104,7 +104,7 @@ abstract class Type implements TypeInterface
     {
         $view = $this->service['view']->from($viewName);
         if (! $view) {
-            throw new Exception('Unknown view name "' . $viewName . '"', Exception::ENUM_TO_VIEW_NAME_UNKNOWN);
+            throw new Exception('Unknown view name "' . $viewName . '"', Exception::TYPE_TO_VIEW_NAME_UNKNOWN);
         }
         return $this->toView($view, $internal);
     }
