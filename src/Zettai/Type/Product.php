@@ -75,6 +75,26 @@ class Product extends Type implements ProjectiveInterface
         return true;
     }
     
+    /**
+     * Дополнительно рассматривает $input как массив.
+    **/
+    public function from($input)
+    {
+        $candidate = parent::from($input);
+        if ($candidate) {
+            return $candidate;
+        }
+        if (is_array($input)) {
+            return $this->fromArray($input);
+        }
+        return null;
+    }
+    
+    public function fromArray($array)
+    {
+        // TODO
+    }
+    
     public function fromPrimitive($primitive)
     {
         $values = [];

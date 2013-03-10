@@ -2,6 +2,7 @@
 namespace Zettai\Controller;
 
 use DomDocument;
+use DomText;
 use DomXPath;
 use Exception as AnyException;
 use Silex\Application;
@@ -14,14 +15,21 @@ class Import implements ControllerProviderInterface
     
     const IMPORT_XPATH_POSTS   = '/html/body/form[@id="delete_form"]/div[@class="thread"]/table[substring(@id,1,5)="post_"]';
     const IMPORT_XPATH_MESSAGE = 'tbody/tr/td[@class="reply"]/div[@class="postbody"]/div[@class="message"]';
+    
     const IMPORT_KEY_ID       = __LINE__;
     const IMPORT_KEY_EXERCISE = __LINE__;
     const IMPORT_KEY_ANSWER   = __LINE__;
+    
+    // var //
+    
+    private $app;
     
     // public : ControllerProviderInterface //
     
     public function connect(Application $app)
     {
+        $this->app = $app;
+        
         $controllers = $app['controllers_factory'];
         $app->error(function (Exception $exception) {
             return $this->error($exception);
@@ -121,16 +129,16 @@ class Import implements ControllerProviderInterface
             unset ($messageNodes);
             
             // Определить задачу или ответ.
-            if (preg_match('/^\s*Задача №(\d{3})/', $messageNode->textContent, $matches)) {
-                $excerciseMessages[$postId] = [
+            if (preg_match('/^\s*Задача №(\d{3})/u', $messageNode->textContent, $matches)) {
+                $exerciseNodes[$postId] = [
                     self::IMPORT_KEY_ID       => intval($matches[1]),
                     self::IMPORT_KEY_EXERCISE => $messageNode,
                 ];
             } else {
-                if (preg_match('/^\s*>>(\d+)\s*Правильный ответ:/s', $messageNode->textContent, $matches)) {
+                if (preg_match('/^\s*>>(\d+)\s*Правильный ответ:/su', $messageNode->textContent, $matches)) {
                     $parentPostId = intval($matches[1]);
-                    if (isset($excerciseMessages[$parentPostId])) {
-                        $excerciseMessages[$parentPostId][self::IMPORT_KEY_ANSWER] = $messageNode;
+                    if (isset($exerciseNodes[$parentPostId])) {
+                        $exerciseNodes[$parentPostId][self::IMPORT_KEY_ANSWER] = $messageNode;
                     }
                 }
             }
@@ -142,6 +150,11 @@ class Import implements ControllerProviderInterface
     /**
      * Разбирает тексты задач и ответов.
      *
+     *  @param  [<postId> => [
+     *      self::IMPORT_KEY_ID       => <exerciseId>,
+     *      self::IMPORT_KEY_EXERCISE => <exerciseNode>,
+     *      self::IMPORT_KEY_ANSWER   => <answerNode>,
+     *  ]]  $nodes
      *  @return [<postId> => <Zettai\Exercise>]
     **/
     private function getExercises(array $nodes)
@@ -180,25 +193,108 @@ class Import implements ControllerProviderInterface
                     'exercise_id'   => $node[self::IMPORT_KEY_ID],
                     'title'         => $matches['title'],
                     'is_hidden'     => true,
-                    'content'       => [
-                        // TODO: Конвертировать все поля из текстового формата в формат базы!
-                        'kyoku'     => $matches['kyoku'],
-                        'position'  => $matches['position'],
-                        'turn'      => $matches['turn'],
-                        'dora'      => $matches['dora'],
-                        'score'     => $matches['score'],
-                        'hand'      => $matches['hand'],
-                        'draw'      => $matches['draw'],
-                        'discard_a' => $matches['discard_a'],
-                        'discard_b' => $matches['discard_b'],
-                        'discard_c' => $matches['discard_c'],
-                    ],
                 ];
-                // TODO: Разобрать ответы.
+                $content = [
+                    'kyoku'     => $matches['kyoku'],
+                    'position'  => $matches['position'],
+                    'turn'      => $matches['turn'],
+                    'dora'      => $matches['dora'],
+                    'score'     => $matches['score'],
+                    'hand'      => $matches['hand'],
+                    'draw'      => $matches['draw'],
+                    'answer'    => [
+                        'a' => [
+                            'discard' => $matches['discard_a'],
+                            'comment' => null,
+                        ],
+                        'b' => [
+                            'discard' => $matches['discard_b'],
+                            'comment' => null,
+                        ],
+                        'c' => [
+                            'discard' => $matches['discard_c'],
+                            'comment' => null,
+                        ],
+                    ],
+                    'best_answer' => null,
+                ];
+                
+                // Разобрать ответы.
+                if (! isset($node[self::IMPORT_KEY_ANSWER])) {
+                    print 'Не найден пост с ответом к задаче ' . $node[self::IMPORT_KEY_ID] . "\n\n";
+                } else {
+                    /**
+                     * <abc> ::= 'a' | 'b' | 'c' ;
+                    **/
+                    $bestAnswer = null;
+                    $currentAnswer = null;
+                    /**
+                     * [<abc> => [<text>]]
+                    **/
+                    $answers = [];
+                    $mode = 'none'; // 'best' | 'others'
+                    foreach ($node[self::IMPORT_KEY_ANSWER]->childNodes as $childNode) {
+                    
+                        if ($childNode instanceof DomText) {
+                            if (preg_match('/Правильный ответ:/u', $childNode->textContent)) {
+                                $mode = 'best';
+                            } elseif (preg_match('/Другие ответы:/u', $childNode->textContent)) {
+                                $mode = 'others';
+                            }
+                        } elseif ($childNode->tagName === 'span' && $childNode->attributes->getNamedItem('class')->nodeValue === 'spoiler') {
+                            if (preg_match('/^\s*([АВС]). (\w+). /u', $childNode->textContent, $matches)) {
+                                $answer = $this->russianToEnglish($matches[1]);
+                                if ($answer) {
+                                    $expectedDiscard = $content['answer'][$answer]['discard'];
+                                    if ($expectedDiscard === $matches[2]) {
+                                        $currentAnswer = $answer;
+                                        if ($mode === 'best') {
+                                            $bestAnswer = $answer;
+                                        }
+                                        $answers[$currentAnswer] = [substr($childNode->textContent, strlen($matches[0]))];
+                                    } else {
+                                        print 'Discard ' . $answer . ' in post (' . $expectedDiscard . ') ' .
+                                            'does not match discard in answer post (' . $matches[2] . ')' . "\n\n"
+                                        ;
+                                    }
+                                } else {
+                                    print 'Span for other answer does not contain discard: ' . $childNode->textContent . "\n\n";
+                                }
+                            } elseif ($currentAnswer) {
+                                if (preg_match('/^\((.*)\)$/u', $childNode->textContent, $matches)) {
+                                    // Примечания переводчика.
+                                    $answers[$currentAnswer][] = '(*' . $matches[1] . ')';
+                                } else {
+                                    $answers[$currentAnswer][] = $childNode->textContent;
+                                }
+                            }
+                        }
+                    }
+                    if ($bestAnswer && count($answers) === 3) {
+                        foreach ($app['types']->abc->each() as $letter) {
+                            $content['answer'][$letter]['comment'] = implode (' ', $answers[$letter]);
+                        }
+                        $content['best_answer'] = $bestAnswer;
+                        
+                        $exercises[$postId] = $app['types']->exercise->from($data + ['content' => $content]);
+                    } else {
+                        print 'Could not recognize answers in post #' . $postId . ': ' . print_r($node[self::IMPORT_KEY_ANSWER], true) . "\n\n";
+                    }
+                }
             } else {
-                print 'Could not recognize format in post ' . $postId . ': ' . $node[self::IMPORT_KEY_EXERCISE]->textContent . "\n\n";
+                print 'Could not recognize format in post #' . $postId . ': ' . $node[self::IMPORT_KEY_EXERCISE]->textContent . "\n\n";
             }
         }
         return $exercises;
+    }
+    
+    private function russianToEnglish($russian)
+    {
+        switch ($russian) {
+            case 'А': return 'a';
+            case 'В': return 'b';
+            case 'С': return 'c';
+        }
+        return null;
     }
 }

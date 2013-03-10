@@ -57,6 +57,10 @@ class Service implements ServiceInterface
     public function __construct(array $views)
     {
         $this['view'] = $this->type($views);
+        
+        $this->register('text', function () {
+            return new Text($this);
+        });
     }
     
     public function __get($name)
@@ -123,7 +127,7 @@ class Service implements ServiceInterface
     
     public function text()
     {
-        return new Text($this);
+        return $this['text'];
     }
     
     public function type($candidate)

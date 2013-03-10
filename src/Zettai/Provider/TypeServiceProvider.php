@@ -163,5 +163,10 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'best_answer' => $service['abc'],
             ]);
         });
+        $service->register('exercise', function ($service) {
+            return $service->record([
+                'exercise_id' => $service->integer(),
+            ]);
+        });
     }
 }
