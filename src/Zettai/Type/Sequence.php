@@ -26,7 +26,7 @@ class Sequence extends Type implements ProjectiveInterface
     
     // public //
     
-    public function __construct(Service $service, $element)
+    public function __construct(ServiceInterface $service, $element)
     {
         parent::__construct($service);
         

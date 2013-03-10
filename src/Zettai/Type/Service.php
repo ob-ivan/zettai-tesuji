@@ -4,9 +4,7 @@
 **/
 namespace Zettai\Type;
 
-use ArrayAccess;
-
-class Service implements ArrayAccess, ServiceInterface
+class Service implements ServiceInterface
 {
     // var //
     
@@ -161,6 +159,6 @@ class Service implements ArrayAccess, ServiceInterface
     **/
     public function viewable(array $values)
     {
-        return new Viewable($this, $this['view']->each(), $values);
+        return new Viewable($this, $values);
     }
 }

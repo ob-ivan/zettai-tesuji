@@ -7,7 +7,7 @@ class Singleton extends Type
     
     private $value;
     
-    public function __construct (Service $service, $value)
+    public function __construct (ServiceInterface $service, $value)
     {
         parent::__construct($service);
         

@@ -17,7 +17,7 @@ class Union extends Type
     **/
     private $variants;
     
-    public function __construct(Service $service, array $variants)
+    public function __construct(ServiceInterface $service, array $variants)
     {
         parent::__construct($service);
         

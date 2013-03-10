@@ -9,7 +9,7 @@ abstract class Type implements TypeInterface
     
     // public //
     
-    public function __construct(Service $service)
+    public function __construct(ServiceInterface $service)
     {
         $this->service = $service;
     }
@@ -98,15 +98,15 @@ abstract class Type implements TypeInterface
         }
     }
     
-    abstract public function toView($view, $primitive);
+    abstract public function toView($view, $internal);
     
-    public function toViewByName($viewName, $primitive)
+    public function toViewByName($viewName, $internal)
     {
         $view = $this->service['view']->from($viewName);
         if (! $view) {
             throw new Exception('Unknown view name "' . $viewName . '"', Exception::ENUM_TO_VIEW_NAME_UNKNOWN);
         }
-        return $this->toView($view, $primitive);
+        return $this->toView($view, $internal);
     }
     
     public function value($internal)

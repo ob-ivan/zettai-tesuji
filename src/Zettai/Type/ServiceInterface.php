@@ -1,6 +1,8 @@
 <?php
 namespace Zettai\Type;
 
-interface ServiceInterface
+use ArrayAccess;
+
+interface ServiceInterface extends ArrayAccess
 {
 }

@@ -8,7 +8,7 @@ class Enum extends Type
     **/
     private $values;
     
-    public function __construct (Service $service, array $values)
+    public function __construct (ServiceInterface $service, array $values)
     {
         parent::__construct($service);
         

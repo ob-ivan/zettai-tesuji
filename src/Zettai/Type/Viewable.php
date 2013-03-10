@@ -5,20 +5,23 @@ class Viewable extends Type
 {
     // var //
     
+    /**
+     *  @param  [<viewIndex> => <viewName>]     $views
+    **/
     private $views  = [];
+    
+    /**
+     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
+    **/
     private $values = [];
     
     // public //
     
-    /**
-     *  @param  [<viewIndex> => <viewName>]                         $views
-     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
-    **/
-    public function __construct(Service $service, array $views, array $values)
+    public function __construct(ServiceInterface $service, array $values)
     {
         parent::__construct($service);
         
-        $this->views   = $views;
+        $this->views   = $service['view']->each();
         $this->values  = $values;
     }
     

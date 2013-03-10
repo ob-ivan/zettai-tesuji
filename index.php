@@ -244,7 +244,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
                 'kyoku'         => $app['types']->kyoku->from($request->request->get('kyoku'))->toEnglish(),
                 'position'      => $app['types']->wind->from($request->request->get('position'))->toEnglish(),
                 'turn'          => $request->request->get('turn'),
-                'dora'          => $app['types']->wind->from($request->request->get('dora'))->toTile(),
+                'dora'          => $app['types']->tile->from($request->request->get('dora'))->toTile(),
                 'score'         => $request->request->get('score'),
                 'hand'          => $request->request->get('hand'),
                 'draw'          => $request->request->get('draw'),

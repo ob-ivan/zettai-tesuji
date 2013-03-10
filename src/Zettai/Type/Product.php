@@ -21,7 +21,7 @@ class Product extends Type implements ProjectiveInterface
     
     // public //
     
-    public function __construct (Service $service, array $multipliers)
+    public function __construct (ServiceInterface $service, array $multipliers)
     {
         parent::__construct($service);
         
