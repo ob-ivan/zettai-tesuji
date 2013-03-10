@@ -11,11 +11,14 @@ class Service implements ArrayAccess, ServiceInterface
     // var //
     
     /**
+     * @var [<name> => <factory>]
+    **/
+    private $registry = [];
+    
+    /**
      * @var [<name> => <TypeInterface>]
     **/
     private $types = [];
-    
-    private $views;
     
     // public : ArrayAccess //
     
@@ -26,6 +29,12 @@ class Service implements ArrayAccess, ServiceInterface
     
     public function offsetGet($offset)
     {
+        if (! isset($this->types[$offset])) {
+            if (! isset($this->registry[$offset])) {
+                return null;
+            }
+            $this->types[$offset] = $this->registry[$offset]($this);
+        }
         return $this->types[$offset];
     }
     
@@ -49,12 +58,7 @@ class Service implements ArrayAccess, ServiceInterface
     
     public function __construct(array $views)
     {
-        $this->views = $this->type($views);
-    }
-    
-    public function getViews()
-    {
-        return $this->views->each();
+        $this['view'] = $this->type($views);
     }
     
     public function getViewByName($name)
@@ -62,12 +66,28 @@ class Service implements ArrayAccess, ServiceInterface
         return $this->views->from($name);
     }
     
-    // public : Service //
+    // public : Service utilities //
     
     public function __get($name)
     {
         return $this[$name];
     }
+    
+    /**
+     * Регистрирует тип для ленивой инициализации.
+     *
+     *  @param  string                      $name       Имя, под которым тип будет известен.
+     *  @param  Service -> TypeInterface    $factory    Функция, которая породит тип по запросу.
+    **/
+    public function register($name, $factory)
+    {
+        if (isset($this->registry[$name])) {
+            throw new Exception('Type "' . $name . '" is already registered', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
+        }
+        $this->registry[$name] = $factory;
+    }
+    
+    // public : type factories //
     
     public function enum(array $values)
     {
@@ -89,6 +109,11 @@ class Service implements ArrayAccess, ServiceInterface
         return new Product($this, func_get_args());
     }
     
+    public function record($fields)
+    {
+        return new Product($this, $fields);
+    }
+    
     /**
      * Создаёт новый тип конечных последовательностей из элементов указанного типа.
      *
@@ -103,6 +128,11 @@ class Service implements ArrayAccess, ServiceInterface
     public function singleton($value)
     {
         return new Singleton($this, $value);
+    }
+    
+    public function text()
+    {
+        return new Text($this);
     }
     
     public function type($candidate)
@@ -132,13 +162,12 @@ class Service implements ArrayAccess, ServiceInterface
     /**
      * Создаёт новый перечислимый тип с настраиваемым представлением.
      *
-     *  @param  [<viewIndex> => <viewValue>]                        $views
      *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
      *
      *  @return Viewable
     **/
-    public function viewable(array $views, array $values)
+    public function viewable(array $values)
     {
-        return new Viewable($this, $views, $values);
+        return new Viewable($this, $this['view']->each(), $values);
     }
 }

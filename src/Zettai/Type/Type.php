@@ -24,7 +24,6 @@ abstract class Type implements TypeInterface
     /**
      * Волшебные методы:
      *  - from<View>($presentation)
-     *  - <eventName>($hook)
     **/
     public function __call($name, $args)
     {
@@ -35,7 +34,7 @@ abstract class Type implements TypeInterface
                     Exception::TYPE_FROM_VIEW_ARGUMENT_ABSENT
                 );
             }
-            $view = $this->service->getViewByName($matches[1]);
+            $view = $this->service['view']->from($matches[1]);
             if (! $view) {
                 throw new Exception(
                     'Unknown view "' . $matches[1] . '"',
@@ -43,10 +42,6 @@ abstract class Type implements TypeInterface
                 );
             }
             return $this->fromView($view, $args[0]);
-        }
-        if (isset($this->hooks[$name])) {
-            $this->hooks[$name][] = $args[0];
-            return $this;
         }
         throw new Exception('Method "' . $name . '" is unknown', Exception::TYPE_CALL_METHOD_UNKNOWN);
     }
@@ -84,7 +79,7 @@ abstract class Type implements TypeInterface
             return $fromPrimitive;
         }
         // Поискать среди представлений.
-        foreach ($this->service->getViews() as $view) {
+        foreach ($this->service['view']->each() as $view) {
             $candidate = $this->fromView($view, $input);
             if ($candidate) {
                 return $candidate;
@@ -111,7 +106,7 @@ abstract class Type implements TypeInterface
     
     public function toString($internal)
     {
-        foreach ($this->service->getViews() as $view) {
+        foreach ($this->service['view']->each() as $view) {
             return $this->toView($view, $internal);
         }
     }
@@ -120,7 +115,7 @@ abstract class Type implements TypeInterface
     
     public function toViewByName($viewName, $primitive)
     {
-        $view = $this->service->getViewByName($viewName);
+        $view = $this->service['view']->from($viewName);
         if (! $view) {
             throw new Exception('Unknown view name "' . $viewName . '"', Exception::ENUM_TO_VIEW_NAME_UNKNOWN);
         }
