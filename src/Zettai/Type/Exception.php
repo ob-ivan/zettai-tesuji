@@ -21,6 +21,8 @@ class Exception extends ParentException
     
     const VALUE_CALL_METHOD_UNKNOWN                 = 0x020501;
     const VALUE_PROJECT_UNSUPPORTED                 = 0x020502;
+    const VALUE_SET_UNSUPPORTED                     = 0x020503;
+    const VALUE_UNSET_UNSUPPORTED                   = 0x020504;
     
     const VIEWABLE_TO_VIEW_NAME_UNKNOWN             = 0x020601;
     const VIEWABLE_TO_VIEW_UNSUPPORTED_VIEW         = 0x020602;

@@ -16,9 +16,7 @@ class Singleton extends Type
     
     public function each()
     {
-        $return = [];
-        $return[self::PRIMITIVE] = $this->fromPrimitive(self::PRIMITIVE);
-        return $return;
+        return [self::PRIMITIVE => $this->fromPrimitive(self::PRIMITIVE)];
     }
     
     public function fromView($view, $presentation)
@@ -34,7 +32,12 @@ class Singleton extends Type
         return $this->value(self::PRIMITIVE);
     }
     
-    public function toView($view, $primitive)
+    public function toPrimitive($internal)
+    {
+        return self::PRIMITIVE;
+    }
+    
+    public function toView($view, $internal)
     {
         return $this->value;
     }

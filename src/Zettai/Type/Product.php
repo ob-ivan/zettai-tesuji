@@ -10,7 +10,7 @@
 **/
 namespace Zettai\Type;
 
-class Product extends Type implements ProjectiveInterface
+class Product extends Type implements DereferenceableInterface
 {
     // var //
     
@@ -19,7 +19,25 @@ class Product extends Type implements ProjectiveInterface
     **/
     private $multipliers = [];
     
-    // public //
+    // public : DereferenceableInterface //
+    
+    public function dereference($internal, $offset)
+    {
+        if (! isset($this->multipliers[$offset])) {
+            throw new Exception('Unknown offset "' . $offset . '" for this type', Exception::PRODUCT_PROJECT_COORDINATE_UNKNOWN);
+        }
+        return $internal[$offset];
+    }
+    
+    public function dereferenceExists($internal, $offset)
+    {
+        if (! isset($this->multipliers[$offset])) {
+            throw new Exception('Unknown offset "' . $offset . '" for this type', Exception::PRODUCT_PROJECT_COORDINATE_UNKNOWN);
+        }
+        return isset($internal[$offset]);
+    }
+    
+    // public : Product //
     
     public function __construct (ServiceInterface $service, array $multipliers)
     {
@@ -92,49 +110,64 @@ class Product extends Type implements ProjectiveInterface
     
     public function fromArray($array)
     {
-        // TODO
+        $internal = [];
+        foreach ($this->multipliers as $index => $multiplier) {
+            if (! isset ($array[$index])) {
+                return null;
+            }
+            $value = $multiplier->from($array[$index]);
+            if (! $value) {
+                return null;
+            }
+            $internal[$index] = $value;
+        }
+        return $this->value($internal);
     }
     
     public function fromPrimitive($primitive)
     {
-        $values = [];
+        $internal = [];
         $primitives = json_decode($primitive);
+        if (! (is_array($primitives) || is_object($primitives))) {
+            return null;
+        }
         foreach ($this->multipliers as $index => $multiplier) {
             $value = $multiplier->fromPrimitive($primitives[$index]);
             if (! $value) {
                 return null;
             }
-            $values[$index] = $value;
+            $internal[$index] = $value;
         }
-        return $this->value($values);
+        return $this->value($internal);
     }
     
     public function fromView($view, $presentation)
     {
-        $values = [];
+        $internal = [];
         foreach ($this->multipliers as $index => $multiplier) {
             $value = $multiplier->fromView($view, $presentation);
             if (! $value) {
                 return null;
             }
-            $values[$index] = $value;
+            $internal[$index] = $value;
             $presentation = substr($presentation, strlen($value->toView($view)));
         }
-        return $this->value($values);
+        return $this->value($internal);
     }
     
-    public function project($coordinate, $internal)
+    public function toPrimitive($internal)
     {
-        if (! isset($this->multipliers[$coordinate])) {
-            throw new Exception('Unknown coordinate "' . $coordinate . '" for this type', Exception::PRODUCT_PROJECT_COORDINATE_UNKNOWN);
+        $primitives = [];
+        foreach ($this->multipliers as $index => $multiplier) {
+            $primitives[$index] = $internal[$index]->toPrimitive();
         }
-        return $internal[$coordinate];
+        return json_encode($primitives);
     }
     
-    public function toView($view, $values)
+    public function toView($view, $internal)
     {
         $presentation = [];
-        foreach ($values as $index => $value) {
+        foreach ($internal as $index => $value) {
             $presentation[] = $value->toView($view);
         }
         return implode('', $presentation);

@@ -86,6 +86,13 @@ class Union extends Type
         return null;
     }
     
+    public function toPrimitive($internal)
+    {
+        foreach ($internal as $index => $value) {
+            return $this->pack($index, $value->toPrimitive());
+        }
+    }
+    
     public function toView($view, $internal)
     {
         foreach ($internal as $index => $value) {

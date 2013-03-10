@@ -114,6 +114,15 @@ class Service implements ServiceInterface
     }
     
     /**
+     * Создаёт тип тотального отображения из области определения (domain)
+     * в область значений (range).
+    **/
+    public function map($domain, $range)
+    {
+        return new Map($this, $domain, $range);
+    }
+    
+    /**
      * Создаёт новый тип декартова произведения.
      *
      * Может быть сколько угодно параметров:

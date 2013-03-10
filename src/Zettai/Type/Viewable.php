@@ -67,7 +67,12 @@ class Viewable extends Type
         return $this->value($primitive);
     }
     
-    public function toView($view, $primitive)
+    public function toPrimitive($internal)
+    {
+        return array_search($internal, $this->values);
+    }
+    
+    public function toView($view, $internal)
     {
         $viewIndex = $this->getViewIndex($view);
         if (false === $viewIndex) {
@@ -76,13 +81,13 @@ class Viewable extends Type
                 Exception::VIEWABLE_TO_VIEW_UNSUPPORTED_VIEW
             );
         }
-        if (! isset($this->values[$primitive][$viewIndex])) {
+        if (! isset($this->values[$internal][$viewIndex])) {
             throw new Exception(
-                'View "' . $view . '" is not supported for value "' . $primitive . '"',
+                'View "' . $view . '" is not supported for value "' . $internal . '"',
                 Exception::VIEWABLE_TO_VIEW_UNSUPPORTED_PRIMITIVE
             );
         }
-        return $this->values[$primitive][$viewIndex];
+        return $this->values[$internal][$viewIndex];
     }
     
     // private //
@@ -90,6 +95,6 @@ class Viewable extends Type
     private function getViewIndex($view)
     {
         // TODO: Кэшировать отдачу.
-        return array_search($view->toView('whatever'), $this->views);
+        return array_search($view->toString(), $this->views);
     }
 }

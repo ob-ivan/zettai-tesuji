@@ -1,7 +1,9 @@
 <?php
 namespace Zettai\Type;
 
-interface ValueInterface
+use ArrayAccess;
+
+interface ValueInterface extends ArrayAccess
 {
     public function __construct(TypeInterface $type, $primitive);
     

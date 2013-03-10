@@ -9,5 +9,7 @@ interface TypeInterface
     
     public function has($value);
     
+    public function toPrimitive($internal);
+    
     public function toViewByName($viewName, $primitive);
 }

@@ -42,6 +42,11 @@ class Enum extends Type
         return $this->value($primitive);
     }
     
+    public function toPrimitive($internal)
+    {
+        return array_search($internal, $this->values);
+    }
+    
     public function toView($view, $internal)
     {
         if (! isset($this->values[$internal])) {
