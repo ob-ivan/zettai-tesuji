@@ -1,10 +1,37 @@
 <?php
 namespace Zettai\Type;
 
-class Map extends Type
+class Map extends Type implements DereferenceableInterface
 {
+    // const //
+    
+    const INTERNAL_KEY_DOMAIN = 0;
+    const INTERNAL_KEY_RANGE  = 1;
+    
+    // var //
+    
     private $domain;
     private $range;
+    
+    // public : DereferenceableInterface //
+    
+    public function dereference($internal, $offset)
+    {
+        if (! $this->domain->has($offset))) {
+            throw new Exception('Offset "' . $offset . '" is not in domain', Exception::MAP_DEREFERENCE_OFFSET_WRONG_DOMAIN);
+        }
+        return $internal[$offset->toPrimitive()][self::INTERNAL_KEY_RANGE];
+    }
+    
+    public function dereferenceExists($internal, $offset)
+    {
+        if (! $this->domain->has($offset))) {
+            throw new Exception('Offset "' . $offset . '" is not in domain', Exception::MAP_DEREFERENCE_OFFSET_WRONG_DOMAIN);
+        }
+        return isset($internal[$offset->toPrimitive()]);
+    }
+    
+    // public : Map //
     
     public function __construct(ServiceInterface $service, $domain, $range)
     {
@@ -41,14 +68,52 @@ class Map extends Type
             if (! $rangeValue) {
                 return null;
             }
-            $internal[$domainValue->toPrimitive()] = $rangeValue;
+            $internal[$domainValue->toPrimitive()] = [
+                self::INTERNAL_KEY_DOMAIN => $domainValue,
+                self::INTERNAL_KEY_RANGE  => $rangeValue,
+            ];
         }
         return $this->value($internal);
     }
     
     public function fromPrimitive($primitive)
     {
-        // Нет пока нужды реализовывать.
+        $primitiveMap = json_decode($primitive);
+        $internal = [];
+        foreach ($primitiveMap as $domainPrimitive => $rangePrimitive) {
+            $domainValue = $this->domain->fromPrimitive($domainPrimitive);
+            if (! $domainValue) {
+                return null;
+            }
+            $rangeValue = $this->rage->fromPrimitive($rangePrimitive);
+            if (! $rangeValue) {
+                return null;
+            }
+            $internal[$domainPrimitive] = [
+                self::INTERNAL_KEY_DOMAIN => $domainValue,
+                self::INTERNAL_KEY_RANGE  => $rangeValue,
+            ];
+        }
+        return $this->value($internal);
+    }
+    
+    public function fromView($view, $presentation)
+    {
+        // Какое могло бы быть естественное представление у отображения?
+        return null;
+    }
+    
+    public function toPrimitive($internal)
+    {
+        $primitiveMap = [];
+        foreach ($internal as $domainPrimitive => $pair) {
+            $primitiveMap[$domainPrimitive] = $pair[self::INTERNAL_KEY_RANGE]->toPrimitive();
+        }
+    }
+    
+    public function toView($view, $internal)
+    {
+        // Какое могло бы быть естественное представление у отображения?
         return null;
     }
 }

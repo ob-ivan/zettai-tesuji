@@ -7,7 +7,7 @@ class Exception extends ParentException
 {
     const ENUM_TO_VIEW_UNSUPPORTED_PRIMITIVE        = 0x020101;
     
-    const PRODUCT_PROJECT_COORDINATE_UNKNOWN        = 0x020201;
+    const PRODUCT_DEREFERENCE_OFFSET_UNKNOWN        = 0x020201;
     
     const SERVICE_REGISTER_NAME_ALREADY_EXISTS      = 0x020301;
     const SERVICE_SET_OFFSET_ALREADY_EXISTS         = 0x020302;

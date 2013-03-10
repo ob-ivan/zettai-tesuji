@@ -24,7 +24,7 @@ class Product extends Type implements DereferenceableInterface
     public function dereference($internal, $offset)
     {
         if (! isset($this->multipliers[$offset])) {
-            throw new Exception('Unknown offset "' . $offset . '" for this type', Exception::PRODUCT_PROJECT_COORDINATE_UNKNOWN);
+            throw new Exception('Unknown offset "' . $offset . '" for this type', Exception::PRODUCT_DEREFERENCE_OFFSET_UNKNOWN);
         }
         return $internal[$offset];
     }
@@ -32,7 +32,7 @@ class Product extends Type implements DereferenceableInterface
     public function dereferenceExists($internal, $offset)
     {
         if (! isset($this->multipliers[$offset])) {
-            throw new Exception('Unknown offset "' . $offset . '" for this type', Exception::PRODUCT_PROJECT_COORDINATE_UNKNOWN);
+            throw new Exception('Unknown offset "' . $offset . '" for this type', Exception::PRODUCT_DEREFERENCE_OFFSET_UNKNOWN);
         }
         return isset($internal[$offset]);
     }
