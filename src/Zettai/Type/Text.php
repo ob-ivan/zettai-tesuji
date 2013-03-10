@@ -13,6 +13,11 @@ class Text extends Type
         return $this->fromPrimitive($presentation);
     }
     
+    public function toPrimitive($internal)
+    {
+        return $internal;
+    }
+    
     public function toView($view, $internal)
     {
         return $internal;

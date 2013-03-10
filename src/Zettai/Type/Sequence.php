@@ -9,7 +9,7 @@
 **/
 namespace Zettai\Type;
 
-class Sequence extends Type implements ProjectiveInterface
+class Sequence extends Type implements DereferenceableInterface
 {
     // include //
     
@@ -24,7 +24,22 @@ class Sequence extends Type implements ProjectiveInterface
     **/
     private $element;
     
-    // public //
+    // public : DereferenceableInterface //
+    
+    public function dereference($internal, $offset)
+    {
+        if (! isset($internal[$offset])) {
+            return null;
+        }
+        return $internal[$offset];
+    }
+    
+    public function dereferenceExists($internal, $offset)
+    {
+        return isset($internal[$offset]);
+    }
+    
+    // public : Sequence //
     
     public function __construct(ServiceInterface $service, $element)
     {
@@ -81,12 +96,13 @@ class Sequence extends Type implements ProjectiveInterface
         return $this->value($internal);
     }
     
-    public function project($coordinate, $internal)
+    public function toPrimitive($internal)
     {
-        if (! isset($internal[$coordinate])) {
-            return null;
+        $primitives = [];
+        foreach ($internal as $index => $value) {
+            $primitives[$index] = $value->toPrimitive();
         }
-        return $internal[$coordinate];
+        return json_encode($primitives);
     }
     
     public function toView($view, $internal)

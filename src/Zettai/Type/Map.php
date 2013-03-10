@@ -17,7 +17,7 @@ class Map extends Type implements DereferenceableInterface
     
     public function dereference($internal, $offset)
     {
-        if (! $this->domain->has($offset))) {
+        if (! $this->domain->has($offset)) {
             throw new Exception('Offset "' . $offset . '" is not in domain', Exception::MAP_DEREFERENCE_OFFSET_WRONG_DOMAIN);
         }
         return $internal[$offset->toPrimitive()][self::INTERNAL_KEY_RANGE];
@@ -25,7 +25,7 @@ class Map extends Type implements DereferenceableInterface
     
     public function dereferenceExists($internal, $offset)
     {
-        if (! $this->domain->has($offset))) {
+        if (! $this->domain->has($offset)) {
             throw new Exception('Offset "' . $offset . '" is not in domain', Exception::MAP_DEREFERENCE_OFFSET_WRONG_DOMAIN);
         }
         return isset($internal[$offset->toPrimitive()]);
@@ -64,7 +64,7 @@ class Map extends Type implements DereferenceableInterface
             if (! $domainValue) {
                 return null;
             }
-            $rangeValue = $this->rage->from($rangePresentation);
+            $rangeValue = $this->range->from($rangePresentation);
             if (! $rangeValue) {
                 return null;
             }
@@ -78,7 +78,13 @@ class Map extends Type implements DereferenceableInterface
     
     public function fromPrimitive($primitive)
     {
+        if (! is_string($primitive)) {
+            return null;
+        }
         $primitiveMap = json_decode($primitive);
+        if (! (is_array($primitiveMap) || is_object($primitiveMap))) {
+            return null;
+        }
         $internal = [];
         foreach ($primitiveMap as $domainPrimitive => $rangePrimitive) {
             $domainValue = $this->domain->fromPrimitive($domainPrimitive);

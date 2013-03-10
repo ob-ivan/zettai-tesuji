@@ -126,11 +126,14 @@ class Product extends Type implements DereferenceableInterface
     
     public function fromPrimitive($primitive)
     {
-        $internal = [];
+        if (! is_string($primitive)) {
+            return null;
+        }
         $primitives = json_decode($primitive);
         if (! (is_array($primitives) || is_object($primitives))) {
             return null;
         }
+        $internal = [];
         foreach ($this->multipliers as $index => $multiplier) {
             $value = $multiplier->fromPrimitive($primitives[$index]);
             if (! $value) {
@@ -143,6 +146,10 @@ class Product extends Type implements DereferenceableInterface
     
     public function fromView($view, $presentation)
     {
+        if (! is_string($presentation)) {
+            return null;
+        }
+        
         $internal = [];
         foreach ($this->multipliers as $index => $multiplier) {
             $value = $multiplier->fromView($view, $presentation);
