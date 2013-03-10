@@ -42,14 +42,14 @@ class Enum extends Type
         return $this->value($primitive);
     }
     
-    public function toView($view, $primitive)
+    public function toView($view, $internal)
     {
-        if (! isset($this->values[$primitive])) {
+        if (! isset($this->values[$internal])) {
             throw new Exception(
-                'Unknown value "' . $primitive . '"',
+                'Unknown value "' . $internal . '"',
                 Exception::ENUM_TO_VIEW_UNSUPPORTED_PRIMITIVE
             );
         }
-        return $this->values[$primitive];
+        return $this->values[$internal];
     }
 }

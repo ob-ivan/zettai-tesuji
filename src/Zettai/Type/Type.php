@@ -8,7 +8,7 @@ abstract class Type implements TypeInterface
     /**
      * Разнообразные внедряемые обработчики.
      *
-     *  @var [<string eventName> => [<callable Hook>]]
+     *  @var [<string hookName> => <callable Hook>]
     **/
     private $hooks = [];
     
@@ -59,14 +59,6 @@ abstract class Type implements TypeInterface
         return $this->from($name);
     }
     
-    public function addEvent($eventName)
-    {
-        if (! isset($this->hooks[$eventName])) {
-            $this->hooks[$eventName] = [];
-        }
-        return $this;
-    }
-    
     public function equals($a, $b)
     {
         return $a === $b;
@@ -111,6 +103,19 @@ abstract class Type implements TypeInterface
         return $value->is($this);
     }
     
+    public function setHook($hookName, callable $hook)
+    {
+        $this->hooks[$hookName] = $hook;
+        return $this;
+    }
+    
+    public function toString($internal)
+    {
+        foreach ($this->service->getViews() as $view) {
+            return $this->toView($view, $internal);
+        }
+    }
+    
     abstract public function toView($view, $primitive);
     
     public function toViewByName($viewName, $primitive)
@@ -129,11 +134,11 @@ abstract class Type implements TypeInterface
     
     // protected //
     
-    protected function getHooks($eventName)
+    protected function getHook($hookName)
     {
-        if (! isset($this->hooks[$eventName])) {
-            return [];
+        if (! isset($this->hooks[$hookName])) {
+            return null;
         }
-        return $this->hooks[$eventName];
+        return $this->hooks[$hookName];
     }
 }

@@ -10,7 +10,7 @@
 **/
 namespace Zettai\Type;
 
-class Product extends Type
+class Product extends Type implements ProjectiveInterface
 {
     // var //
     
@@ -101,6 +101,14 @@ class Product extends Type
             $presentation = substr($presentation, strlen($value->toView($view)));
         }
         return $this->value($values);
+    }
+    
+    public function project($coordinate, $internal)
+    {
+        if (! isset($this->multipliers[$coordinate])) {
+            throw new Exception('Unknown coordinate "' . $coordinate . '" for this type', Exception::PRODUCT_PROJECT_COORDINATE_UNKNOWN);
+        }
+        return $internal[$coordinate];
     }
     
     public function toView($view, $values)

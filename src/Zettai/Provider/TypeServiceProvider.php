@@ -56,42 +56,81 @@ class TypeServiceProvider implements ServiceProviderInterface
             $dragon
         );
         $service['tileSequence'] = $service->sequence($service['tile'])
-        ->addEvent('beforeFromView')
-        ->beforeFromView(function ($view, $presentation) {
-            $prepared = [];
+        ->setHook('fromView', function ($view, $presentation) {
+            $internal = [];
             while (! empty($presentation)) {
-                $oldLength = strlen($presentation);
+                $prevLength = strlen($presentation);
+                
                 $presentation = trim($presentation);
-                if (preg_match('/^(\d+)(\D*)/', $presentation, $matches)) {
-                    for ($i = 0, $count = strlen($matches[1]); $i < $count; ++$i) {
-                        $prepared[] = $matches[1][$i] . $matches[2];
+                $candidate = $this->element->fromView($view, $presentation);
+                if ($candidate) {
+                    $internal[] = $candidate;
+                    $presentation = substr($presentation, strlen($candidate->toView($view)));
+                } elseif (preg_match('~^(\d+)([^\d\s]+)~', $presentation, $matches)) {
+                    $ranks = $matches[1];
+                    $suit  = $matches[2];
+                    for ($i = 0, $l = strlen($ranks); $i < $l; ++$i) {
+                        $candidate = $this->element->fromView($view, $ranks[$i] . $suit);
+                        if ($candidate) {
+                            $internal[] = $candidate;
+                        }
                     }
                     $presentation = substr($presentation, strlen($matches[0]));
-                } elseif (preg_match('/\D+/', $presentation, $matches)) {
-                    $prepared[] = $matches[0];
-                    $presentation = substr($presentation, strlen($matches[0]));
+                } else {
+                    break;
                 }
-                if ($oldLength <= strlen($presentation)) {
+                
+                if ($prevLength <= strlen($presentation)) {
                     break;
                 }
             }
-            return preg_replace('/\s+/', '', implode('', $prepared));
+            return $this->value($internal);
         })
-        ->addEvent('afterToView')
-        ->afterToView(function ($view, $presentation) {
-            $prepared = [];
-            while (! empty($presentation)) {
-                $oldLength = strlen($presentation);
-                $presentation = trim($presentation);
-                if (preg_match_all('/^\d(\D+)/', $presentation, $matches)) {
-                    print '<pre>' . __FILE__ . ':' . __LINE__ . ': matches = ' . print_r($matches, true) . '</pre>'; die; // debug
-                    $presentation = substr($presentation, strlen($matches[0]));
-                }
-                if ($oldLength <= strlen($presentation)) {
-                    break;
+        ->setHook('toView', function ($view, $internal) {
+        
+            $isLong = in_array($view, ['English', 'Russian']);
+        
+            $prevRankPresentation = null;
+            $prevSuitPresentation = null;
+            $presentations = [];
+            foreach ($internal as $index => $value) {
+                $newPresentation = $value->toView($view);
+                if (preg_match('/^(\d)(\D+)$/', $newPresentation, $matches)) {
+                    $newRankPresentation = $matches[1];
+                    $newSuitPresentation = $matches[2];
+                    
+                    if (! is_null($prevRankPresentation) && ! is_null($prevSuitPresentation)) {
+                        $presentations[] = $prevRankPresentation;
+                        if ($prevSuitPresentation !== $newSuitPresentation) {
+                            $presentations[] = $prevSuitPresentation;
+                            if ($isLong) {
+                                $presentations[] = ' ';
+                            }
+                        }
+                    }
+                    $prevRankPresentation = $newRankPresentation;
+                    $prevSuitPresentation = $newSuitPresentation;
+                } else {
+                    if (! is_null($prevRankPresentation) && ! is_null($prevSuitPresentation)) {
+                        $presentations[] = $prevRankPresentation;
+                        $presentations[] = $prevSuitPresentation;
+                        if ($isLong) {
+                            $presentations[] = ' ';
+                        }
+                    }
+                    $prevRankPresentation = null;
+                    $prevSuitPresentation = null;
+                    $presentations[] = $newPresentation;
+                    if ($isLong) {
+                        $presentations[] = ' ';
+                    }
                 }
             }
-            return implode('', $prepared);
+            if (! is_null($prevRankPresentation) && ! is_null($prevSuitPresentation)) {
+                $presentations[] = $prevRankPresentation;
+                $presentations[] = $prevSuitPresentation;
+            }
+            return implode('', $presentations);
         });
     }
 }

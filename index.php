@@ -73,7 +73,16 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // Если стоит режим заглушки, то выводим её и больше ничего не делаем.
 $app->before(function (Request $request) use ($app) {
 
-    print_r ($app['types']->tileSequence->fromRussian('1235699ман 99пин 3378со')->toTile()); die; // debug
+    $presentation = '34ман 35пин 3377со юг юг юг север север';
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': presentation = ' . $presentation . '</pre>'; // debug
+    $sequence = $app['types']->tileSequence->fromRussian($presentation);
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': sequence            = ' . $sequence . '</pre>'; // debug
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': sequence->toTile    = ' . $sequence->toTile() . '</pre>'; // debug
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': sequence->toEng     = ' . $sequence->toEng() . '</pre>'; // debug
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': sequence->toEnglish = ' . $sequence->toEnglish() . '</pre>'; // debug
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': sequence->toRus     = ' . $sequence->toRus() . '</pre>'; // debug
+    print '<pre>' . __FILE__ . ':' . __LINE__ . ': sequence->toRussian = ' . $sequence->toRussian() . '</pre>'; // debug
+    die; // debug
 
     if (file_exists(DEPLOY_LOCK_PATH)) {
         if ($request->getMethod() === 'GET') {
