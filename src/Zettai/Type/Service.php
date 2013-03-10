@@ -24,7 +24,7 @@ class Service implements ArrayAccess, ServiceInterface
     
     public function offsetExists($offset)
     {
-        return isset($this->types[$offset]);
+        return isset($this->types[$offset]) || isset($this->registry[$offset]);
     }
     
     public function offsetGet($offset)
@@ -54,19 +54,12 @@ class Service implements ArrayAccess, ServiceInterface
         throw new Exception('Unsetting types is unsupported', Exception::SERVICE_UNSET_UNSUPPORTED);
     }
     
-    // public : ServiceInterface //
+    // public : Service //
     
     public function __construct(array $views)
     {
         $this['view'] = $this->type($views);
     }
-    
-    public function getViewByName($name)
-    {
-        return $this->views->from($name);
-    }
-    
-    // public : Service utilities //
     
     public function __get($name)
     {

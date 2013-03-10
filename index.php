@@ -40,10 +40,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
-    // константы //
-    
-    $twig->addGlobal('ABCS', array_keys(Zettai\Exercise::$ABCS));
-
     // фильтры //
     
     $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app) {

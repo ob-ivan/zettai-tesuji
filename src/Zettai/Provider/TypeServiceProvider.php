@@ -138,7 +138,16 @@ class TypeServiceProvider implements ServiceProviderInterface
                 return implode('', $presentations);
             });
         });
-        $service->register('exerciseContents', function ($service) {
+        $service->register('abc', function ($service) {
+            return $service->type(['a', 'b', 'c']);
+        });
+        $service->register('answer', function ($service) {
+            return $service->record([
+                'discard' => $service['tile'],
+                'comment' => $service->text(),
+            ]);
+        });
+        $service->register('exerciseContent', function ($service) {
             return $service->record([
                 'kyoku'     => $service['kyoku'],
                 'position'  => $service['wind'],
@@ -147,12 +156,11 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'score'     => $service->text(),
                 'hand'      => $service['tileSequence'],
                 'draw'      => $service['tile'],
-                'discard_a' => $service['tile'],
-                'answer_a'  => $service->text(),
-                'discard_b' => $service['tile'],
-                'answer_b'  => $service->text(),
-                'discard_c' => $service['tile'],
-                'answer_c'  => $service->text(),
+                'answer'    => $service->map(
+                    $service['abc'],
+                    $service['answer']
+                ),
+                'best_answer' => $service['abc'],
             ]);
         });
     }
