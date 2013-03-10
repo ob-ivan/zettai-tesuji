@@ -21,7 +21,7 @@ class Value implements ValueInterface
     public function offsetGet($offset)
     {
         if (! $this->type instanceof DereferenceableInterface) {
-            return false;
+            return null;
         }
         return $this->type->dereference($this->internal, $offset);
     }
@@ -80,14 +80,6 @@ class Value implements ValueInterface
     public function is(TypeInterface $type)
     {
         return $this->type === $type;
-    }
-    
-    public function project($coordinate)
-    {
-        if ($this->type instanceof ProjectiveInterface) {
-            return $this->type->project($coordinate, $this->internal);
-        }
-        throw new Exception('Projection for this type is not supported', Exception::VALUE_PROJECT_UNSUPPORTED);
     }
     
     public function toPrimitive()
