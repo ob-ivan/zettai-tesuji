@@ -2,7 +2,7 @@
 /**
  * Контейнер и породитель перечислимых типов.
 **/
-namespace Zettai\Type;
+namespace Zettai\Type\Type;
 
 class Service implements ServiceInterface
 {

@@ -1,7 +1,9 @@
 <?php
 namespace Zettai\Type;
 
-class ViewContainer implements ArrayAccess
+use Zettai\Type\Type\TypeInterface;
+
+class ViewService implements ServiceInterface
 {
     /**
      * @var [<string viewName> => <callable viewProvider>]
@@ -39,30 +41,20 @@ class ViewContainer implements ArrayAccess
     public function offsetSet($offset, $value)
     {
         if (isset($this[$offset])) {
-            throw new Exception('View "' . $offset . '" already exists', Exception::VIEW_CONTAINER_SET_ALREADY_EXISTS);
+            throw new Exception('View "' . $offset . '" already exists', Exception::SERVICE_SET_OFFSET_ALREADY_EXISTS);
         }
         if (! $value instanceof ViewInterface) {
-            throw new Exception('Value must implement ViewInterface for offset "' . $offset . '"', Exception::VIEW_CONTAINER_SET_VALUE_WRONG_TYPE);
+            throw new Exception('Value must implement ViewInterface for offset "' . $offset . '"', Exception::SERVICE_SET_VALUE_WRONG_TYPE);
         }
         $this->views[$offset] = $value;
     }
     
     public function offsetUnset($offset)
     {
-        throw new Exception('Unsetting offsets is not supported', Exception::VIEW_CONTAINER_UNSET_NOT_SUPPORTED);
+        throw new Exception('Unsetting offsets is not supported', Exception::SERVICE_UNSET_NOT_SUPPORTED);
     }
     
-    // public : ViewContainer //
-    
-    public function __construct(TypeInterface $type)
-    {
-        $this->type = $type;
-    }
-    
-    public function __get($name)
-    {
-        return $this[$name];
-    }
+    // public : ServiceInterface //
     
     /**
      * Запоминает свойства представления для отложенной инстанциации.
@@ -77,10 +69,10 @@ class ViewContainer implements ArrayAccess
     public function register($name, $provider)
     {
         if (isset($this->registry[$name])) {
-            throw new Exception('View "' . $name . '" is already registered', Exception::VIEW_CONTAINER_REGISTER_NAME_ALREADY_EXISTS);
+            throw new Exception('View "' . $name . '" is already registered', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
         }
         if (isset($this->views[$name])) {
-            throw new Exception('View "' . $name . '" already exists', Exception::VIEW_CONTAINER_REGISTER_NAME_ALREADY_EXISTS);
+            throw new Exception('View "' . $name . '" already exists', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
         }
         if (! is_callable($provider)) {
             $args = array_slice(func_get_args(), 2);
@@ -91,5 +83,17 @@ class ViewContainer implements ArrayAccess
         }
         $this->registry[$name] = $provider;
         return $this;
+    }
+    
+    // public : Service //
+    
+    public function __construct(TypeInterface $type)
+    {
+        $this->type = $type;
+    }
+    
+    public function __get($name)
+    {
+        return $this[$name];
     }
 }
