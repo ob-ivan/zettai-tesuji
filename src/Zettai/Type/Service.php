@@ -38,7 +38,7 @@ class Service implements ServiceInterface
     
     public function offsetSet($offset, $value)
     {
-        if (isset($this->types[$offset])) {
+        if (isset($this[$offset])) {
             throw new Exception('Type "' . $offset . '" already exists', Exception::SERVICE_SET_OFFSET_ALREADY_EXISTS);
         }
         if (! $value instanceof TypeInterface) {
@@ -83,10 +83,11 @@ class Service implements ServiceInterface
     **/
     public function register($name, $factory)
     {
-        if (isset($this->registry[$name])) {
-            throw new Exception('Type "' . $name . '" is already registered', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
+        if (isset($this[$offset])) {
+            throw new Exception('Type "' . $name . '" already exists', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
         }
         $this->registry[$name] = $factory;
+        return $this;
     }
     
     // public : predefined types //

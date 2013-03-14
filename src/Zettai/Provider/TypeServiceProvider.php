@@ -7,13 +7,36 @@ use Zettai\Type\Service;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
+    // END
+    
     public function register(Application $app)
     {
-        $app['types'] = new Service(['Tile', 'English', 'Eng', 'Russian', 'Rus']);
-
+        $app['types'] = new Service();
     }
     
-    public function boot(Application $app)
+    public function boot(Application app)
+    {
+        $service = $app['types'];
+        
+        $service->register('roundWind', function ($service) {
+            $type = $service->enum(['east', 'south']);
+            $type->view
+                ->register('english', 'dictionary', ['east',   'south'])
+                ->register('e',       'dictionary', ['e',      's'    ])
+                ->register('russian', 'dictionary', ['восток', 'юг'   ])
+                ->register('r',       'dictionary', ['в',      'ю'    ]);
+            return $type;
+        });
+    }
+    
+    // OLD
+    
+    public function _register(Application $app)
+    {
+        $app['types'] = new Service(['Tile', 'English', 'Eng', 'Russian', 'Rus']);
+    }
+    
+    public function _boot(Application $app)
     {
         $service = $app['types'];
         
