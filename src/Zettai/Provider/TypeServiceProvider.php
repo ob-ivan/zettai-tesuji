@@ -7,7 +7,7 @@ use Zettai\Type\Service;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
-    // END
+    // NEW
     
     public function register(Application $app)
     {
