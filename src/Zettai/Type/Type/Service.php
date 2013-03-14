@@ -54,22 +54,6 @@ class Service implements ServiceInterface
     
     // public : Service //
     
-    public function __construct(array $views)
-    {
-        $this['view'] = $this->type($views);
-        
-        // predefined types //
-        $this->register('boolean', function () {
-            return $this->enum(['true', 'false']);
-        });
-        $this->register('integer', function () {
-            return new Integer($this);
-        });
-        $this->register('text', function () {
-            return new Text($this);
-        });
-    }
-    
     public function __get($name)
     {
         return $this[$name];
@@ -83,7 +67,7 @@ class Service implements ServiceInterface
     **/
     public function register($name, $factory)
     {
-        if (isset($this[$offset])) {
+        if (isset($this[$name])) {
             throw new Exception('Type "' . $name . '" already exists', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
         }
         $this->registry[$name] = $factory;
@@ -154,11 +138,6 @@ class Service implements ServiceInterface
         return new Sequence($this, $type);
     }
     
-    public function singleton($value)
-    {
-        return new Singleton($this, $value);
-    }
-    
     public function type($candidate)
     {
         if ($candidate instanceof TypeInterface) {
@@ -167,7 +146,7 @@ class Service implements ServiceInterface
         if (is_array($candidate)) {
             return $this->enum($candidate);
         }
-        return $this->singleton($candidate);
+        return null;
     }
     
     /**
@@ -181,17 +160,5 @@ class Service implements ServiceInterface
     public function union()
     {
         return new Union($this, func_get_args());
-    }
-    
-    /**
-     * Создаёт новый перечислимый тип с настраиваемым представлением.
-     *
-     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
-     *
-     *  @return Viewable
-    **/
-    public function viewable(array $values)
-    {
-        return new Viewable($this, $values);
     }
 }

@@ -15,17 +15,22 @@ class Enum extends Type
         $this->values = $values;
         
         $this->view
-            ->register('primitive', 'dictionary', array_keys($values))
-            ->register('name',      'dictionary', $values)
+            ->register('index',   'dictionary', array_keys($values))
+            ->register('default', 'dictionary', $values)
         ;
     }
     
     public function each()
     {
         $return = [];
-        foreach ($this->values as $primitive => $views) {
-            $return[$primitive] = $this->value($primitive);
+        foreach ($this->values as $index => $views) {
+            $return[$index] = $this->value($index);
         }
         return $return;
+    }
+    
+    public function equals($internalA, $internalB)
+    {
+        return $internalA === $internalB;
     }
 }

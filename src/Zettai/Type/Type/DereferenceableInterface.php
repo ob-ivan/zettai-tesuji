@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Type;
+namespace Zettai\Type\Type;
 
 interface DereferenceableInterface extends TypeInterface
 {

@@ -14,7 +14,7 @@ class TypeServiceProvider implements ServiceProviderInterface
         $app['types'] = new TypeService();
     }
     
-    public function boot(Application app)
+    public function boot(Application $app)
     {
         $typeService = $app['types'];
         
@@ -49,6 +49,15 @@ class TypeServiceProvider implements ServiceProviderInterface
                 ->register('r',         'select', ['r',         'r'      ])
                 ->register('tenhou',    'select', ['tenhou',    'tenhou' ])
                 ->register('tile',      'select', ['tile',      'tile'   ])
+            ->type;
+        });
+        $typeService->register('kyoku', function ($typeService) {
+            return $typeService->product($typeService['roundWind'], range(1, 4))
+            ->view
+                ->register('english',   'separator', '-', ['english',   'default'])
+                ->register('e',         'concat',         ['e',         'default'])
+                ->register('russian',   'separator', '-', ['russian',   'default'])
+                ->register('r',         'concat',         ['r',         'default'])
             ->type;
         });
     }

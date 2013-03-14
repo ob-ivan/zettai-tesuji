@@ -8,7 +8,7 @@
  * Внутренним примитивным значением (хранимым в Value) является массив
  * [<index> => <Value>].
 **/
-namespace Zettai\Type;
+namespace Zettai\Type\Type;
 
 class Product extends Type implements DereferenceableInterface
 {

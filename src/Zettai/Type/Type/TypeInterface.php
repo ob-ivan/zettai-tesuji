@@ -3,7 +3,7 @@ namespace Zettai\Type\Type;
 
 interface TypeInterface
 {
-    public function equals($a, $b);
+    public function equals($internalA, $internalB);
     
     public function from($input);
     

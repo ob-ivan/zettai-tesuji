@@ -56,6 +56,15 @@ class Service implements ServiceInterface
     
     // public : ServiceInterface //
     
+    public function each()
+    {
+        // Дозагрузить все представления во views.
+        foreach ($this->registry as $name => $provider) {
+            $this[$name];
+        }
+        return $this->views;
+    }
+    
     /**
      * Запоминает свойства представления для отложенной инстанциации.
      *
