@@ -1,9 +1,9 @@
 <?php
-namespace Zettai\Type;
+namespace Zettai\Type\View;
 
 use Zettai\Type\Type\TypeInterface;
 
-class ViewService implements ServiceInterface
+class Service implements ServiceInterface
 {
     /**
      * @var [<string viewName> => <callable viewProvider>]

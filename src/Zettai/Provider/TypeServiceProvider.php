@@ -3,7 +3,7 @@ namespace Zettai\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Zettai\Type\Service;
+use Zettai\Type\Type\Service as TypeService;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
@@ -11,30 +11,49 @@ class TypeServiceProvider implements ServiceProviderInterface
     
     public function register(Application $app)
     {
-        $app['types'] = new Service();
+        $app['types'] = new TypeService();
     }
     
     public function boot(Application app)
     {
-        $service = $app['types'];
+        $typeService = $app['types'];
         
-        $service->register('roundWind', function ($service) {
-            $type = $service->enum(['east', 'south']);
-            $type->view
+        $typeService->register('roundWind', function ($typeService) {
+            return $typeService->enum(['east', 'south'])
+            ->view
                 ->register('english', 'dictionary', ['east',   'south'])
                 ->register('e',       'dictionary', ['e',      's'    ])
                 ->register('russian', 'dictionary', ['восток', 'юг'   ])
-                ->register('r',       'dictionary', ['в',      'ю'    ]);
-            return $type;
+                ->register('r',       'dictionary', ['в',      'ю'    ])
+                ->register('tenhou',  'dictionary', ['1z',     '2z'   ])
+                ->register('tile', 'cast', 'tenhou', 'tile', 'tenhou')
+            ->type;
+        });
+        $typeService->register('squareWind', function ($typeService) {
+            return $typeService->enum(['west', 'north'])
+            ->view
+                ->register('english', 'dictionary', ['west',   'north'])
+                ->register('e',       'dictionary', ['w',      'n'    ])
+                ->register('russian', 'dictionary', ['запад',  'север'])
+                ->register('r',       'dictionary', ['з',      'с'    ])
+                ->register('tenhou',  'dictionary', ['3z',     '4z'   ])
+                ->register('tile', 'cast', 'tenhou', 'tile', 'tenhou')
+            ->type;
+        });
+        $typeService->register('wind', function ($typeService) {
+            return $typeService->union($typeService['roundWind'], $typeService['squareWind'])
+            ->view
+                ->register('english',   'select', ['english',   'english'])
+                ->register('e',         'select', ['e',         'e'      ])
+                ->register('russian',   'select', ['russian',   'russian'])
+                ->register('r',         'select', ['r',         'r'      ])
+                ->register('tenhou',    'select', ['tenhou',    'tenhou' ])
+                ->register('tile',      'select', ['tile',      'tile'   ])
+            ->type;
         });
     }
     
     // OLD
-    
-    public function _register(Application $app)
-    {
-        $app['types'] = new Service(['Tile', 'English', 'Eng', 'Russian', 'Rus']);
-    }
     
     public function _boot(Application $app)
     {

@@ -1,55 +1,44 @@
 <?php
-namespace Zettai\Type;
+namespace Zettai\Type\Type;
+
+use Zettai\Type\Value;
+use Zettai\Type\ValueInterface;
+use Zettai\Type\View\Service as ViewService;
 
 abstract class Type implements TypeInterface
 {
     // var //
     
-    private $service;
+    /**
+     *  @var ServiceInterface
+    **/
+    private $typeService;
+    
+    /**
+     *  @var ViewService
+    **/
+    private $view;
     
     // public //
     
-    public function __construct(ServiceInterface $service)
+    public function __construct(ServiceInterface $typeService)
     {
-        $this->service = $service;
+        $this->typeService = $typeService;
+        
+        $this->view = new ViewService($this);
     }
     
     /**
-     * Волшебные методы:
-     *  - from<View>($presentation)
-    **/
-    public function __call($name, $args)
-    {
-        if (preg_match('/^from(\w+)$/i', $name, $matches)) {
-            if (! isset($args[0])) {
-                throw new Exception(
-                    'Method "' . $name . '" expects at least one argument',
-                    Exception::TYPE_FROM_VIEW_ARGUMENT_ABSENT
-                );
-            }
-            $view = $this->service['view']->from($matches[1]);
-            if (! $view) {
-                throw new Exception(
-                    'Unknown view "' . $matches[1] . '"',
-                    Exception::TYPE_FROM_VIEW_UNKNOWN_VIEW
-                );
-            }
-            return $this->fromView($view, $args[0]);
-        }
-        throw new Exception('Method "' . $name . '" is unknown', Exception::TYPE_CALL_METHOD_UNKNOWN);
-    }
-    
-    /**
-     * Короткая запись для инстанциации значения.
+     * Волшебные свойства:
+     *  - view открыт на чтение.
+     *  - Короткая запись для инстанциации значения.
     **/
     public function __get($name)
     {
+        if ($name === 'view') {
+            return $this->view;
+        }
         return $this->from($name);
-    }
-    
-    public function equals($a, $b)
-    {
-        return $a === $b;
     }
     
     /**
@@ -66,22 +55,15 @@ abstract class Type implements TypeInterface
         if ($this->has($input)) {
             return $input;
         }
-        // Попробовать примитивное значение.
-        $fromPrimitive = $this->fromPrimitive($input);
-        if ($fromPrimitive) {
-            return $fromPrimitive;
-        }
         // Поискать среди представлений.
-        foreach ($this->service['view']->each() as $view) {
-            $candidate = $this->fromView($view, $input);
-            if ($candidate) {
-                return $candidate;
+        foreach ($this->view->each() as $view) {
+            $value = $view->from($input);
+            if ($value) {
+                return $value;
             }
         }
         return null;
     }
-    
-    abstract public function fromView($view, $presentation);
     
     public function has($value)
     {
@@ -93,20 +75,9 @@ abstract class Type implements TypeInterface
     
     public function toString($internal)
     {
-        foreach ($this->service['view']->each() as $view) {
-            return $this->toView($view, $internal);
+        foreach ($this->view->each() as $view) {
+            return $view->to($internal);
         }
-    }
-    
-    abstract public function toView($view, $internal);
-    
-    public function toViewByName($viewName, $internal)
-    {
-        $view = $this->service['view']->from($viewName);
-        if (! $view) {
-            throw new Exception('Unknown view name "' . $viewName . '"', Exception::TYPE_TO_VIEW_NAME_UNKNOWN);
-        }
-        return $this->toView($view, $internal);
     }
     
     public function value($internal)

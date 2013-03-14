@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Type;
+namespace Zettai\Type\Type;
 
 class Enum extends Type
 {
@@ -8,53 +8,24 @@ class Enum extends Type
     **/
     private $values;
     
-    public function __construct (ServiceInterface $service, array $values)
+    public function __construct (ServiceInterface $typeService, array $values)
     {
-        parent::__construct($service);
+        parent::__construct($typeService);
         
         $this->values = $values;
+        
+        $this->view
+            ->register('primitive', 'dictionary', array_keys($values))
+            ->register('name',      'dictionary', $values)
+        ;
     }
     
     public function each()
     {
         $return = [];
         foreach ($this->values as $primitive => $views) {
-            $return[$primitive] = $this->fromPrimitive($primitive);
+            $return[$primitive] = $this->value($primitive);
         }
         return $return;
-    }
-    
-    public function fromView($view, $presentation)
-    {
-        foreach ($this->values as $index => $value) {
-            if (0 === strpos($presentation, strval($value))) {
-                return $this->fromPrimitive($index);
-            }
-        }
-        return null;
-    }
-    
-    public function fromPrimitive($primitive)
-    {
-        if (! isset($this->values[$primitive])) {
-            return null;
-        }
-        return $this->value($primitive);
-    }
-    
-    public function toPrimitive($internal)
-    {
-        return array_search($internal, $this->values);
-    }
-    
-    public function toView($view, $internal)
-    {
-        if (! isset($this->values[$internal])) {
-            throw new Exception(
-                'Unknown value "' . $internal . '"',
-                Exception::ENUM_TO_VIEW_UNSUPPORTED_PRIMITIVE
-            );
-        }
-        return $this->values[$internal];
     }
 }
