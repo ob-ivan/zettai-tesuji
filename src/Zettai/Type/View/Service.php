@@ -103,6 +103,16 @@ class Service implements ServiceInterface
     
     public function __get($name)
     {
+        if ($name === 'type') {
+            return $this->type;
+        }
         return $this[$name];
+    }
+    
+    // public : predefined views //
+    
+    public function phpArray()
+    {
+        return new PhpArray($this->type);
     }
 }

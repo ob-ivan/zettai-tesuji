@@ -52,11 +52,17 @@ class Service implements ServiceInterface
         throw new Exception('Unsetting types is unsupported', Exception::SERVICE_UNSET_UNSUPPORTED);
     }
     
-    // public : Service //
+    // public : ServiceInterface //
     
-    public function __get($name)
+    public function from($candidate)
     {
-        return $this[$name];
+        if ($candidate instanceof TypeInterface) {
+            return $candidate;
+        }
+        if (is_array($candidate)) {
+            return $this->enum($candidate);
+        }
+        return null;
     }
     
     /**
@@ -72,6 +78,13 @@ class Service implements ServiceInterface
         }
         $this->registry[$name] = $factory;
         return $this;
+    }
+    
+    // public : Service //
+    
+    public function __get($name)
+    {
+        return $this[$name]; 
     }
     
     // public : predefined types //
@@ -136,17 +149,6 @@ class Service implements ServiceInterface
     public function sequence(TypeInterface $type)
     {
         return new Sequence($this, $type);
-    }
-    
-    public function type($candidate)
-    {
-        if ($candidate instanceof TypeInterface) {
-            return $candidate;
-        }
-        if (is_array($candidate)) {
-            return $this->enum($candidate);
-        }
-        return null;
     }
     
     /**

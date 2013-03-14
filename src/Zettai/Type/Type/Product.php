@@ -39,162 +39,84 @@ class Product extends Type implements DereferenceableInterface
     
     // public : Product //
     
-    public function __construct (ServiceInterface $service, array $multipliers)
+    public function __construct (ServiceInterface $typeService, array $multipliers)
     {
-        parent::__construct($service);
+        parent::__construct($typeService);
         
         foreach ($multipliers as $index => $multiplier) {
-            $this->multipliers[$index] = $service->type($multiplier);
+            $this->multipliers[$index] = $typeService->from($multiplier);
         }
+        
+        $this->view->register('array', 'phpArray');
     }
     
+    /**
+     * Перебирает все значения для каждой координаты и возвращает
+     * по значению для всевозможных сочетаний координат.
+     *
+     *  TODO: Переделать без деления с остатком, ведь достаточно увеличивать
+     *      последнюю координату и перекидывать в следующий разряд при переполнении.
+     *
+     *  @return [<Value>]
+    **/
     public function each()
     {
         /**
-         * [<index> => [<primitive>]]
+         * [<index> => [<value>]]
         **/
-        $primitives = [];
+        $values = [];
         /**
-         * [<index> => <primitive values count>]
+         * [<index> => <values count>]
         **/
         $counts = [];
         $totalCount = 1;
         foreach ($this->multipliers as $index => $multiplier) {
-            $primitives[$index] = array_keys($multiplier->each());
-            $counts[$index] = count($primitives[$index]);
+            $values[$index] = $multiplier->each();
+            $counts[$index] = count($values[$index]);
             $totalCount *= $counts[$index];
         }
         $return = [];
         for ($seed = 0; $seed < $totalCount; ++$seed) {
-            $primitive = $this->pack($seed, $counts, $primitives);
-            $return[$primitive] = $this->fromPrimitive($primitive);
+            $return[] = $this->fromSeed($seed, $counts, $values);
         }
         return $return;
     }
     
-    public function equals ($a, $b)
+    public function equals ($internalA, $internalB)
     {
-        foreach ($a as $index => $value) {
-            if (! isset($b[$index])) {
+        foreach ($internalA as $index => $value) {
+            if (! isset($internalB[$index])) {
                 return false;
             }
-            if (! $value->equals($b[$index])) {
+            if (! $value->equals($internalB[$index])) {
                 return false;
             }
         }
-        foreach ($b as $index => $value) {
-            if (! isset($a[$index])) {
+        foreach ($internalB as $index => $value) {
+            if (! isset($internalA[$index])) {
                 return false;
             }
-            if (! $value->equals($a[$index])) {
+            if (! $value->equals($internalA[$index])) {
                 return false;
             }
         }
         return true;
     }
     
-    /**
-     * Дополнительно рассматривает $input как массив.
-    **/
-    public function from($input)
-    {
-        $candidate = parent::from($input);
-        if ($candidate) {
-            return $candidate;
-        }
-        if (is_array($input)) {
-            return $this->fromArray($input);
-        }
-        return null;
-    }
-    
-    public function fromArray($array)
-    {
-        $internal = [];
-        foreach ($this->multipliers as $index => $multiplier) {
-            if (! isset ($array[$index])) {
-                return null;
-            }
-            $value = $multiplier->from($array[$index]);
-            if (! $value) {
-                return null;
-            }
-            $internal[$index] = $value;
-        }
-        return $this->value($internal);
-    }
-    
-    public function fromPrimitive($primitive)
-    {
-        if (! is_string($primitive)) {
-            return null;
-        }
-        $primitives = json_decode($primitive);
-        if (! (is_array($primitives) || is_object($primitives))) {
-            return null;
-        }
-        $internal = [];
-        foreach ($this->multipliers as $index => $multiplier) {
-            $value = $multiplier->fromPrimitive($primitives[$index]);
-            if (! $value) {
-                return null;
-            }
-            $internal[$index] = $value;
-        }
-        return $this->value($internal);
-    }
-    
-    public function fromView($view, $presentation)
-    {
-        if (! is_string($presentation)) {
-            return null;
-        }
-        
-        $internal = [];
-        foreach ($this->multipliers as $index => $multiplier) {
-            $value = $multiplier->fromView($view, $presentation);
-            if (! $value) {
-                return null;
-            }
-            $internal[$index] = $value;
-            $presentation = substr($presentation, strlen($value->toView($view)));
-        }
-        return $this->value($internal);
-    }
-    
-    public function toPrimitive($internal)
-    {
-        $primitives = [];
-        foreach ($this->multipliers as $index => $multiplier) {
-            $primitives[$index] = $internal[$index]->toPrimitive();
-        }
-        return json_encode($primitives);
-    }
-    
-    public function toView($view, $internal)
-    {
-        $presentation = [];
-        foreach ($internal as $index => $value) {
-            $presentation[] = $value->toView($view);
-        }
-        return implode('', $presentation);
-    }
-    
     // private //
     
     /**
-     *  @return [<index> => primitives[index][0 .. counts[index]]]
+     *  @return Value
     **/
-    private function pack($seed, $counts, $primitives)
+    private function fromSeed($seed, $counts, $values)
     {
-        $key = [];
+        $internal = [];
         for ($i = count($counts) - 1; $i >= 0; --$i) {
             $rem = $seed % $counts[$i];
-            $key[$i] = $primitives[$i][$rem];
-            $seed -= $key[$i];
+            $seed -= $rem;
             $seed /= $counts[$i];
+            $internal[$i] = $values[$i][$rem];
         }
-        ksort($key, SORT_NUMERIC);
-        return json_encode($key);
+        return $this->value($internal);
     }
 }
