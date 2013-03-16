@@ -46,8 +46,6 @@ class Product extends Type implements DereferenceableInterface
         foreach ($multipliers as $index => $multiplier) {
             $this->multipliers[$index] = $typeService->from($multiplier);
         }
-        
-        $this->view->register('array', 'phpArray');
     }
     
     /**

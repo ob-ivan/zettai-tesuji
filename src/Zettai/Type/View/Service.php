@@ -70,7 +70,7 @@ class Service implements ServiceInterface
      *
      *  @param  string                          $name
      *
-     *  @param  ViewInterface(ViewContainer)    $provider
+     *  @param  ViewInterface(ViewService)    $provider
      * или:
      *  @param  string  $viewClass
      *  @params mixed   аргументы
@@ -85,10 +85,9 @@ class Service implements ServiceInterface
         }
         if (! is_callable($provider)) {
             $args = array_slice(func_get_args(), 2);
-            $factory = $provider;
-            $provider = function ($viewService) use ($factory, $args) {
-                return call_user_func_array([$viewService, $factory], $args);
-            };
+            $provider = return function ($service) use ($provider, $args) {
+                return $this->providers[$provider]($service, $args)
+            }
         }
         $this->registry[$name] = $provider;
         return $this;
@@ -107,12 +106,5 @@ class Service implements ServiceInterface
             return $this->type;
         }
         return $this[$name];
-    }
-    
-    // public : predefined views //
-    
-    public function phpArray()
-    {
-        return new PhpArray($this->type);
     }
 }
