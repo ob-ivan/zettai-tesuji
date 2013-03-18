@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit colors="true">
+    <testsuites>
+        <testsuite>
+            <directory suffix="">EviType</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="display_errors" value="0"/>
+    </php>
+</phpunit>

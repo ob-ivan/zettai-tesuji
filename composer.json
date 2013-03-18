@@ -25,9 +25,8 @@
         "twig/twig"                     : ">=1.8,<2.0-dev"
     },
     "require-dev": {
-        "phpunit/dbunit"    : ">=1.2",
-        "phpunit/phpunit"   : ">=3.7.5"
-    },    
+        "phpunit/phpunit": ">=3.7.5"
+    },
     "autoload": {
         "psr-0": {
             "Ob_Ivan": "src/",
