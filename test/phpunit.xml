@@ -2,10 +2,7 @@
 <phpunit colors="true">
     <testsuites>
         <testsuite>
-            <directory suffix="">EviType</directory>
+            <directory suffix=".php">EviType</directory>
         </testsuite>
     </testsuites>
-    <php>
-        <ini name="display_errors" value="0"/>
-    </php>
 </phpunit>
