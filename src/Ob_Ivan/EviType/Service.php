@@ -1,7 +1,7 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-class Service
+class Service implements ServiceInterface
 {
     /**
      * @var TypeContainer
@@ -12,6 +12,37 @@ class Service
      * @var TypeFactory
     **/
     private $factory;
+    
+    // public : ArrayAccess //
+    
+    public function offsetExists($offset)
+    {
+        return $this->container->offsetExists($offset);
+    }
+    
+    public function offsetGet($offset)
+    {
+        return $this->container->offsetGet($offset);
+    }
+    
+    public function offsetSet($offset, $value)
+    {
+        return $this->container->offsetSet($offset, $value);
+    }
+    
+    public function offsetUnset($offset)
+    {
+        return $this->container->offsetUnset($offset);
+    }
+    
+    // public : ServiceInterface //
+    
+    public function register($name, callable $producer)
+    {
+        return $this->container->register($name, $producer);
+    }
+    
+    // public : Service //
     
     public function __construct()
     {
