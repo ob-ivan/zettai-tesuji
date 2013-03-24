@@ -3,7 +3,7 @@ namespace Zettai\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Zettai\Type\Type\Service as TypeService;
+use Ob_Ivan\EviType\Service as TypeService;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
