@@ -1,28 +1,37 @@
 {#
     Подключаемый шаблон для вывода пагинации.
     На входе должен иметь параметры:
-    {
-        'totalCount'    :
-        'perPage'       :
-        'curPage'       :
-        'linkTemplate'  :
-    }
+        totalCount      Общее количество предметов в списке.
+        perPage         Количество предметов для вывода на одной странице.
+        curPage         Номер текущей страницы.
+        adjacentPages   Количество соседних страниц, которые выводить без сокращения.
+        linkTemplate    Имя ссылки в таблице рутинга, на которую ведёт номер страницы.
 #}
+{% import _self as paginator %}
+
+{% macro link(page) %}
+    <a href="{{ path(linkTemplate, { 'page' : page }) }}">{{ page }}</a>
+{% endmacro %}
+
 {% if totalCount > perPage %}
-    {# На предыдущую страницу #}
     {% if curPage > 1 %}
-        {% if curPage > 2%}
-            ...
+        {% if curPage > adjacentPages + 1 %}
+            {{ paginator.link(1) }}
+            {% if curPage > adjacentPages + 2 %}
+                &hellip;
+            {% endif %}
         {% endif %}
-        <a href="{{ path(linkTemplate, { 'page' : curPage - 1 }) }}">{{ curPage - 1 }}</a>
+        {% set prevPages = min(curPage - 1, adjacentPages) %}
     {% endif %}
+    
     {# Текущая страница #}
     <b>{{ curPage }}</b>
+    
     {# На следующую страницу #}
-    {% set totalPages = ceil(totalCount / perPage) %}
-    {% if curPage < totalPages %}
-        <a href="{{ path(linkTemplate, { 'page' : curPage + 1 }) }}">{{ curPage + 1 }}</a>
-        {% if curPage < totalPages - 1 %}
+    {% set lastPage = ceil(totalCount / perPage) %}
+    {% if curPage < lastPage %}
+        {{ paginator.link(curPage + 1) }}
+        {% if curPage < lastPage - 1 %}
             ...
         {% endif %}
     {% endif %}
