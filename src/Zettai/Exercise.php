@@ -149,7 +149,14 @@ class Exercise
     public function __construct(array $row)
     {
         foreach (self::$FIELD_PROPERTIES as $fieldName => $properties) {
-            $value = isset($row[$fieldName]) ? $row[$fieldName] : null;
+            $value = null;
+            if (isset($row[$fieldName])) {
+                $value = $row[$fieldName];
+            } elseif (isset($properties[self::PROPERTY_DEFAULT])) {
+                $value = $properties[self::PROPERTY_DEFAULT];
+            } else {
+                $value = self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
+            }
             $this->data[$fieldName] = self::prepare($value, $properties);
         }
     }
