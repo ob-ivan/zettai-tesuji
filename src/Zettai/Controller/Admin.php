@@ -145,12 +145,7 @@ class Admin implements ControllerProviderInterface
                     'score'         => $request->request->get('score'),
                     'hand'          => $request->request->get('hand'),
                     'draw'          => $request->request->get('draw'),
-                    'discard_a'     => $request->request->get('discard_a'),
-                    'answer_a'      => $request->request->get('answer_a'),
-                    'discard_b'     => $request->request->get('discard_b'),
-                    'answer_b'      => $request->request->get('answer_b'),
-                    'discard_c'     => $request->request->get('discard_c'),
-                    'answer_c'      => $request->request->get('answer_c'),
+                    'answer'        => $request->request->get('answer'),
                     'best_answer'   => $request->request->get('best_answer'),
                 ],
             ]);
