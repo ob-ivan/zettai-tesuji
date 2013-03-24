@@ -201,24 +201,24 @@ class Import implements ControllerProviderInterface
                 ];
                 // TODO: Убрать явные приведения к типам, когда для content будет определено представление.
                 $content = [
-                    'kyoku'     => $this->types->kyoku->from(mb_strtolower($matches['kyoku']))->toEnglish(),
-                    'position'  => $this->types->wind ->from(mb_strtolower($matches['position']))->toEnglish(),
+                    'kyoku'     => $this->convertKyoku($matches['kyoku']),
+                    'position'  => $this->convertWind($matches['position']),
                     'turn'      => $matches['turn'],
-                    'dora'      => $this->types->tile ->from($matches['dora'])->toEnglish(),
+                    'dora'      => $this->convertTile($matches['dora']),
                     'score'     => $matches['score'],
-                    'hand'      => $this->types->tileSequence->fromRussian($matches['hand'])->toTile(),
-                    'draw'      => $matches['draw'],
+                    'hand'      => $this->convertTileSequence($matches['hand']),
+                    'draw'      => $this->convertTile($matches['draw']),
                     'answer'    => [
                         'a' => [
-                            'discard' => $matches['discard_a'],
+                            'discard' => $this->convertTile($matches['discard_a']),
                             'comment' => null,
                         ],
                         'b' => [
-                            'discard' => $matches['discard_b'],
+                            'discard' => $this->convertTile($matches['discard_b']),
                             'comment' => null,
                         ],
                         'c' => [
-                            'discard' => $matches['discard_c'],
+                            'discard' => $this->convertTile($matches['discard_c']),
                             'comment' => null,
                         ],
                     ],
@@ -252,7 +252,7 @@ class Import implements ControllerProviderInterface
                                 $answer = $this->russianToEnglish($matches[1]);
                                 if ($answer) {
                                     $expectedDiscard = $content['answer'][$answer]['discard'];
-                                    if ($expectedDiscard === $matches[2]) {
+                                    if ($expectedDiscard === $this->convertTile($matches[2])) {
                                         $currentAnswer = $answer;
                                         if ($mode === 'best') {
                                             $bestAnswer = $answer;
@@ -304,5 +304,27 @@ class Import implements ControllerProviderInterface
             case 'С': return 'c';
         }
         return null;
+    }
+    
+    // private : type converters //
+    
+    private function convertKyoku($presentation)
+    {
+        return $this->types->kyoku->from(mb_strtolower($presentation))->toEnglish();
+    }
+    
+    private function convertTile($presentation)
+    {
+        return $this->types->tile->from($presentation)->toTile();
+    }
+    
+    private function convertTileSequence($presentation)
+    {
+        return $this->types->tileSequence->fromRussian($presentation)->toTile();
+    }
+    
+    private function convertWind($presentation)
+    {
+        return $this->types->wind->from(mb_strtolower($presentation))->toEnglish();
     }
 }
