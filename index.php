@@ -55,54 +55,8 @@ $app->before(function (Request $request) use ($app) {
 
 // Задаём рутинг и контроллеры.
 
-// Главная страница.
-$app->get('/{page}', function ($page) use ($app) {
-    $exerciseCount = $app['model']->getExerciseCount(false);
-    $perPage = 20;
-    if (($page - 1) * $perPage > $exerciseCount) {
-        return $app->redirect($app['url_generator']->generate('main', ['page' => 1]));
-    }
-    $exerciseList = $app['model']->getExerciseList(($page - 1) * $perPage, $perPage, false);
-    
-    return $app->render('main.twig', [
-        'exerciseList'  => $exerciseList,
-        'exerciseCount' => $exerciseCount,
-        'curPage'       => $page,
-        'perPage'       => $perPage,
-    ]);
-})
-->assert ('page', '\\d*')
-->value  ('page', '1')
-->convert('page', function ($page) {
-    $page = intval ($page);
-    if ($page < 1) {
-        $page = 1;
-    }
-    return $page;
-})
-->bind('main');
-
-// Просмотр одной задачи на сайте.
-$app->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) use ($app) {
-    $exercise = $app['model']->getExercise($exercise_id);
-    if ($exercise->is_hidden) {
-        $exercise = null;
-    }
-    $page = $request->query->get('page');
-    return $app->render('exercise.twig', [
-        'exercise' => $exercise,
-        'page'     => $page,
-    ]);
-})
-->assert('exercise_id', '\\d+')
-->convert('exercise_id', function ($exercise_id) {
-    $exercise_id = intval ($exercise_id);
-    if ($exercise_id < 1) {
-        throw new Exception('Exercise id must be positive integer');
-    }
-    return $exercise_id;
-})
-->bind('exercise');
+$app->mount('/', new Zettai\Controller\Site());
+$app->mount('/admin', new Zettai\Controller\Admin());
 
 // Вход в админку.
 $app->get('/login', function (Request $request) use ($app) {
@@ -111,8 +65,6 @@ $app->get('/login', function (Request $request) use ($app) {
         'last_username' => $app['session']->get('_security.last_username'),
     ]);
 });
-
-$app->mount('/admin', new Zettai\Controller\Admin());
 
 // На дев-хосте добавляем генератор паролей.
 if ($app['debug']) {
