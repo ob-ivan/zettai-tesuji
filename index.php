@@ -35,32 +35,9 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
     ]
 ]);
 $app->register(new Silex\Provider\SessionServiceProvider());
-$app->register(new Silex\Provider\TwigServiceProvider(), [
+$app->register(new Zettai\Provider\TwigServiceProvider(), [
     'twig.path' => TEMPLATE_DIR,
 ]);
-$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
-
-    // фильтры //
-    
-    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app) {
-        return $app['types']->wind->from($wind)->toRussian();
-    }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app) {
-        return $app['types']->kyoku->from($kyoku)->toRussian();
-    }));
-    $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
-        return str_pad($input, $length, $char, STR_PAD_LEFT);
-    }));
-    $twig->addFilter('tile', new \Twig_Filter_Function(function ($tiles) use ($app) {
-        return $app['twig']->render('_tile.twig', ['tiles' => $tiles]);
-    }));
-    
-    // функции //
-    
-    $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
-    $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
-    return $twig;
-}));
 $app->register(new Zettai\Provider\TypeServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
