@@ -1,3 +1,9 @@
+{#
+    Шаблон для контроллера Site::exercise -- вывод одной задачи.
+    Параметры:
+        exercise    Exercise    Текущая задача.
+        page        integer     Текущий номер страницы в списке.
+#}
 {% extends '_layout.twig' %}
 
 {% block style %}main{% endblock %}
@@ -17,7 +23,7 @@
     {% endif %}
     
     <p>
-        <a href="{{ path('main') }}">[на главную]</a>
-        <a href="{{ path('main', { 'page' : page }) }}">[к списку задач]</a>
+        <a href="{{ path('site_page') }}">[на главную]</a>
+        <a href="{{ path('site_page', { 'page' : page }) }}">[к списку задач]</a>
     </p>
 {% endblock %}
