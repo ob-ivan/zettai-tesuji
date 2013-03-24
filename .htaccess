@@ -6,8 +6,7 @@ RewriteEngine On
 RewriteBase /
 
 # Prevent web access to some sensitive files and folders.
-RewriteRule ^(\.git|composer|config|db|deploy|log/|src|template|test|vendor) - [F,L]
-ErrorDocument 403 "Access Forbidden"
+RewriteRule ^(\.git|bin|composer|config|db|deploy|log/|src|template|test|vendor) - [F]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule (.*) index.php [L]
