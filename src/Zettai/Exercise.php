@@ -45,38 +45,42 @@ class Exercise
         'north' => 1,
     ];
     
+    private static $DEFAULT = [
+        self::TYPE_ABC      => 'a',
+        self::TYPE_BOOLEAN  => false,
+        self::TYPE_INTEGER  => 0,
+        self::TYPE_JSON     => '{}',
+        self::TYPE_KYOKU    => 'east-1',
+        self::TYPE_POSITION => 'east',
+        self::TYPE_STRING   => '',
+        self::TYPE_TILE     => '5z',
+    ];
+    
     private static $FIELD_PROPERTIES = [
         'exercise_id' => [
             self::PROPERTY_TYPE    => self::TYPE_INTEGER,
-            self::PROPERTY_DEFAULT => 0,
         ],
         'title'     => [
             self::PROPERTY_TYPE    => self::TYPE_STRING,
-            self::PROPERTY_DEFAULT => '',
         ],
         'is_hidden' => [
             self::PROPERTY_TYPE    => self::TYPE_BOOLEAN,
-            self::PROPERTY_DEFAULT => false,
         ],
         'content'     => [ 
             self::PROPERTY_TYPE    => self::TYPE_JSON,
-            self::PROPERTY_DEFAULT => '{}',
             self::PROPERTY_SCHEMA  => [
                 'kyoku'     => [
                     self::PROPERTY_TYPE    => self::TYPE_KYOKU,
-                    self::PROPERTY_DEFAULT => 'east-1',
                 ],
                 'position'  => [
                     self::PROPERTY_TYPE    => self::TYPE_POSITION,
-                    self::PROPERTY_DEFAULT => 'east',
                 ],
                 'turn'      => [
                     self::PROPERTY_TYPE    => self::TYPE_INTEGER,
-                    self::PROPERTY_DEFAULT => '1',
+                    self::PROPERTY_DEFAULT => 1,
                 ],
                 'dora'      => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
-                    self::PROPERTY_DEFAULT => '5z',
                 ],
                 'score'     => [
                     self::PROPERTY_TYPE    => self::TYPE_STRING,
@@ -88,35 +92,48 @@ class Exercise
                 ],
                 'draw'      => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
-                    self::PROPERTY_DEFAULT => '5z',
                 ],
-                'discard_a' => [
-                    self::PROPERTY_TYPE    => self::TYPE_TILE,
-                    self::PROPERTY_DEFAULT => '5z',
-                ],
-                'answer_a' => [
-                    self::PROPERTY_TYPE    => self::TYPE_STRING,
-                    self::PROPERTY_DEFAULT => '',
-                ],
-                'discard_b' => [
-                    self::PROPERTY_TYPE    => self::TYPE_TILE,
-                    self::PROPERTY_DEFAULT => '5z',
-                ],
-                'answer_b' => [
-                    self::PROPERTY_TYPE    => self::TYPE_STRING,
-                    self::PROPERTY_DEFAULT => '',
-                ],
-                'discard_c' => [
-                    self::PROPERTY_TYPE    => self::TYPE_TILE,
-                    self::PROPERTY_DEFAULT => '5z',
-                ],
-                'answer_c' => [
-                    self::PROPERTY_TYPE    => self::TYPE_STRING,
-                    self::PROPERTY_DEFAULT => '',
+                'answer' => [
+                    self::PROPERTY_TYPE    => self::TYPE_JSON,
+                    self::PROPERTY_DEFAULT => '{}',
+                    self::PROPERTY_SCHEMA  => [
+                        'a' => [
+                            self::PROPERTY_TYPE    => self::TYPE_JSON,
+                            self::PROPERTY_SCHEMA  => [
+                                'discard' => [
+                                    self::PROPERTY_TYPE    => self::TYPE_TILE,
+                                ],
+                                'comment' => [
+                                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                                ],
+                            ],
+                        ],
+                        'b' => [
+                            self::PROPERTY_TYPE    => self::TYPE_JSON,
+                            self::PROPERTY_SCHEMA  => [
+                                'discard' => [
+                                    self::PROPERTY_TYPE    => self::TYPE_TILE,
+                                ],
+                                'comment' => [
+                                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                                ],
+                            ],
+                        ],
+                        'c' => [
+                            self::PROPERTY_TYPE    => self::TYPE_JSON,
+                            self::PROPERTY_SCHEMA  => [
+                                'discard' => [
+                                    self::PROPERTY_TYPE    => self::TYPE_TILE,
+                                ],
+                                'comment' => [
+                                    self::PROPERTY_TYPE    => self::TYPE_STRING,
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'best_answer' => [
                     self::PROPERTY_TYPE    => self::TYPE_ABC,
-                    self::PROPERTY_DEFAULT => 'a',
                 ],
             ],
         ],
@@ -161,7 +178,7 @@ class Exercise
         $data = $this->data;
         foreach (self::$FIELD_PROPERTIES as $field => $properties) {
             if ($properties[self::PROPERTY_TYPE] === self::TYPE_JSON) {
-                $data[$field] = json_encode($data[$field]);
+                $data[$field] = json_encode($data[$field],  JSON_UNESCAPED_UNICODE);
             }
         }
         return $data;
@@ -174,7 +191,10 @@ class Exercise
         switch ($properties[self::PROPERTY_TYPE]) {
             case self::TYPE_ABC:
                 if (! isset(self::$ABCS[$value])) {
-                    return $properties[self::PROPERTY_DEFAULT];
+                    if (isset($properties[self::PROPERTY_DEFAULT])) {
+                        return $properties[self::PROPERTY_DEFAULT];
+                    }
+                    return self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
                 }
                 return $value;
                 
@@ -183,7 +203,10 @@ class Exercise
                 
             case self::TYPE_KYOKU:
                 if (! isset(self::$KYOKUS[$value])) {
-                    return $properties[self::PROPERTY_DEFAULT];
+                    if (isset($properties[self::PROPERTY_DEFAULT])) {
+                        return $properties[self::PROPERTY_DEFAULT];
+                    }
+                    return self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
                 }
                 return $value;
                 
@@ -192,15 +215,18 @@ class Exercise
                 
             case self::TYPE_POSITION:
                 if (! isset(self::$WINDS[$value])) {
-                    return $properties[self::PROPERTY_DEFAULT];
+                    if (isset($properties[self::PROPERTY_DEFAULT])) {
+                        return $properties[self::PROPERTY_DEFAULT];
+                    }
+                    return self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
                 }
                 return $value;
                 
             case self::TYPE_JSON:
                 if (is_string ($value)) {
-                    $decoded = json_decode($value);
-                    if (is_object($decoded)) {
-                        $unpacked = new ArrayObject($decoded);
+                    $decoded = json_decode($value, true);
+                    if (is_array($decoded)) {
+                        $unpacked = $decoded;
                     } else {
                         $unpacked = [];
                     }
@@ -211,8 +237,10 @@ class Exercise
                 foreach ($properties[self::PROPERTY_SCHEMA] as $field => $subproperties) {
                     if (isset($unpacked[$field])) {
                         $subvalue = $unpacked[$field];
-                    } else {
+                    } elseif (isset($subproperties[self::PROPERTY_DEFAULT])) {
                         $subvalue = $subproperties[self::PROPERTY_DEFAULT];
+                    } else {
+                        $subvalue = self::$DEFAULT[$subproperties[self::PROPERTY_TYPE]];
                     }
                     $prepared[$field] = self::prepare($subvalue, $subproperties);
                 }

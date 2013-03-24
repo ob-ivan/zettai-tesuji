@@ -12,35 +12,12 @@ define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 require_once AUTOLOAD_PATH;
 use Symfony\Component\HttpFoundation\Request;
 
-// Загружаем конфиги.
-
-$config = new Zettai\Config(DOCUMENT_ROOT);
-
 // Инициализируем приложение.
 
-$app = new Zettai\Application();
+$app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
-if ($config->debug) {
-    $app['debug'] = true;
-}
-$app['config'] = $app->share(function () use ($config) {
-    return $config;
-});
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
-});
-$app->register(new Silex\Provider\DoctrineServiceProvider(), [
-    'db.options' => [
-        'driver'    => 'pdo_mysql',
-        'host'      => $config->db->host,
-        'dbname'    => $config->db->dbname,
-        'user'      => $config->db->user,
-        'password'  => $config->db->password,
-        'charset'   => 'utf8',
-    ],
-]);
-$app['model'] = $app->share(function () use ($app) {
-    return new Zettai\Model($app['db']);
 });
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
@@ -49,7 +26,7 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
             'form' => ['login_path' => '/login', 'check_path' => '/admin/login_check'],
             'logout' => ['logout_path' => '/admin/logout'],
             'users' => $app->share(function() use ($app) {
-                return new Zettai\UserProvider($app['config']);
+                return new Zettai\UserProvider($app['config']->security);
             }),
         ],
     ],
@@ -63,30 +40,13 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 ]);
 $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
 
-    // константы //
-    
-    $twig->addGlobal('ABCS', array_keys(Zettai\Exercise::$ABCS));
-
     // фильтры //
     
-    $windName = function ($wind) {
-        switch ($wind) {
-            case 'east':  return 'восток';
-            case 'south': return 'юг';
-            case 'west':  return 'запад';
-            case 'north': return 'север';
-        }
-        return $wind;
-    };
-    
-    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app, $windName) {
-        return $windName($wind);
+    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app) {
+        return $app['types']->wind->from($wind)->toRussian();
     }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app, $windName) {
-        if (! preg_match ('/^(\w+)-(\d)$/', $kyoku, $matches)) {
-            return $kyoku;
-        }
-        return $windName($matches[1]) . '-' . $matches[2];
+    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app) {
+        return $app['types']->kyoku->from($kyoku)->toRussian();
     }));
     $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
         return str_pad($input, $length, $char, STR_PAD_LEFT);
@@ -101,11 +61,12 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
     return $twig;
 }));
+$app->register(new Zettai\Provider\TypeServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());
 
-// Если стоит режим заглушки, выводим её и больше ничего не делаем.
+// Если стоит режим заглушки, то выводим её и больше ничего не делаем.
 $app->before(function (Request $request) use ($app) {
     if (file_exists(DEPLOY_LOCK_PATH)) {
         if ($request->getMethod() === 'GET') {
@@ -241,8 +202,6 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'csrf'        => $app['csrf']->generate($csrfKey),
             'exercise'    => $exercise,
             'errors'      => $errors,
-            'KYOKUS'      => array_keys(Zettai\Exercise::$KYOKUS),
-            'WINDS'       => array_keys(Zettai\Exercise::$WINDS),
             'TILES'       => Zettai\Tile::$TILES,
         ]);
     };
@@ -282,10 +241,10 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
             'title'     => $request->request->get('title'),
             'is_hidden' => intval($request->request->get('is_hidden')) === 1,
             'content'   => [
-                'kyoku'         => $request->request->get('kyoku'),
-                'position'      => $request->request->get('position'),
+                'kyoku'         => $app['types']->kyoku->from($request->request->get('kyoku'))->toEnglish(),
+                'position'      => $app['types']->wind->from($request->request->get('position'))->toEnglish(),
                 'turn'          => $request->request->get('turn'),
-                'dora'          => $request->request->get('dora'),
+                'dora'          => $app['types']->tile->from($request->request->get('dora'))->toTile(),
                 'score'         => $request->request->get('score'),
                 'hand'          => $request->request->get('hand'),
                 'draw'          => $request->request->get('draw'),
@@ -390,7 +349,7 @@ $app->match('/admin/exercise/edit/{exercise_id}', function (Request $request, $e
 ->bind('admin_exercise_edit');
 
 // На дев-хосте добавляем генератор паролей.
-if ($config->debug) {
+if ($app['debug']) {
     $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
         return $app['security.encoder.digest']->encodePassword($password, $salt);
     })
