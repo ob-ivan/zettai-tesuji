@@ -1,3 +1,11 @@
+{#
+    Шаблон для контроллера Site::page -- вывод одной страницы из списка задач.
+    Параметры:
+        exerciseList    [Exercise]  Список задач для вывода на странице.
+        exerciseCount   integer     Общее количество задач для публикации.
+        curPage         integer     Номер текущей страницы.
+        perPage         integer     Количество задач для вывода на одной странице.
+#}
 {% extends '_layout.twig' %}
 
 {% block style %}main{% endblock %}
@@ -9,7 +17,7 @@
         <ul>
             {% for exercise in exerciseList %}
                 <li>
-                    <a href="{{ path('exercise', { 'exercise_id' : exercise.exercise_id }) }}?page={{ curPage }}">
+                    <a href="{{ path('site_exercise', { 'exercise_id' : exercise.exercise_id }) }}?page={{ curPage }}">
                         №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
                     </a>
                 </li>
@@ -20,7 +28,7 @@
             'perPage'       : perPage,
             'curPage'       : curPage,
             'adjacentPages' : 5,
-            'linkTemplate'  : 'main'
+            'linkTemplate'  : 'site_page'
         } only %}
     {% else %}
         <p class="empty">Нет задач</p>
