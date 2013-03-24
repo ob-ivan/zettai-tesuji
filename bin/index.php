@@ -3,6 +3,7 @@
 // Настраиваем окружение.
 define ('DOCUMENT_ROOT', dirname(__DIR__));
 define ('AUTOLOAD_PATH', DOCUMENT_ROOT . '/vendor/autoload.php');
+mb_internal_encoding('UTF-8');
 
 set_error_handler(function ($errno, $errstr, $errfile, $errline ) {
     throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
@@ -18,6 +19,10 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
 $app->register(new Zettai\Provider\TypeServiceProvider());
+$app->error(function (Exception $e) {
+    // TODO: Разобраться, почему даже сюда не заходит.
+    return 'Error!';
+});
 
 // Подключаем контроллеры.
 

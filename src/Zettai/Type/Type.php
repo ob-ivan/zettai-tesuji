@@ -5,6 +5,13 @@ abstract class Type implements TypeInterface
 {
     // var //
     
+    /**
+     * Кэш для метода from.
+     *
+     *  @var [<mixed input> => <result>]
+    **/
+    private $fromCache = [];
+    
     private $service;
     
     // public //
@@ -66,19 +73,23 @@ abstract class Type implements TypeInterface
         if ($this->has($input)) {
             return $input;
         }
+        // Поискать в кэше.
+        if (array_key_exists($input, $this->fromCache)) {
+            return $this->fromCache[$input];
+        }
         // Попробовать примитивное значение.
-        $fromPrimitive = $this->fromPrimitive($input);
-        if ($fromPrimitive) {
-            return $fromPrimitive;
+        $candidate = $this->fromPrimitive($input);
+        if ($candidate) {
+            return $this->fromCache[$input] = $candidate;
         }
         // Поискать среди представлений.
         foreach ($this->service['view']->each() as $view) {
             $candidate = $this->fromView($view, $input);
             if ($candidate) {
-                return $candidate;
+                return $this->fromCache[$input] = $candidate;
             }
         }
-        return null;
+        return $this->fromCache[$input] = null;
     }
     
     abstract public function fromView($view, $presentation);
