@@ -105,9 +105,9 @@
                 <label>
                     Вариант {{ letter|upper }}:
                     {% include 'admin/exercise/_tile_select.twig' with {
-                        'name'  : 'discard_' ~ letter,
+                        'name'  : 'answer[' ~ letter ~ '][discard]',
                         'TILES' : TILES,
-                        'value' : attribute(exercise.content, 'discard_' ~ letter),
+                        'value' : attribute(exercise.content.answer, letter).discard,
                     } only %}
                 </label>
                 <label>
@@ -122,7 +122,11 @@
                     Правильный ответ
                 </label>
             </p>
-            <p><textarea class="answer" name="answer_{{ letter }}">{{ attribute(exercise.content, 'answer_' ~ letter) }}</textarea></p>
+            <p>
+                <textarea class="answer" name="answer[{{ letter }}][comment]">
+                    {{- attribute(exercise.content.answer, letter).comment -}}
+                </textarea>
+            </p>
         {% endfor %}
         <p>
             <input type="submit" name="save" value="Сохранить"/>

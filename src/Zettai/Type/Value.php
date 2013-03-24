@@ -12,6 +12,9 @@ class Value implements ValueInterface
     
     public function offsetExists($offset)
     {
+        if ($this->getViewName($offset)) {
+            return true;
+        }
         if (! $this->type instanceof DereferenceableInterface) {
             return false;
         }
@@ -20,6 +23,10 @@ class Value implements ValueInterface
     
     public function offsetGet($offset)
     {
+        $viewName = $this->getViewName($offset);
+        if ($viewName) {
+            return $this->toViewByName($viewName);
+        }
         if (! $this->type instanceof DereferenceableInterface) {
             return null;
         }
@@ -50,15 +57,24 @@ class Value implements ValueInterface
     **/
     public function __call($name, $args)
     {
-        if (preg_match('/^to(\w+)$/i', $name, $matches)) {
-            return $this->type->toViewByName($matches[1], $this->internal);
+        $viewName = $this->getViewName($name);
+        if ($viewName) {
+            return $this->toViewByName($viewName);
         }
         throw new Exception('Method "' . $name . '" is unknown', Exception::VALUE_CALL_METHOD_UNKNOWN);
     }
     
+    /**
+     * Реализует обращение к волшебному методу to<ViewName> без скобочек.
+    **/
     public function __get($name)
     {
         return $this[$name];
+    }
+    
+    public function __isset($name)
+    {
+        return isset($this[$name]);
     }
     
     public function __toString()
@@ -95,5 +111,21 @@ class Value implements ValueInterface
     public function toView($view)
     {
         return $this->type->toView($view, $this->internal);
+    }
+    
+    public function toViewByName($viewName)
+    {
+        return $this->type->toViewByName($viewName, $this->internal);
+    }
+    
+    // private //
+    
+    // Извлекает название представления из функции преобразования в представление.
+    private function getViewName($name)
+    {
+        if (preg_match('/^to(\w+)$/i', $name, $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 }
