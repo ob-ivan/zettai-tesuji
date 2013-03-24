@@ -6,7 +6,7 @@
 >
     <testsuites>
         <testsuite>
-            <directory suffix=".php">EviType</directory>
+            <directory suffix=".php">case</directory>
         </testsuite>
     </testsuites>
 </phpunit>

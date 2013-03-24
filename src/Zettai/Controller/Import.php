@@ -1,13 +1,12 @@
 <?php
 namespace Zettai\Controller;
 
-use DomDocument;
-use DomText;
-use DomXPath;
+use DomDocument, DomText, DomXPath;
 use Exception as AnyException;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Zettai\Exercise;
 
 class Import implements ControllerProviderInterface
 {
@@ -22,13 +21,15 @@ class Import implements ControllerProviderInterface
     
     // var //
     
-    private $app;
+    private $model;
+    private $types;
     
     // public : ControllerProviderInterface //
     
     public function connect(Application $app)
     {
-        $this->app = $app;
+        $this->model = $app['model'];
+        $this->types = $app['types'];
         
         $controllers = $app['controllers_factory'];
         $app->error(function (Exception $exception) {
@@ -67,6 +68,10 @@ class Import implements ControllerProviderInterface
                 )
             )
         );
+        
+        foreach ($exercises as $exercise) {
+            $this->model->setExercise($exercise);
+        }
         
         return 'done';
     }
@@ -194,25 +199,26 @@ class Import implements ControllerProviderInterface
                     'title'         => $matches['title'],
                     'is_hidden'     => true,
                 ];
+                // TODO: Убрать явные приведения к типам, когда для content будет определено представление.
                 $content = [
-                    'kyoku'     => $matches['kyoku'],
-                    'position'  => $matches['position'],
+                    'kyoku'     => $this->convertKyoku($matches['kyoku']),
+                    'position'  => $this->convertWind($matches['position']),
                     'turn'      => $matches['turn'],
-                    'dora'      => $matches['dora'],
+                    'dora'      => $this->convertTile($matches['dora']),
                     'score'     => $matches['score'],
-                    'hand'      => $matches['hand'],
-                    'draw'      => $matches['draw'],
+                    'hand'      => $this->convertTileSequence($matches['hand']),
+                    'draw'      => $this->convertTile($matches['draw']),
                     'answer'    => [
                         'a' => [
-                            'discard' => $matches['discard_a'],
+                            'discard' => $this->convertTile($matches['discard_a']),
                             'comment' => null,
                         ],
                         'b' => [
-                            'discard' => $matches['discard_b'],
+                            'discard' => $this->convertTile($matches['discard_b']),
                             'comment' => null,
                         ],
                         'c' => [
-                            'discard' => $matches['discard_c'],
+                            'discard' => $this->convertTile($matches['discard_c']),
                             'comment' => null,
                         ],
                     ],
@@ -246,7 +252,7 @@ class Import implements ControllerProviderInterface
                                 $answer = $this->russianToEnglish($matches[1]);
                                 if ($answer) {
                                     $expectedDiscard = $content['answer'][$answer]['discard'];
-                                    if ($expectedDiscard === $matches[2]) {
+                                    if ($expectedDiscard === $this->convertTile($matches[2])) {
                                         $currentAnswer = $answer;
                                         if ($mode === 'best') {
                                             $bestAnswer = $answer;
@@ -271,12 +277,14 @@ class Import implements ControllerProviderInterface
                         }
                     }
                     if ($bestAnswer && count($answers) === 3) {
-                        foreach ($this->app['types']->abc->each() as $letter) {
+                        foreach ($this->types->abc->each() as $letter) {
                             $content['answer'][$letter.'']['comment'] = implode (' ', $answers[$letter.'']);
                         }
                         $content['best_answer'] = $bestAnswer;
                         
-                        $exercises[$postId] = $this->app['types']->exercise->from($data + ['content' => $content]);
+                        // TODO: Сделать так, когда типы будут позволять.
+                        // $exercises[$postId] = $this->types->exercise->from($data + ['content' => $content]);
+                        $exercises[$postId] = new Exercise($data + ['content' => $content]);
                     } else {
                         print 'Could not recognize answers in post #' . $postId . ': ' . print_r($node[self::IMPORT_KEY_ANSWER], true) . "\n\n";
                     }
@@ -296,5 +304,27 @@ class Import implements ControllerProviderInterface
             case 'С': return 'c';
         }
         return null;
+    }
+    
+    // private : type converters //
+    
+    private function convertKyoku($presentation)
+    {
+        return $this->types->kyoku->from(mb_strtolower($presentation))->toEnglish();
+    }
+    
+    private function convertTile($presentation)
+    {
+        return $this->types->tile->from($presentation)->toTile();
+    }
+    
+    private function convertTileSequence($presentation)
+    {
+        return $this->types->tileSequence->fromRussian($presentation)->toTile();
+    }
+    
+    private function convertWind($presentation)
+    {
+        return $this->types->wind->from(mb_strtolower($presentation))->toEnglish();
     }
 }
