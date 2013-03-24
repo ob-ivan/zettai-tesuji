@@ -10,7 +10,6 @@ class TypeServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['types'] = new Service(['Tile', 'English', 'Eng', 'Russian', 'Rus']);
-
     }
     
     public function boot(Application $app)
