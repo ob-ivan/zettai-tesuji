@@ -9,12 +9,16 @@
             dora
             hand
             draw
-            discard_a
-            answer_a
-            discard_b
-            answer_b
-            discard_c
-            answer_c
+            answer
+                a
+                    discard
+                    content
+                b
+                    discard
+                    content
+                c
+                    discard
+                    content
             best_answer
         question    <string>
         show_answer <boolean>
@@ -43,8 +47,8 @@
             is_best : true,
         } only %}
         <div class="row">Другие ответы:</div>
-        {% for answer in ABCS %}
-            {% if answer != content.best_answer %}
+        {% for answer in app.types.abc.each %}
+            {% if not answer.equals(content.best_answer) %}
                 {% include '_answer.twig' with {
                     answer  : answer,
                     content : content,
@@ -55,9 +59,9 @@
     {% else %}
         <div class="question">Что сбросить?</div>
         <div class="row variants">
-            <div>A. {{ content.discard_a|tile|raw }}</div>
-            <div>B. {{ content.discard_b|tile|raw }}</div>
-            <div>C. {{ content.discard_c|tile|raw }}</div>
+            <div>A. {{ content.answer.a.discard|tile|raw }}</div>
+            <div>B. {{ content.answer.b.discard|tile|raw }}</div>
+            <div>C. {{ content.answer.c.discard|tile|raw }}</div>
         </div>
         <div class="row"></div>
     {% endif %}

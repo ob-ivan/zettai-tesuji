@@ -30,7 +30,7 @@
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
         <p>
             <label>№<input name="exercise_id" required value="{{ exercise.exercise_id }}" maxlength="3"/>.</label>
-            <input name="title"     required value="{{ exercise.title }}"/>
+            <input name="title" required value="{{ exercise.title }}"/>
             <label>
                 <input
                     type="checkbox"
@@ -47,14 +47,14 @@
             <label>
                 Сдача:
                 <select name="kyoku">
-                    {% for kyoku in KYOKUS %}
+                    {% for primitive, kyoku in app.types.kyoku.each %}
                         <option
-                            value="{{ kyoku }}"
-                            {% if kyoku == exercise.content.kyoku %}
+                            value="{{ primitive }}"
+                            {% if kyoku.equals(exercise.content.kyoku) %}
                                 selected
                             {% endif %}
                         >
-                            {{ kyoku|kyoku }}
+                            {{ kyoku.toRussian }}
                         </option>
                     {% endfor %}
                 </select>
@@ -64,14 +64,14 @@
             <label>
                 Позиция:
                 <select name="position">
-                    {% for wind in WINDS %}
+                    {% for primitive, wind in app.types.wind.each %}
                         <option
-                            value="{{ wind }}"
-                            {% if wind == exercise.content.position %}
+                            value="{{ primitive }}"
+                            {% if wind.equals(exercise.content.position) %}
                                 selected
                             {% endif %}
                         >
-                            {{ wind|wind }}
+                            {{ wind.toRussian }}
                         </option>
                     {% endfor %}
                 </select>
@@ -100,14 +100,14 @@
                 } only %}
             </label>
         </p>
-        {% for letter in ABCS %}
+        {% for letter in app.types.abc.each %}
             <p>
                 <label>
                     Вариант {{ letter|upper }}:
                     {% include 'admin/exercise/_tile_select.twig' with {
-                        'name'  : 'discard_' ~ letter,
+                        'name'  : 'answer[' ~ letter ~ '][discard]',
                         'TILES' : TILES,
-                        'value' : attribute(exercise.content, 'discard_' ~ letter),
+                        'value' : attribute(exercise.content.answer, letter).discard,
                     } only %}
                 </label>
                 <label>
@@ -122,7 +122,11 @@
                     Правильный ответ
                 </label>
             </p>
-            <p><textarea class="answer" name="answer_{{ letter }}">{{ attribute(exercise.content, 'answer_' ~ letter) }}</textarea></p>
+            <p>
+                <textarea class="answer" name="answer[{{ letter }}][comment]">
+                    {{- attribute(exercise.content.answer, letter).comment -}}
+                </textarea>
+            </p>
         {% endfor %}
         <p>
             <input type="submit" name="save" value="Сохранить"/>

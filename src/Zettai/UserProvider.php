@@ -13,18 +13,18 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 **/
 class UserProvider implements UserProviderInterface
 {
-    public function __construct(Config $config)
+    public function __construct(Config $userlist)
     {
-        $this->config = $config;
+        $this->userlist = $userlist;
     }
  
     public function loadUserByUsername($username)
     {
-        if (! isset ($this->config->security[$username])) {
+        if (! isset ($this->userlist[$username])) {
             throw new UsernameNotFoundException('Пользователя "' . $username . '" не существует');
         }
-        $userdata = $this->config->security[$username];
-        return new User($username, $userdata['password'], $userdata['roles']->getArrayCopy());
+        $userdata = $this->userlist[$username];
+        return new User($username, $userdata->password, $userdata->roles->toArray());
     }
  
     public function refreshUser(UserInterface $user)
