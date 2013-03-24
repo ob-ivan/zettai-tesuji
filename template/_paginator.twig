@@ -14,6 +14,7 @@
 {% endmacro %}
 
 {% if totalCount > perPage %}
+    {# Предыдущие страницы #}
     {% if curPage > 1 %}
         {% if curPage > adjacentPages + 1 %}
             {{ paginator.link(linkTemplate, 1) }}
@@ -34,7 +35,7 @@
     {# Текущая страница #}
     <b>{{ curPage }}</b>
     
-    {# На следующую страницу #}
+    {# Следующие страницы #}
     {% set lastPage = ceil(totalCount / perPage) %}
     {% if curPage < lastPage %}
         {% if adjacentPages > 0 %}
