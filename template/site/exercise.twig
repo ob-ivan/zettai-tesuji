@@ -8,6 +8,12 @@
 
 {% block style %}main{% endblock %}
 
+{% block script %}
+    <script src="/script/jquery.js"></script>
+    <script src="/script/class.js"></script>
+    <script src="/script/site/exercise.js"></script>
+{% endblock %}
+
 {% block body %}
     {% if exercise %}
         <h2>
@@ -18,6 +24,12 @@
             'content'     : exercise.content,
             'show_answer' : false,
         } only %}
+        <script>
+            new ExercisePage({
+                exercise_id : {{ exercise.exercise_id }},
+                buttons     : $('button[name]')
+            });
+        </script>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
