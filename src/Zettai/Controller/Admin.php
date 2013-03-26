@@ -22,49 +22,30 @@ class Admin implements ControllerProviderInterface
         $controllers = $app['controllers_factory'];
         
         // Главная страница админки.
-        $controllers->get('/{page}', function ($page) {
-            return $this->page($page);
-        })
-        ->assert ('page', '\\d*')
-        ->value  ('page', '1')
-        ->convert('page', function ($page) {
-            $page = intval($page);
-            if ($page < 1) {
-                $page = 1;
-            }
-            return $page;
-        })
+        $app['parameter']->setParameters(
+            $controllers->get('/{page}', function ($page) {
+                return $this->page($page);
+            }),
+            ['page' => 'page']
+        )
         ->bind('admin_page');
 
         // Страница просмотра задачи в админке.
-        $controllers->get('/exercise/view/{exercise_id}', function (Request $request, $exercise_id) {
-            return $this->exerciseView($request, $exercise_id);
-        })
-        ->assert('exercise_id', '\\d+')
-        ->convert('exercise_id', function ($exercise_id) {
-            $exercise_id = intval ($exercise_id);
-            if ($exercise_id < 1) {
-                throw new Exception('Exercise id must be positive integer');
-            }
-            return $exercise_id;
-        })
+        $app['parameter']->setParameters(
+            $controllers->get('/exercise/view/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exerciseView($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id']
+        )
         ->bind('admin_exercise_view');
 
         // Страница редактирования задачи в админке.
-        $controllers->match('/exercise/edit/{exercise_id}', function (Request $request, $exercise_id) {
-            return $this->exerciseEdit($request, $exercise_id);
-        })
-        ->assert('exercise_id', '\\d+|new')
-        ->convert('exercise_id', function ($exercise_id) {
-            if ($exercise_id === 'new') {
-                return $exercise_id;
-            }
-            $exercise_id = intval ($exercise_id);
-            if ($exercise_id < 1) {
-                throw new Exception('Exercise id must be "new" or positive integer');
-            }
-            return $exercise_id;
-        })
+        $app['parameter']->setParameters(
+            $controllers->match('/exercise/edit/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exerciseEdit($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id_new']
+        )
         ->method('GET|POST')
         ->bind('admin_exercise_edit');
 

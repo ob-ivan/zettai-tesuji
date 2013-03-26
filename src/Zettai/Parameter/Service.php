@@ -9,39 +9,46 @@ class Service implements ArrayAccess
     // var //
     
     /**
-     * @var [<parameterName> => [<methodName> => <methodArguments>]]
+     * @var [<ruleName> => [<methodName> => <methodArguments>]]
     **/
-    private $options = [];
+    private $rules = [];
     
     // public : ArrayAccess //
     
     public function offsetExists($offset)
     {
-        return isset($this->options[$offset]);
+        return isset($this->rules[$offset]);
     }
     
     public function offsetGet($offset)
     {
-        return $this->options[$offset];
+        return $this->rules[$offset];
     }
     
     public function offsetSet($offset, $value)
     {
         // TODO: Проверить входное значение и привести к виду.
-        $this->options[$offset] = $value;
+        $this->rules[$offset] = $value;
     }
     
     public function offsetUnset($offset)
     {
-        unset($this->options[$offset]);
+        unset($this->rules[$offset]);
     }
     
     // public : Service //
     
-    public function setParameters(Controller $controller, array $parameterNames)
+    /**
+     * Обвешивает контроллер правилами для своих параметров.
+     *
+     *  @param  Controller                      $controller
+     *  @param  [<parameterName> => <ruleName>] $parameterRules
+     *  @return Controller
+    **/
+    public function setParameters(Controller $controller, array $parameterRules)
     {
-        foreach ($parameterNames as $parameterName) {
-            foreach ($this->options[$parameterName] as $methodName => $methodArguments) {
+        foreach ($parameterRules as $parameterName => $ruleName) {
+            foreach ($this->rules[$ruleName] as $methodName => $methodArguments) {
                 if (! is_array($methodArguments)) {
                     $methodArguments = [$methodArguments];
                 }
@@ -49,5 +56,6 @@ class Service implements ArrayAccess
                 call_user_func_array([$controller, $methodName], $methodArguments);
             }
         }
+        return $controller;
     }
 }
