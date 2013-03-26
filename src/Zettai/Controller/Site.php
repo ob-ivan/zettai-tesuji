@@ -90,7 +90,7 @@ class Site implements ControllerProviderInterface
         if (! $exercise || $exercise->is_hidden) {
             $errors[] = 'EXERCISE:DOES_NOT_EXIST';
         }
-        if (! $this->app['csrd']->validate($request->request->get('csrf'), $this->csrfKey($exercise_id))) {
+        if (! $this->app['csrf']->validate($request->request->get('csrf'), $this->csrfKey($exercise_id))) {
             $errors[] = 'CSRF';
         }
         if (! empty($errors)) {
@@ -98,9 +98,9 @@ class Site implements ControllerProviderInterface
         }
         // Отдать ответы, правильный ответ, следующую задачу.
         return $this->app->json([
-            'answer'            => $exercise['answer'],
-            'best_answer'       => $exercise['best_answer'],
-            'next_exercise_id'  => $this->app['model']->getNextExerciseId($exercise_id),
+            'answer'            => $exercise->content['answer'],
+            'best_answer'       => $exercise->content['best_answer'],
+            'exercise_next_id'  => $this->app['model']->getExerciseNextId($exercise_id),
         ]);
     }
     

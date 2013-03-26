@@ -110,8 +110,16 @@ if ($app['debug']) {
     ->value('salt', '');
 }
 
-// Запускаем приложение.
+// Запускаем приложение (копипаста из Application->run()) и выводим время работы.
+// TODO: Отдать бенчмаркинг на откуп FirePHP.
 
-$app->run();
-
-print '<!-- server time: ' . (microtime(true) - $time) . ' -->';
+$request = Request::createFromGlobals();
+$response = $app->handle($request);
+$content = $response->getContent();
+$search = '~SERVER_TIME~';
+if (strpos($content, $search)) {
+    $response->setContent(str_replace($search, microtime(true) - $time, $content));
+}
+$response->send();
+$app->terminate($request, $response);
+die;
