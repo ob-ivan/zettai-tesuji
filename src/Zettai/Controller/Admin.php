@@ -214,7 +214,7 @@ class Admin implements ControllerProviderInterface
         
         // Отобразить свежую форму для новой задачи.
         if ($exercise_id === 'new') {
-            return $view(new Exercise (['exercise_id' => $this->app['model']->getExerciseNextId()]));
+            return $view(new Exercise (['exercise_id' => $this->app['model']->getExerciseNewId()]));
         }
         
         // Существует ли запрошенная задача?

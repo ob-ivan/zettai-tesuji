@@ -26,8 +26,10 @@
         } only %}
         <script>
             new ExercisePage({
-                exercise_id : {{ exercise.exercise_id }},
-                buttons     : $('button[name]')
+                ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
+                buttons     : $('button[name]'),
+                csrf        : '{{ csrf }}',
+                exercise_id : {{ exercise.exercise_id }}
             });
         </script>
     {% else %}

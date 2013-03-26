@@ -38,7 +38,13 @@ class Site implements ControllerProviderInterface
         ->bind('site_exercise');
         
         // Аякс для получения ответов к задаче.
-        // $controllers->post('/exercise/answer/{exercise_id}', function () {});
+        $app['parameter']->setParameters(
+            $controllers->post('/exercise/answer/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exerciseAnswer($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id']
+        )
+        ->bind('site_exercise_answer');
 
         return $controllers;
     }
@@ -65,7 +71,7 @@ class Site implements ControllerProviderInterface
     private function exercise(Request $request, $exercise_id)
     {
         $exercise = $this->app['model']->getExercise($exercise_id);
-        if ($exercise->is_hidden) {
+        if ($exercise && $exercise->is_hidden) {
             $exercise = null;
         }
         $page = $request->query->get('page');
@@ -73,6 +79,28 @@ class Site implements ControllerProviderInterface
             'exercise'  => $exercise,
             'page'      => $page,
             'csrf'      => $this->app['csrf']->generate($this->csrfKey($exercise_id)),
+        ]);
+    }
+    
+    private function exerciseAnswer(Request $request, $exercise_id)
+    {
+        // Проверить входные данные.
+        $errors = [];
+        $exercise = $this->app['model']->getExercise($exercise_id);
+        if (! $exercise || $exercise->is_hidden) {
+            $errors[] = 'EXERCISE:DOES_NOT_EXIST';
+        }
+        if (! $this->app['csrd']->validate($request->request->get('csrf'), $this->csrfKey($exercise_id))) {
+            $errors[] = 'CSRF';
+        }
+        if (! empty($errors)) {
+            return $this->app->json(['errors' => $errors]);
+        }
+        // Отдать ответы, правильный ответ, следующую задачу.
+        return $this->app->json([
+            'answer'            => $exercise['answer'],
+            'best_answer'       => $exercise['best_answer'],
+            'next_exercise_id'  => $this->app['model']->getNextExerciseId($exercise_id),
         ]);
     }
     
