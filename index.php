@@ -19,6 +19,21 @@ $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
+$app->register(new Zettai\Provider\ParameterServiceProvider(), [
+    'parameter.options' => [
+        'page' => [
+            'assert'  => '\\d*',
+            'value'   => '1',
+            'convert' => function ($page) {
+                $page = intval($page);
+                if ($page < 1) {
+                    $page = 1;
+                }
+                return $page;
+            }),
+        ],
+    ]
+]);
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
