@@ -7,7 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Site implements ControllerProviderInterface
 {
+    // var //
+    
     private $app;
+    
+    // public : ControllerProviderInterface //
     
     public function connect(Application $app)
     {
@@ -15,38 +19,31 @@ class Site implements ControllerProviderInterface
         
         $controllers = $app['controllers_factory'];
         
-        $controllers->get('/{page}', function ($page) {
-            return $this->page($page);
-        })
-        ->assert ('page', '\\d*')
-        ->value  ('page', '1')
-        ->convert('page', function ($page) {
-            $page = intval ($page);
-            if ($page < 1) {
-                $page = 1;
-            }
-            return $page;
-        })
+        // Главная страница -- список задач.
+        $app['parameter']->setParameters(
+            $controllers->get('/{page}', function ($page) {
+                return $this->page($page);
+            }),
+            ['page' => 'page']
+        )
         ->bind('site_page');
 
         // Просмотр одной задачи на сайте.
-        $controllers->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) {
-            return $this->exercise($request, $exercise_id);
-        })
-        ->assert('exercise_id', '\\d+')
-        ->convert('exercise_id', function ($exercise_id) {
-            $exercise_id = intval ($exercise_id);
-            if ($exercise_id < 1) {
-                throw new Exception('Exercise id must be positive integer');
-            }
-            return $exercise_id;
-        })
+        $app['parameter']->setParameters(
+            $controllers->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exercise($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id']
+        )
         ->bind('site_exercise');
+        
+        // Аякс для получения ответов к задаче.
+        // $controllers->post('/exercise/answer/{exercise_id}', function () {});
 
         return $controllers;
     }
     
-    // private //
+    // private : controllers //
     
     private function page($page)
     {
@@ -73,9 +70,17 @@ class Site implements ControllerProviderInterface
         }
         $page = $request->query->get('page');
         return $this->app->render('site/exercise.twig', [
-            'exercise' => $exercise,
-            'page'     => $page,
+            'exercise'  => $exercise,
+            'page'      => $page,
+            'csrf'      => $this->app['csrf']->generate($this->csrfKey($exercise_id)),
         ]);
+    }
+    
+    // private : helpers //
+    
+    private function csrfKey($exercise_id)
+    {
+        return 'site_exercise_answer_' . $exercise_id;
     }
 }
 
