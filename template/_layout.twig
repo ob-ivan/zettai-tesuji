@@ -4,9 +4,16 @@
         <title>Беспроигрышное мастерство маджонга</title>
         <link rel="stylesheet" href="/style/global.css"/>
         <link rel="stylesheet" href="/style/{% block style %}{% endblock %}.css"/>
+        {% block script %}
+        {% endblock %}
     </head>
     <body class="{{ block('style') }}">
-        {% block body %}
+        {% block header %}
         {% endblock %}
+        <div class="column">
+            {% block body %}
+            {% endblock %}
+        </div>
     </body>
 </html>
+<!-- server time: ~SERVER_TIME~ -->

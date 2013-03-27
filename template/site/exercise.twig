@@ -6,7 +6,13 @@
 #}
 {% extends '_layout.twig' %}
 
-{% block style %}main{% endblock %}
+{% block style %}site{% endblock %}
+
+{% block script %}
+    <script src="/script/jquery.js"></script>
+    <script src="/script/class.js"></script>
+    <script src="/script/site/exercise.js"></script>
+{% endblock %}
 
 {% block body %}
     {% if exercise %}
@@ -15,15 +21,29 @@
             {{ exercise.title }}
         </h2>
         {% include '_exercise_content.twig' with {
-            'content'     : exercise.content,
-            'show_answer' : false,
+            content : exercise.content,
+            mode    : 'site',
         } only %}
+        <script>
+            $(function () {
+                new ExercisePage({
+                    ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}?page={{ page }}",
+                    answers     : $('div.answer'),
+                    buttons     : $('button[name]'),
+                    csrf        : '{{ csrf }}',
+                    hide        : $('div.variants'),
+                    show        : $('div.answers'),
+                    next        : $('p.links a.next'),
+                });
+            });
+        </script>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
     
-    <p>
+    <p class="links">
         <a href="{{ path('site_page') }}">[на главную]</a>
         <a href="{{ path('site_page', { 'page' : page }) }}">[к списку задач]</a>
+        <a href="" class="next">[следующая задача]</a>
     </p>
 {% endblock %}

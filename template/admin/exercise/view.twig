@@ -1,6 +1,6 @@
 {% extends 'admin/_layout.twig' %}
 
-{% block admin_body %}
+{% block body %}
     {% if exercise %}
         <h2>
             Задача №{{ exercise.exercise_id|lpad('0', 3) }}.
@@ -10,8 +10,8 @@
             {% endif %}
         </h2>
         {% include '_exercise_content.twig' with {
-            'content'     : exercise.content,
-            'show_answer' : true,
+            content : exercise.content,
+            mode    : 'admin',
         } only %}
         <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}?page={{ page }}">[редактировать]</a></p>
     {% else %}
