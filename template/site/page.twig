@@ -10,8 +10,11 @@
 
 {% block style %}main{% endblock %}
 
-{% block body %}
+{% block header %}
     <h1>Беспроигрышное мастерство маджонга</h1>
+{% endblock %}
+
+{% block body %}
     <h2>Задачи</h2>
     {% if exerciseList %}
         <ul>

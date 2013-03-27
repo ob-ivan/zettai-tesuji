@@ -96,11 +96,22 @@ class Site implements ControllerProviderInterface
         if (! empty($errors)) {
             return $this->app->json(['errors' => $errors]);
         }
-        // Отдать ответы, правильный ответ, следующую задачу.
+        // Скомпилировать ответы и ссылку на следующую задачу.
+        $answers = [];
+        foreach ($exercise->content['answer'] as $letter => $answer) {
+            $answers[$letter] = [
+                // TODO: Устранить дублирование с TwigServiceProvider/addFilter('tile').
+                'discard' => $this->app['twig']->render('_tile.twig', ['tiles' => $answer['discard']]),
+                'comment' => $answer['comment'],
+            ];
+        }
         return $this->app->json([
-            'answer'            => $exercise->content['answer'],
-            'best_answer'       => $exercise->content['best_answer'],
-            'exercise_next_id'  => $this->app['model']->getExerciseNextId($exercise_id),
+            'answers'       => $answers,
+            'best_answer'   => $exercise->content['best_answer'],
+            'exercise_next' => $this->app['url_generator']->generate(
+                'site_exercise',
+                ['exercise_id' => $this->app['model']->getExerciseNextId($exercise_id)]
+            ),
         ]);
     }
     

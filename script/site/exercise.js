@@ -36,6 +36,10 @@ var ExercisePage = Class({
      *
      *      show        : <jQuery>,
      *          Элемент, который надо показать при показе ответов.
+     *
+     *      next        : <jQuery>,
+     *          Элемент ссылки на следующую задачу, который надо
+     *          наполнить и показать после показа ответов.
      *  } options
     **/
     __construct : function (options) {
@@ -50,6 +54,7 @@ var ExercisePage = Class({
         this.csrf = options.csrf;
         this.hide = options.hide;
         this.show = options.show;
+        this.next = options.next;
     },
     _handle : function (element, event) {
         var show = this._show;
@@ -58,6 +63,15 @@ var ExercisePage = Class({
             {
                 csrf : this.csrf
             },
+            /**
+             *  Получает ответ от сервера и передаёт в обработчик.
+             *
+             *  @param  {
+             *      answers         : ...,
+             *      best_answer     : <abc>,
+             *      exercise_next   : <string>,
+             *  }
+            **/
             function (data, textStatus, jqXHR) {
                 // Если контроллер не принял входные данные, показать на экране, чем он недоволен.
                 if (typeof data.errors !== 'undefined') {
@@ -79,9 +93,9 @@ var ExercisePage = Class({
                 // Отобразить ответы и навигацию.
                 show(
                     $(element).attr('name'),
-                    data.answer,
+                    data.answers,
                     data.best_answer,
-                    data.exercise_next_id
+                    data.exercise_next
                 );
             },
             'json'
@@ -92,13 +106,13 @@ var ExercisePage = Class({
      *
      *  @param  <abc>       user_answer
      *  @param  { <abc> : {
-     *      discard : <?>,
-     *      comment : <string>
+     *      discard : <html>,
+     *      comment : <html>
      *  } }                 answers
      *  @param  <abc>       best_answer
-     *  @param  <integer>   exercise_next_id
+     *  @param  <string>    exercise_next
     **/
-    _show : function (user_answer, answers, best_answer, exercise_next_id) {
+    _show : function (user_answer, answers, best_answer, exercise_next) {
     
         // Заполнить ответы.
         var letters = [best_answer];
@@ -111,8 +125,7 @@ var ExercisePage = Class({
             var letter = letters[i];
             var container = $(this.answers[i]);
             container.find('span.letter').text(letter.toUpperCase());
-            // TODO: Преобразовать discard в картинку.
-            container.find('span.discard').text(answers[letter].discard);
+            container.find('span.discard').html(answers[letter].discard);
             container.find('div.comment').html(answers[letter].comment);
             if (user_answer === letter) {
                 if (letter === best_answer) {
@@ -127,7 +140,9 @@ var ExercisePage = Class({
         this.hide.hide();
         this.show.show();
         
-        // TODO: Показать ссылку на следующую задачу.
+        // Показать ссылку на следующую задачу.
+        console.log(this.next); // debug
+        this.next.attr('href', exercise_next).show();
     }
 });
 
