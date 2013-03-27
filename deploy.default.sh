@@ -22,8 +22,10 @@ else
         flock -x -n 200
         
         # Commands to run
+        echo 'Deployment runs git-pull at ['`date`']'
         git pull
-        $COMPOSER update
+        echo 'Deployment runs composer-install at ['`date`']'
+        $COMPOSER install
             
     ) 200>$LOCKPATH
     rm -f $LOCKPATH
