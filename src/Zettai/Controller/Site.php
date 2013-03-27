@@ -111,7 +111,7 @@ class Site implements ControllerProviderInterface
             'exercise_next' => $this->app['url_generator']->generate(
                 'site_exercise',
                 ['exercise_id' => $this->app['model']->getExerciseNextId($exercise_id)]
-            ),
+            ) . '?page=' . $request->query->get('page'),
         ]);
     }
     
