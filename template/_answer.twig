@@ -1,27 +1,29 @@
 {#
     Вывод ответов к задаче.
     Параметры:
-        answer <abc>
-        content
-            answer
-                a
-                    discard
-                    comment
-                b
-                    discard
-                    comment
-                c
-                    discard
-                    comment
-        is_best <boolean>
+        letter      <abc>
+        fields
+            discard
+            comment
+        is_best     <boolean>
 #}
 <div class="answer">
     {% if is_best %}
         Правильный ответ:
     {% endif %}
-    {{ answer|upper }}.
-    {{ attribute(content.answer, answer).discard|tile|raw }}
+    <span class="letter">
+        {% if mode == 'admin' %}
+            {{ letter|upper }}
+        {% endif %}
+    </span>.
+    <span class="discard">
+        {% if mode == 'admin' %}
+            {{ fields.discard|tile|raw }}
+        {% endif %}
+    </span>
 </div>
-<div class="row">
-    {{ attribute(content.answer, answer).comment }}
+<div class="row comment">
+    {% if mode == 'admin' %}
+        {{ fields.comment }}
+    {% endif %}
 </div>

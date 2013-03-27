@@ -6,7 +6,7 @@
 #}
 {% extends '_layout.twig' %}
 
-{% block style %}main{% endblock %}
+{% block style %}site{% endblock %}
 
 {% block script %}
     <script src="/script/jquery.js"></script>
@@ -21,8 +21,8 @@
             {{ exercise.title }}
         </h2>
         {% include '_exercise_content.twig' with {
-            'content'     : exercise.content,
-            'show_answer' : false,
+            content : exercise.content,
+            mode    : 'site',
         } only %}
         <script>
             new ExercisePage({
