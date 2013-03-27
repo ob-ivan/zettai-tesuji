@@ -126,6 +126,8 @@ var ExercisePage = Class({
         // Скрыть вопросы, показать ответы.
         this.hide.hide();
         this.show.show();
+        
+        // TODO: Показать ссылку на следующую задачу.
     }
 });
 

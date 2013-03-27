@@ -1,4 +1,10 @@
 
+/* _layout.twig */
+
+div.column {
+    width : 570px;
+}
+
 /* _exercise_content.twig */
 
 div.exercise {

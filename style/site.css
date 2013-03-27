@@ -10,3 +10,8 @@ div.fail {
 div.win {
     border : 2px solid green;
 }
+
+p.links a.next {
+    display : none;
+    float   : right;
+}
