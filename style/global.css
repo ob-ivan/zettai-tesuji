@@ -1,4 +1,10 @@
 
+/* _layout.twig */
+
+div.column {
+    width : 570px;
+}
+
 /* _exercise_content.twig */
 
 div.exercise {
@@ -10,7 +16,7 @@ div.exercise br {
 }
 
 div.exercise div.row {
-    clear : both;
+    clear   : both;
     padding : 0 0 20px;
 }
 
@@ -40,10 +46,17 @@ div.exercise div.question {
     padding : 0 0 10px;
 }
 
-div.exercise div.row.variants div {
+div.exercise div.row.variants button {
     float : left;
     width : 33%;
     text-align : center;
+    border : 0;
+    margin : 0;
+    background : white;
+}
+
+div.exercise div.answer {
+    padding : 5px 5px 10px;
 }
 
 /* _tile.twig */

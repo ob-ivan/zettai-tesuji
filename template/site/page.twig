@@ -8,10 +8,13 @@
 #}
 {% extends '_layout.twig' %}
 
-{% block style %}main{% endblock %}
+{% block style %}site{% endblock %}
+
+{% block header %}
+    <h1>Беспроигрышное мастерство маджонга</h1>
+{% endblock %}
 
 {% block body %}
-    <h1>Беспроигрышное мастерство маджонга</h1>
     <h2>Задачи</h2>
     {% if exerciseList %}
         <ul>

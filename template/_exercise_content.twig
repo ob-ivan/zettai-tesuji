@@ -20,8 +20,9 @@
                     discard
                     content
             best_answer
-        question    <string>
-        show_answer <boolean>
+        mode    string      'admin'|'site'
+            В админке ответы показываются сразу.
+            На сайте показываются кнопки для выбора ответа.
 #}
 <div class="exercise">
     <div class="row">
@@ -39,30 +40,35 @@
         <div class="draw">Набрал: {{ content.draw|tile|raw }}</div>
         <br/>
     </div>
-    {% if show_answer %}
+    
+    {% if mode == 'site' %}
+        <div class="row variants">
+            <div class="question">Что сбросить?</div>
+            {% for letter in app.types.abc.each %}
+                <button name="{{ letter }}">{{ letter|upper }}. {{ attribute(content.answer, letter).discard|tile|raw }}</button>
+            {% endfor %}
+            <br/>
+        </div>
+    {% endif %}
+    
+    <div class="row answers">
         <hr/>
         {% include '_answer.twig' with {
-            answer  : content.best_answer,
-            content : content,
+            mode    : mode,
+            letter  : content.best_answer,
+            fields  : attribute(content.answer, content.best_answer),
             is_best : true,
         } only %}
-        <div class="row">Другие ответы:</div>
-        {% for answer in app.types.abc.each %}
-            {% if not answer.equals(content.best_answer) %}
+        <p>Другие ответы:</p>
+        {% for letter in app.types.abc.each %}
+            {% if not letter.equals(content.best_answer) %}
                 {% include '_answer.twig' with {
-                    answer  : answer,
-                    content : content,
+                    mode    : mode,
+                    letter  : letter,
+                    fields  : attribute(content.answer, letter),
                     is_best : false,
                 } only %}
             {% endif %}
         {% endfor %}
-    {% else %}
-        <div class="question">Что сбросить?</div>
-        <div class="row variants">
-            <div>A. {{ content.answer.a.discard|tile|raw }}</div>
-            <div>B. {{ content.answer.b.discard|tile|raw }}</div>
-            <div>C. {{ content.answer.c.discard|tile|raw }}</div>
-        </div>
-        <div class="row"></div>
-    {% endif %}
+    </div>
 </div>

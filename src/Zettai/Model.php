@@ -88,12 +88,24 @@ class Model
         return $records;
     }
 
-    public function getExerciseNextId()
+    public function getExerciseNewId()
     {
         return $this->db->fetchColumn('
             SELECT MAX(`exercise_id`) + 1
             FROM `exercise`
         ');
+    }
+
+    public function getExerciseNextId($exercise_id)
+    {
+        return $this->db->fetchColumn('
+            SELECT MIN(`exercise_id`)
+            FROM `exercise`
+            WHERE `exercise_id` > :exercise_id
+            AND `is_hidden` = 0
+        ', [
+            'exercise_id' => $exercise_id,
+        ]);
     }
 
     public function deleteExercise ($exercise_id)
@@ -107,7 +119,7 @@ class Model
         }
 
         // execute
-        $this->db->delete ('exercise', ['exercise_id' => $exercise_id]);
+        $this->db->delete('exercise', ['exercise_id' => $exercise_id]);
     }
 
     public function setExercise (Exercise $exercise)

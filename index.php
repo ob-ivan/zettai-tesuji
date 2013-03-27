@@ -19,6 +19,42 @@ $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
+$app->register(new Zettai\Provider\ParameterServiceProvider([
+    'page' => [
+        'assert'  => '\\d*',
+        'value'   => '1',
+        'convert' => function ($page) {
+            $page = intval($page);
+            if ($page < 1) {
+                $page = 1;
+            }
+            return $page;
+        },
+    ],
+    'exercise_id' => [
+        'assert'  => '\\d+',
+        'convert' => function ($exercise_id) {
+            $exercise_id = intval($exercise_id);
+            if ($exercise_id < 1) {
+                throw new Exception('Exercise id must be positive integer');
+            }
+            return $exercise_id;
+        },
+    ],
+    'exercise_id_new' => [
+        'assert' => '\\d+|new',
+        'convert' => function ($exercise_id) {
+            if ($exercise_id === 'new') {
+                return $exercise_id;
+            }
+            $exercise_id = intval($exercise_id);
+            if ($exercise_id < 1) {
+                throw new Exception('Exercise id must be "new" or positive integer');
+            }
+            return $exercise_id;
+        },
+    ],
+]));
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
@@ -74,8 +110,16 @@ if ($app['debug']) {
     ->value('salt', '');
 }
 
-// Запускаем приложение.
+// Запускаем приложение (копипаста из Application->run()) и выводим время работы.
+// TODO: Отдать бенчмаркинг на откуп FirePHP.
 
-$app->run();
-
-print '<!-- server time: ' . (microtime(true) - $time) . ' -->';
+$request = Request::createFromGlobals();
+$response = $app->handle($request);
+$content = $response->getContent();
+$search = '~SERVER_TIME~';
+if (strpos($content, $search)) {
+    $response->setContent(str_replace($search, microtime(true) - $time, $content));
+}
+$response->send();
+$app->terminate($request, $response);
+die;

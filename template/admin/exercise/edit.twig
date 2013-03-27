@@ -1,7 +1,11 @@
 {% extends 'admin/_layout.twig' %}
 
-{% block admin_body %}
+{% block script %}
+    {{ parent() }}
     <script src="/script/happy.js"></script>
+{% endblock %}
+
+{% block body %}
     <h2>Редактирование задачи</h2>
     {% if errors %}
         <ul class="error">

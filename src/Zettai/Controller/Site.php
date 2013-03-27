@@ -7,7 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Site implements ControllerProviderInterface
 {
+    // var //
+    
     private $app;
+    
+    // public : ControllerProviderInterface //
     
     public function connect(Application $app)
     {
@@ -15,38 +19,37 @@ class Site implements ControllerProviderInterface
         
         $controllers = $app['controllers_factory'];
         
-        $controllers->get('/{page}', function ($page) {
-            return $this->page($page);
-        })
-        ->assert ('page', '\\d*')
-        ->value  ('page', '1')
-        ->convert('page', function ($page) {
-            $page = intval ($page);
-            if ($page < 1) {
-                $page = 1;
-            }
-            return $page;
-        })
+        // Главная страница -- список задач.
+        $app['parameter']->setParameters(
+            $controllers->get('/{page}', function ($page) {
+                return $this->page($page);
+            }),
+            ['page' => 'page']
+        )
         ->bind('site_page');
 
         // Просмотр одной задачи на сайте.
-        $controllers->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) {
-            return $this->exercise($request, $exercise_id);
-        })
-        ->assert('exercise_id', '\\d+')
-        ->convert('exercise_id', function ($exercise_id) {
-            $exercise_id = intval ($exercise_id);
-            if ($exercise_id < 1) {
-                throw new Exception('Exercise id must be positive integer');
-            }
-            return $exercise_id;
-        })
+        $app['parameter']->setParameters(
+            $controllers->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exercise($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id']
+        )
         ->bind('site_exercise');
+        
+        // Аякс для получения ответов к задаче.
+        $app['parameter']->setParameters(
+            $controllers->post('/exercise/answer/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exerciseAnswer($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id']
+        )
+        ->bind('site_exercise_answer');
 
         return $controllers;
     }
     
-    // private //
+    // private : controllers //
     
     private function page($page)
     {
@@ -68,14 +71,55 @@ class Site implements ControllerProviderInterface
     private function exercise(Request $request, $exercise_id)
     {
         $exercise = $this->app['model']->getExercise($exercise_id);
-        if ($exercise->is_hidden) {
+        if ($exercise && $exercise->is_hidden) {
             $exercise = null;
         }
         $page = $request->query->get('page');
         return $this->app->render('site/exercise.twig', [
-            'exercise' => $exercise,
-            'page'     => $page,
+            'exercise'  => $exercise,
+            'page'      => $page,
+            'csrf'      => $this->app['csrf']->generate($this->csrfKey($exercise_id)),
         ]);
+    }
+    
+    private function exerciseAnswer(Request $request, $exercise_id)
+    {
+        // Проверить входные данные.
+        $errors = [];
+        $exercise = $this->app['model']->getExercise($exercise_id);
+        if (! $exercise || $exercise->is_hidden) {
+            $errors[] = 'EXERCISE:DOES_NOT_EXIST';
+        }
+        if (! $this->app['csrf']->validate($request->request->get('csrf'), $this->csrfKey($exercise_id))) {
+            $errors[] = 'CSRF';
+        }
+        if (! empty($errors)) {
+            return $this->app->json(['errors' => $errors]);
+        }
+        // Скомпилировать ответы и ссылку на следующую задачу.
+        $answers = [];
+        foreach ($exercise->content['answer'] as $letter => $answer) {
+            $answers[$letter] = [
+                // TODO: Устранить дублирование с TwigServiceProvider/addFilter('tile').
+                'discard' => $this->app['twig']->render('_tile.twig', ['tiles' => $answer['discard']]),
+                'comment' => $answer['comment'],
+            ];
+        }
+        return $this->app->json([
+            'answers'       => $answers,
+            'best_answer'   => $exercise->content['best_answer'],
+            'exercise_next' => $this->app['url_generator']->generate(
+                'site_exercise',
+                ['exercise_id' => $this->app['model']->getExerciseNextId($exercise_id)]
+            ) . '?page=' . $request->query->get('page'),
+        ]);
+    }
+    
+    // private : helpers //
+    
+    private function csrfKey($exercise_id)
+    {
+        return 'site_exercise_answer_' . $exercise_id;
     }
 }
 
