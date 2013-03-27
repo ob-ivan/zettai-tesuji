@@ -51,26 +51,24 @@
         </div>
     {% endif %}
     
-    <div class="row">
-        <div class="hidden">
-            <hr/>
-            {% include '_answer.twig' with {
-                mode    : mode,
-                letter  : content.best_answer,
-                fields  : attribute(content.answer, content.best_answer),
-                is_best : true,
-            } only %}
-            <div class="row">Другие ответы:</div>
-            {% for letter in app.types.abc.each %}
-                {% if not letter.equals(content.best_answer) %}
-                    {% include '_answer.twig' with {
-                        mode    : mode,
-                        letter  : letter,
-                        fields  : attribute(content.answer, letter),
-                        is_best : false,
-                    } only %}
-                {% endif %}
-            {% endfor %}
-        </div>
+    <div class="row answers">
+        <hr/>
+        {% include '_answer.twig' with {
+            mode    : mode,
+            letter  : content.best_answer,
+            fields  : attribute(content.answer, content.best_answer),
+            is_best : true,
+        } only %}
+        <p>Другие ответы:</p>
+        {% for letter in app.types.abc.each %}
+            {% if not letter.equals(content.best_answer) %}
+                {% include '_answer.twig' with {
+                    mode    : mode,
+                    letter  : letter,
+                    fields  : attribute(content.answer, letter),
+                    is_best : false,
+                } only %}
+            {% endif %}
+        {% endfor %}
     </div>
 </div>

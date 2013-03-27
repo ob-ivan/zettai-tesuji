@@ -1,6 +1,7 @@
 {#
-    Вывод ответов к задаче.
+    Выводит один из ответов к задаче.
     Параметры:
+        mode        <string>    'admin'|'site'
         letter      <abc>
         fields
             discard
@@ -21,9 +22,9 @@
             {{ fields.discard|tile|raw }}
         {% endif %}
     </span>
-</div>
-<div class="row comment">
-    {% if mode == 'admin' %}
-        {{ fields.comment }}
-    {% endif %}
+    <div class="comment">
+        {% if mode == 'admin' %}
+            {{ fields.comment }}
+        {% endif %}
+    </div>
 </div>
