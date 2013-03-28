@@ -1,5 +1,5 @@
 {
-    "hash": "553087c3f9d3d5194a538ee8098ed74c",
+    "hash": "a4154dbd9faa9763e5f3da2b65a63339",
     "packages": [
         {
             "name": "andyet/Happy.js",
@@ -307,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Silex.git",
-                "reference": "a5cb55ced63ece76550de1599ddcc60719373594"
+                "reference": "59e7dbd338b5caba9879ae11524da4a5905f80c1"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/fabpot/Silex/zipball/a5cb55ced63ece76550de1599ddcc60719373594",
-                "reference": "a5cb55ced63ece76550de1599ddcc60719373594",
+                "reference": "59e7dbd338b5caba9879ae11524da4a5905f80c1",
                 "shasum": ""
             },
             "require": {
@@ -380,7 +380,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2013-03-27 09:31:32"
+            "time": "2013-03-08 16:56:52"
         },
         {
             "name": "symfony/browser-kit",
