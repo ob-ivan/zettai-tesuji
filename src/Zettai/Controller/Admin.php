@@ -56,12 +56,12 @@ class Admin implements ControllerProviderInterface
     
     private function page ($page)
     {
-        $exerciseCount = $this->app['model']->getExerciseCount(true);
+        $exerciseCount = $this->app['model']->exercise->getCount(true);
         $perPage = 20;
         if (($page - 1) * $perPage > $exerciseCount) {
             return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => 1]));
         }
-        $exerciseList = $this->app['model']->getExerciseList(($page - 1) * $perPage, $perPage, true);
+        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * $perPage, $perPage, true);
         
         return $this->app->render('admin/main.twig', [
             'exerciseList'  => $exerciseList,
@@ -73,7 +73,7 @@ class Admin implements ControllerProviderInterface
     
     private function exerciseView(Request $request, $exercise_id)
     {
-        $exercise = $this->app['model']->getExercise($exercise_id);
+        $exercise = $this->app['model']->exercise->get($exercise_id);
         $page = $request->query->get('page');
         return $this->app->render('admin/exercise/view.twig', [
             'exercise' => $exercise,
@@ -143,7 +143,9 @@ class Admin implements ControllerProviderInterface
                         $errors[] = 'EXERCISE_ID:NOT_POSITIVE';
                     } else {
                         // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
-                        if ($exercise_id !== $exercise->exercise_id && $this->app['model']->getExercise($exercise->exercise_id)) {
+                        if ($exercise_id !== $exercise->exercise_id &&
+                            $this->app['model']->exercise->get($exercise->exercise_id)
+                        ) {
                             $errors[] = 'EXERCISE_ID:ALREADY_EXISTS';
                         }
                     }
@@ -158,11 +160,11 @@ class Admin implements ControllerProviderInterface
                 }
                 
                 // Создать задачу.
-                $this->app['model']->setExercise($exercise);
+                $this->app['model']->exercise->set($exercise);
                 
                 // Если старый номер не равен new, то после создания нового надо удалить старое.
                 if ($exercise_id !== 'new' && $exercise_id !== $exercise->exercise_id) {
-                    $this->app['model']->deleteExercise($exercise_id);
+                    $this->app['model']->exercise->delete($exercise_id);
                 }
                 
                 // Показать новую задачу в админке.
@@ -179,7 +181,7 @@ class Admin implements ControllerProviderInterface
                 }
                 
                 // Удалить задачу.
-                $this->app['model']->deleteExercise($exercise_id);
+                $this->app['model']->exercise->delete($exercise_id);
                 
                 // Показать список задач.
                 return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => $request->query->get('page')]));
@@ -214,11 +216,11 @@ class Admin implements ControllerProviderInterface
         
         // Отобразить свежую форму для новой задачи.
         if ($exercise_id === 'new') {
-            return $view(new Exercise (['exercise_id' => $this->app['model']->getExerciseNewId()]));
+            return $view(new Exercise (['exercise_id' => $this->app['model']->exercise->getNewId()]));
         }
         
         // Существует ли запрошенная задача?
-        $exercise = $this->app['model']->getExercise($exercise_id);
+        $exercise = $this->app['model']->exercise->get($exercise_id);
         if (! $exercise) {
             return $view(null, ['EXERCISE:DOES_NOT_EXIST']);
         }
