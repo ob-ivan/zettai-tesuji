@@ -1,5 +1,5 @@
 <?php
-namespace Zettai;
+namespace Zettai\Model;
 
 use Doctrine\DBAL\Connection;
 
@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
  *
  * Документация: https://github.com/ob-ivan/zettai-tesuji/wiki/Data-Model
 **/
-class Model
+class Service
 {
     private $db;
     private $debug;
