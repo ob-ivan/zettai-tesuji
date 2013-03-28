@@ -28,6 +28,7 @@ class Exercise extends Entity
             throw new Exception('Exercise id is empty', Exception::EXERCISE_ID_EMPTY);
         }
 
+        /*
         // execute
         $row = $this->db->fetchAssoc('
             SELECT
@@ -40,8 +41,8 @@ class Exercise extends Entity
         ', [
             'exercise_id' => $exercise_id,
         ]);
+        */
         
-        /*
         $row = $this->queryBuilder()
         ->select('exercise_id') // строка => название поля.
         ->select('title')
@@ -49,10 +50,8 @@ class Exercise extends Entity
         ->select('content')
         ->where(function($expression) {
             return $expression->equals('exercise_id', ':exercise_id');
-            // просто строка => название поля, строка с двоеточием => имя параметра.
         })
-        ->fetchAssoc(['exercise_id' => $exercise_id] ); // значения параметров.
-        */
+        ->fetchAssoc(['exercise_id' => $exercise_id]);
 
         // convert to record
         if ($row) {
@@ -63,24 +62,23 @@ class Exercise extends Entity
 
     public function getCount($includeHidden = false)
     {
+        /*
         return $this->db->fetchColumn('
             SELECT COUNT(`exercise_id`)
             FROM `exercise`
             ' . ($includeHidden ? '' : ' WHERE `is_hidden` = 0 ') . '
         ');
-        /*
+        */
         $qb = $this->queryBuilder()
         ->select(function($expression) {
-            return $expression->count('exercise_id')
+            return $expression->count('exercise_id');
         });
         if (! $includeHidden) {
             $qb->where(function($expr) {
-                return $expr->equals('is_hidden', 0)
+                return $expr->equals('is_hidden', 0);
             });
         }
-        $row = $qb->fetchColumn();
-        */
-
+        return $qb->fetchColumn();
     }
 
     public function getList ($offset = 0, $limit = 20, $includeHidden = false)
@@ -90,6 +88,7 @@ class Exercise extends Entity
         $limit  = intval ($limit);
 
         // execute
+        /*
         $rows = $this->db->fetchAll('
             SELECT
                 `exercise_id`,
@@ -100,8 +99,7 @@ class Exercise extends Entity
             ORDER BY `exercise_id` ASC
             LIMIT ' . $offset . ', ' . $limit . '
         ');
-        
-        /*
+        */
         $qb = $this->queryBuilder()
         ->select('exercise_id')
         ->select('title')
@@ -115,7 +113,6 @@ class Exercise extends Entity
             });
         }
         $rows = $qb->fetchAll();
-        */
 
         // convert to records
         $records = [];
@@ -127,21 +124,22 @@ class Exercise extends Entity
 
     public function getNewId()
     {
+        /*
         return $this->db->fetchColumn('
             SELECT MAX(`exercise_id`) + 1
             FROM `exercise`
         ');
-        /*
+        */
         return $this->queryBuilder()
         ->select(function ($expr) {
             return $expr->max('exercise_id');
         })
         ->fetchColumn() + 1;
-        */
     }
 
     public function getNextId($exercise_id)
     {
+        /*
         return $this->db->fetchColumn('
             SELECT MIN(`exercise_id`)
             FROM `exercise`
@@ -150,7 +148,7 @@ class Exercise extends Entity
         ', [
             'exercise_id' => $exercise_id,
         ]);
-        /*
+        */
         return $this->queryBuilder()
         ->select(function ($expr) {
             return $expr->min('exercise_id');
@@ -162,7 +160,6 @@ class Exercise extends Entity
             );
         })
         ->fetchColumn(['exercise_id' => $exercise_id]);
-        */
     }
 
     public function delete($exercise_id)

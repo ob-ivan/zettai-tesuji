@@ -16,7 +16,7 @@ class QueryBuilder
     private $select = [];
     private $where;
     private $orderBy = [];
-    private $offset;
+    private $offset = 0;
     private $limit;
     
     // public //
@@ -57,11 +57,13 @@ class QueryBuilder
     public function offset($offset)
     {
         $this->offset = $offset;
+        return $this;
     }
     
     public function limit($limit)
     {
         $this->limit = $limit;
+        return $this;
     }
     
     // public : fetching //
@@ -114,7 +116,7 @@ class QueryBuilder
         $from = $tableName;
         
         // WHERE
-        $where = $this->where->toString();
+        $where = $this->where ? $this->where->toString() : '';
         
         // ORDER BY
         $orderBy = [];
@@ -125,14 +127,20 @@ class QueryBuilder
         }
         
         // LIMIT
-        $limit = $this->offset . ', ' . $this->limit;
+        $limit = $this->limit > 0 ? $this->offset . ', ' . $this->limit : '';
         
-        return '
-            SELECT   ' . implode(', ', $select) . '
-            FROM     ' . $from . '
-            WHERE    ' . $where . '
-            ORDER BY ' . $orderBy . '
-            LIMIT    ' . $limit . '
-        ';
+        $clauses = [];
+        $clauses[] = 'SELECT ' . implode(', ', $select);
+        $clauses[] = 'FROM ' . $from;
+        if (! empty($where)) {
+            $clauses[] = 'WHERE ' . $where;
+        }
+        if (! empty($orderBy)) {
+            $clauses[] = 'ORDER BY ' . implode(', ', $orderBy);
+        }
+        if (! empty($limit)) {
+            $clauses[] = 'LIMIT ' . $limit;
+        }
+        return implode(' ', $clauses);
     }
 }

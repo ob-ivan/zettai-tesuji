@@ -36,7 +36,7 @@ class Expression
         if (isset(self::$METHOD_TO_TYPE[$name])) {
             $expressions = [];
             foreach ($arguments as $argument) {
-                $expressions = self::create($argument);
+                $expressions[] = self::create($argument);
             }
             return new self(self::$METHOD_TO_TYPE[$name], $expressions);
         }
@@ -59,7 +59,7 @@ class Expression
             return $expression(self::create());
         }
         if (is_numeric($expression)) {
-            return new self(self::TYPE_CONST, $expression);
+            return new self(self::TYPE_CONST, [$expression]);
         }
         if (preg_match('/^:(\w+)$/', $expression, $matches)) {
             return new self(self::TYPE_PARAMETER, [$matches[1]]);
@@ -110,7 +110,7 @@ class Expression
     
     // private //
     
-    private function __construct($type, $arguments = [])
+    private function __construct($type, array $arguments = [])
     {
         $this->type      = $type;
         $this->arguments = $arguments;

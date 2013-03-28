@@ -23,6 +23,21 @@ class Service implements ServiceInterface
         $this->debug = $debug;
     }
     
+    public function fetchAll($query, $parameters)
+    {
+        return $this->db->fetchAll($query, $parameters);
+    }
+    
+    public function fetchAssoc($query, $parameters)
+    {
+        return $this->db->fetchAssoc($query, $parameters);
+    }
+    
+    public function fetchColumn($query, $parameters)
+    {
+        return $this->db->fetchColumn($query, $parameters);
+    }
+    
     public function getTableName(EntityInterface $entity)
     {
         return ($this->debug ? '_test_' : '') . $entity->getTableName();
