@@ -85,27 +85,25 @@ class QueryBuilder
     
     // public : modifying //
     
-    public function delete()
+    public function delete($filter)
     {
-        // TODO
+        $this->service->delete($this->getTableName(), $filter);
     }
     
-    public function insert()
+    public function insert($data)
     {
-        // TODO
+        $this->service->insert($this->getTableName(), $data);
     }
     
-    public function update()
+    public function update($data, $filter)
     {
-        // TODO
+        $this->service->update($this->getTableName(), $data, $filter);
     }
     
     // private //
     
     private function buildQuery()
     {
-        $tableName = $this->service->getTableName($this->entity);
-        
         // SELECT
         $select = [];
         foreach ($this->select as $expression) {
@@ -113,7 +111,7 @@ class QueryBuilder
         }
         
         // FROM
-        $from = $tableName;
+        $from = $this->getTableName();
         
         // WHERE
         $where = $this->where ? $this->where->toString() : '';
@@ -129,6 +127,7 @@ class QueryBuilder
         // LIMIT
         $limit = $this->limit > 0 ? $this->offset . ', ' . $this->limit : '';
         
+        // clauses
         $clauses = [];
         $clauses[] = 'SELECT ' . implode(', ', $select);
         $clauses[] = 'FROM ' . $from;
@@ -142,5 +141,10 @@ class QueryBuilder
             $clauses[] = 'LIMIT ' . $limit;
         }
         return implode(' ', $clauses);
+    }
+    
+    private function getTableName()
+    {
+        return $this->service->getTableName($this->entity);
     }
 }

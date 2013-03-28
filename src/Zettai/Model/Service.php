@@ -23,6 +23,18 @@ class Service implements ServiceInterface
         $this->debug = $debug;
     }
     
+    public function getTableName(EntityInterface $entity)
+    {
+        return ($this->debug ? '_test_' : '') . $entity->getTableName();
+    }
+    
+    public function register($name, callable $entityProvider)
+    {
+        $this->registry[$name] = $entityProvider;
+    }
+    
+    // public : ServiceInterface : fetch //
+    
     public function fetchAll($query, $parameters)
     {
         return $this->db->fetchAll($query, $parameters);
@@ -38,14 +50,21 @@ class Service implements ServiceInterface
         return $this->db->fetchColumn($query, $parameters);
     }
     
-    public function getTableName(EntityInterface $entity)
+    // public : ServiceInterface : modify //
+    
+    public function delete($tableName, $filter)
     {
-        return ($this->debug ? '_test_' : '') . $entity->getTableName();
+        return $this->db->delete($tableName, $filter);
     }
     
-    public function register($name, callable $entityProvider)
+    public function insert($tableName, $data)
     {
-        $this->registry[$name] = $entityProvider;
+        return $this->db->insert($tableName, $data);
+    }
+    
+    public function update($tableName, $data, $filter)
+    {
+        return $this->db->update($tableName, $data, $filter);
     }
     
     // public : Service //
