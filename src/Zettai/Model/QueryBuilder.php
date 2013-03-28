@@ -3,6 +3,11 @@ namespace Zettai\Model;
 
 class QueryBuilder
 {
+    // const //
+    
+    const ORDER_BY_KEY_EXPRESSION = __LINE__;
+    const ORDER_BY_KEY_DIRECTION  = __LINE__;
+    
     // var //
     
     private $entity;
@@ -30,17 +35,23 @@ class QueryBuilder
     **/
     public function select($expression)
     {
-        // TODO
+        $this->select[] = Expression::create($expression);
+        return $this;
     }
     
     public function where($expression)
     {
-        // TODO
+        $this->where = Expression::create($expression);
+        return $this;
     }
     
     public function orderBy($expression, $direction)
     {
-        // TODO
+        $this->orderBy[] = [
+            self::ORDER_BY_KEY_EXPRESSION => Expression::create($expression),
+            self::ORDER_BY_KEY_DIRECTION  => $direction,
+        ];
+        return $this;
     }
     
     public function offset($offset)
@@ -55,19 +66,19 @@ class QueryBuilder
     
     // public : fetching //
     
-    public function fetchAssoc($parameters = [])
-    {
-        // TODO
-    }
-    
     public function fetchAll($parameters = [])
     {
-        // TODO
+        return $this->service->fetchAll($this->buildQuery(), $parameters);
+    }
+    
+    public function fetchAssoc($parameters = [])
+    {
+        return $this->service->fetchAssoc($this->buildQuery(), $parameters);
     }
     
     public function fetchColumn($parameters = [])
     {
-        // TODO
+        return $this->service->fetchColumn($this->buildQuery(), $parameters);
     }
     
     // public : modifying //
@@ -85,5 +96,43 @@ class QueryBuilder
     public function update()
     {
         // TODO
+    }
+    
+    // private //
+    
+    private function buildQuery()
+    {
+        $tableName = $this->service->getTableName($this->entity);
+        
+        // SELECT
+        $select = [];
+        foreach ($this->select as $expression) {
+            $select[] = $expression->toString();
+        }
+        
+        // FROM
+        $from = $tableName;
+        
+        // WHERE
+        $where = $this->where->toString();
+        
+        // ORDER BY
+        $orderBy = [];
+        foreach ($this->orderBy as $orderByPair) {
+            $orderBy[] =
+                $orderByPair[self::ORDER_BY_KEY_EXPRESSION]->toString() . ' ' . 
+                $orderByPair[self::ORDER_BY_KEY_DIRECTION];
+        }
+        
+        // LIMIT
+        $limit = $this->offset . ', ' . $this->limit;
+        
+        return '
+            SELECT   ' . implode(', ', $select) . '
+            FROM     ' . $from . '
+            WHERE    ' . $where . '
+            ORDER BY ' . $orderBy . '
+            LIMIT    ' . $limit . '
+        ';
     }
 }

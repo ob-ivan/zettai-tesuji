@@ -17,18 +17,23 @@ class Service implements ServiceInterface
 
     // public : ServiceInterface //
     
+    public function __construct (Connection $db, $debug)
+    {
+        $this->db    = $db;
+        $this->debug = $debug;
+    }
+    
+    public function getTableName(EntityInterface $entity)
+    {
+        return ($this->debug ? '_test_' : '') . $entity->getTableName();
+    }
+    
     public function register($name, callable $entityProvider)
     {
         $this->registry[$name] = $entityProvider;
     }
     
     // public : Service //
-    
-    public function __construct (Connection $db, $debug)
-    {
-        $this->db    = $db;
-        $this->debug = $debug;
-    }
     
     public function __get($name)
     {

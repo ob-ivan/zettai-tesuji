@@ -3,6 +3,7 @@ namespace Zettai;
 
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Application as BaseApplication;
+use Zettai\Provider\ModelServiceProvider;
 
 class Application extends BaseApplication
 {
@@ -53,8 +54,6 @@ class Application extends BaseApplication
     
     private function registerModel()
     {
-        $this['model'] = $this->share(function () {
-            return new Model($this['db'], $this['debug']);
-        });
+        $this->register(new ModelServiceProvider());
     }
 }
