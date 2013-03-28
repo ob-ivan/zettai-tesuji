@@ -43,17 +43,15 @@ class Exercise extends Entity
         
         /*
         $row = $this->queryBuilder()
-            ->select('exercise_id') // строка => название поля.
-            ->select('title')
-            ->select('is_hidden')
-            ->select('content')
-            ->where(function($expression) {
-                return $expression->equals('exercise_id', ':exercise_id');
-                // просто строка => название поля, строка с двоеточием => имя параметра.
-            })
-        ->fetchAssoc(
-            ['exercise_id' => $exercise_id] // значения параметров.
-        );
+        ->select('exercise_id') // строка => название поля.
+        ->select('title')
+        ->select('is_hidden')
+        ->select('content')
+        ->where(function($expression) {
+            return $expression->equals('exercise_id', ':exercise_id');
+            // просто строка => название поля, строка с двоеточием => имя параметра.
+        })
+        ->fetchAssoc(['exercise_id' => $exercise_id] ); // значения параметров.
         */
 
         // convert to record
@@ -174,7 +172,7 @@ class Exercise extends Entity
 
         // validate
         if (! ($exercise_id > 0)) {
-            throw new Exception('Exercise id is empty', Exception::MODEL_EXERCISE_ID_EMPTY);
+            throw new Exception('Exercise id is empty', Exception::EXERCISE_ID_EMPTY);
         }
 
         // execute
@@ -188,10 +186,10 @@ class Exercise extends Entity
     {
         // validate
         if (! ($exercise->exercise_id > 0)) {
-            throw new Exception('Exercise id is empty', Exception::MODEL_EXERCISE_ID_EMPTY);
+            throw new Exception('Exercise id is empty', Exception::EXERCISE_ID_EMPTY);
         }
         if (! (strlen($exercise->title) > 0)) {
-            throw new Exception('Exercise title is empty', Exception::MODEL_EXERCISE_TITLE_EMPTY);
+            throw new Exception('Exercise title is empty', Exception::EXERCISE_TITLE_EMPTY);
         }
 
         if ($this->get($exercise->exercise_id)) {
