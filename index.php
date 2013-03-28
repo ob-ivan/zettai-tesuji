@@ -3,7 +3,7 @@
 // Подготовка глобального состояния.
 
 $time = microtime(true);
-set_error_handler(function ($errno, $errstr, $errfile, $errline ) {
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
 
@@ -19,6 +19,7 @@ define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 // Зависимости.
 
 require_once AUTOLOAD_PATH;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 
 // Инициализируем приложение.
@@ -29,7 +30,15 @@ $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
 $app->register(new Silex\Provider\MonologServiceProvider(), [
-    'monolog.logfile'   => LOG_DIR . '/development.log',
+    'monolog.logfile'   => LOG_DIR . (
+        $app['debug']
+        ? '/debug.log'
+        : '/error.log'
+    ),
+    'monolog.level'     =>
+        $app['debug']
+        ? Logger::DEBUG
+        : Logger::ERROR,
     'monolog.name'      => 'zettai-tesuji',
 ]);
 $app->register(new Zettai\Provider\ParameterServiceProvider([
