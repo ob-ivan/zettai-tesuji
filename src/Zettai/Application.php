@@ -53,9 +53,8 @@ class Application extends BaseApplication
     
     private function registerModel()
     {
-        $app = $this;
-        $this['model'] = $this->share(function () use ($app) {
-            return new Model($app['db']);
+        $this['model'] = $this->share(function () {
+            return new Model($this['db'], $this['debug']);
         });
     }
 }

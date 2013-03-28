@@ -11,10 +11,12 @@ use Doctrine\DBAL\Connection;
 class Model
 {
     private $db;
+    private $debug;
 
-    public function __construct (Connection $db)
+    public function __construct (Connection $db, $debug)
     {
         $this->db = $db;
+        $this->debug = $debug;
     }
 
     // Exercise //
