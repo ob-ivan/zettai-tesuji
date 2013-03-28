@@ -3,17 +3,13 @@ namespace Zettai\Model;
 
 use Zettai\Exercise as Record;
 
-class Exercise implements EntityInterface
+class Exercise extends Entity
 {
-    // var //
-    
-    private $service;
-    
     // public : EntityInterface //
     
-    public function __construct(Service $service)
+    public function getTableName()
     {
-        $this->service = $service;
+        return 'exercise';
     }
     
     // public : Exercise //
@@ -44,6 +40,21 @@ class Exercise implements EntityInterface
         ', [
             'exercise_id' => $exercise_id,
         ]);
+        
+        /*
+        $row = $this->queryBuilder()
+            ->select('exercise_id') // строка => название поля.
+            ->select('title')
+            ->select('is_hidden')
+            ->select('content')
+            ->where(function($expression) {
+                return $expression->equals('exercise_id', ':exercise_id');
+                // просто строка => название поля, строка с двоеточием => имя параметра.
+            })
+        ->fetchAssoc(
+            ['exercise_id' => $exercise_id] // значения параметров.
+        );
+        */
 
         // convert to record
         if ($row) {
@@ -59,6 +70,19 @@ class Exercise implements EntityInterface
             FROM `exercise`
             ' . ($includeHidden ? '' : ' WHERE `is_hidden` = 0 ') . '
         ');
+        /*
+        $qb = $this->queryBuilder()
+        ->select(function($expression) {
+            return $expression->count('exercise_id')
+        });
+        if (! $includeHidden) {
+            $qb->where(function($expr) {
+                return $expr->equals('is_hidden', 0)
+            });
+        }
+        $row = $qb->fetchColumn();
+        */
+
     }
 
     public function getList ($offset = 0, $limit = 20, $includeHidden = false)
@@ -78,6 +102,22 @@ class Exercise implements EntityInterface
             ORDER BY `exercise_id` ASC
             LIMIT ' . $offset . ', ' . $limit . '
         ');
+        
+        /*
+        $qb = $this->queryBuilder()
+        ->select('exercise_id')
+        ->select('title')
+        ->select('is_hidden')
+        ->orderBy('exercise_id', 'ASC')
+        ->offset($offset)
+        ->limit($limit);
+        if (! $includeHidden) {
+            $qb->where(function($expr) {
+                return $expr->equals('is_hidden', 0);
+            });
+        }
+        $rows = $qb->fetchAll();
+        */
 
         // convert to records
         $records = [];
@@ -93,6 +133,13 @@ class Exercise implements EntityInterface
             SELECT MAX(`exercise_id`) + 1
             FROM `exercise`
         ');
+        /*
+        return $this->queryBuilder()
+        ->select(function ($expr) {
+            return $expr->max('exercise_id');
+        })
+        ->fetchColumn() + 1;
+        */
     }
 
     public function getNextId($exercise_id)
@@ -105,6 +152,19 @@ class Exercise implements EntityInterface
         ', [
             'exercise_id' => $exercise_id,
         ]);
+        /*
+        return $this->queryBuilder()
+        ->select(function ($expr) {
+            return $expr->min('exercise_id');
+        })
+        ->where(function ($expr) {
+            return $expr->andx(
+                $expr->greaterThan('exercise_id', ':exercise_id'),
+                $expr->equals('is_hidden', 0)
+            );
+        })
+        ->fetchColumn(['exercise_id' => $exercise_id]);
+        */
     }
 
     public function delete($exercise_id)
@@ -119,6 +179,9 @@ class Exercise implements EntityInterface
 
         // execute
         $this->db->delete('exercise', ['exercise_id' => $exercise_id]);
+        /*
+        $this->queryBuilder()->delete(['exercise_id' => $exercise_id]);
+        */
     }
 
     public function set(Record $exercise)
@@ -131,9 +194,15 @@ class Exercise implements EntityInterface
             throw new Exception('Exercise title is empty', Exception::MODEL_EXERCISE_TITLE_EMPTY);
         }
 
-        if ($this->getExercise($exercise->exercise_id)) {
+        if ($this->get($exercise->exercise_id)) {
             return $this->db->update('exercise', $exercise->getData(), ['exercise_id' => $exercise->exercise_id]);
+            /*
+            return $this->queryBuilder()->update($exercise->getData(), ['exercise_id' => $exercise->exercise_id]);
+            */
         }
         return $this->db->insert('exercise', $exercise->getData());
+        /*
+        return $this->queryBuilder()->insert($exercise->getData());
+        */
     }
 }
