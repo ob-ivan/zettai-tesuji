@@ -69,7 +69,7 @@ var ExercisePage = Class({
              *  @param  {
              *      answers         : ...,
              *      best_answer     : <abc>,
-             *      exercise_next   : <string>,
+             *      exercise_next   : <string>, // Может отсутствовать.
              *  }
             **/
             function (data, textStatus, jqXHR) {
@@ -110,7 +110,7 @@ var ExercisePage = Class({
      *      comment : <html>
      *  } }                 answers
      *  @param  <abc>       best_answer
-     *  @param  <string>    exercise_next
+     *  @param  <string>    exercise_next   Optional.
     **/
     _show : function (user_answer, answers, best_answer, exercise_next) {
     
@@ -141,8 +141,9 @@ var ExercisePage = Class({
         this.show.show();
         
         // Показать ссылку на следующую задачу.
-        console.log(this.next); // debug
-        this.next.attr('href', exercise_next).show();
+        if (exercise_next) {
+            this.next.attr('href', exercise_next).show();
+        }
     }
 });
 

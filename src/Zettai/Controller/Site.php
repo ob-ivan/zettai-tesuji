@@ -53,12 +53,12 @@ class Site implements ControllerProviderInterface
     
     private function page($page)
     {
-        $exerciseCount = $this->app['model']->getExerciseCount(false);
+        $exerciseCount = $this->app['model']->exercise->getCount(false);
         $perPage = 20;
         if (($page - 1) * $perPage > $exerciseCount) {
             return $this->app->redirect($this->app['url_generator']->generate('site_page', ['page' => 1]));
         }
-        $exerciseList = $this->app['model']->getExerciseList(($page - 1) * $perPage, $perPage, false);
+        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * $perPage, $perPage, false);
         
         return $this->app->render('site/page.twig', [
             'exerciseList'  => $exerciseList,
@@ -70,7 +70,7 @@ class Site implements ControllerProviderInterface
     
     private function exercise(Request $request, $exercise_id)
     {
-        $exercise = $this->app['model']->getExercise($exercise_id);
+        $exercise = $this->app['model']->exercise->get($exercise_id);
         if ($exercise && $exercise->is_hidden) {
             $exercise = null;
         }
@@ -86,7 +86,7 @@ class Site implements ControllerProviderInterface
     {
         // Проверить входные данные.
         $errors = [];
-        $exercise = $this->app['model']->getExercise($exercise_id);
+        $exercise = $this->app['model']->exercise->get($exercise_id);
         if (! $exercise || $exercise->is_hidden) {
             $errors[] = 'EXERCISE:DOES_NOT_EXIST';
         }
@@ -96,7 +96,7 @@ class Site implements ControllerProviderInterface
         if (! empty($errors)) {
             return $this->app->json(['errors' => $errors]);
         }
-        // Скомпилировать ответы и ссылку на следующую задачу.
+        // Скомпилировать ответы и получить номер следующей задачи.
         $answers = [];
         foreach ($exercise->content['answer'] as $letter => $answer) {
             $answers[$letter] = [
@@ -105,14 +105,21 @@ class Site implements ControllerProviderInterface
                 'comment' => $answer['comment'],
             ];
         }
-        return $this->app->json([
+        $nextId = $this->app['model']->exercise->getNextId($exercise_id);
+        
+        // Собрать выходной массив.
+        $data = [
             'answers'       => $answers,
             'best_answer'   => $exercise->content['best_answer'],
-            'exercise_next' => $this->app['url_generator']->generate(
+        ];
+        if ($nextId) {
+            $data['exercise_next'] = $this->app['url_generator']->generate(
                 'site_exercise',
-                ['exercise_id' => $this->app['model']->getExerciseNextId($exercise_id)]
-            ) . '?page=' . $request->query->get('page'),
-        ]);
+                ['exercise_id' => $this->app['model']->exercise->getNextId($exercise_id)]
+            ) . '?page=' . $request->query->get('page');
+        }
+        
+        return $this->app->json($data);
     }
     
     // private : helpers //
