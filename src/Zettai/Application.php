@@ -8,6 +8,7 @@ class Application extends BaseApplication
 {
     // include //
     
+    use BaseApplication\MonologTrait;
     use BaseApplication\TwigTrait;
     use BaseApplication\UrlGeneratorTrait;
     

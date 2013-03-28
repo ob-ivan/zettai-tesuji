@@ -1,10 +1,19 @@
 <?php
+
+// Подготовка глобального состояния.
+
 $time = microtime(true);
+set_error_handler(function ($errno, $errstr, $errfile, $errline ) {
+    throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+});
 
 // Пути.
+
 define ('DOCUMENT_ROOT', __DIR__);
 define ('AUTOLOAD_PATH',    DOCUMENT_ROOT . '/vendor/autoload.php');
 define ('DEPLOY_LOCK_PATH', DOCUMENT_ROOT . '/deploy.lock');
+define ('ERROR_DIR',        DOCUMENT_ROOT . '/error');
+define ('LOG_DIR',          DOCUMENT_ROOT . '/log');
 define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 
 // Зависимости.
@@ -19,6 +28,10 @@ $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
+$app->register(new Silex\Provider\MonologServiceProvider(), [
+    'monolog.logfile'   => LOG_DIR . '/development.log',
+    'monolog.name'      => 'zettai-tesuji',
+]);
 $app->register(new Zettai\Provider\ParameterServiceProvider([
     'page' => [
         'assert'  => '\\d*',
@@ -110,11 +123,34 @@ if ($app['debug']) {
     ->value('salt', '');
 }
 
-// Запускаем приложение (копипаста из Application->run()) и выводим время работы.
+// Запускаем приложение -- слегка модифицированная копипаста из Application->run().
+try {
+    $request = Request::createFromGlobals();
+    $response = $app->handle($request);
+} catch (Exception $e) {
+
+    // Построить представление исключения.
+    $lines = [];
+    for (; $e; $e = $e->getPrevious()) {
+        $lines[] = 'Uncaught exception ' . get_class($e) . '(' . $e->getCode() . ') "' . $e->getMessage() . '"';
+        $lines[] = "<pre>\n" . $e->getTraceAsString() . "</pre>";
+    }
+    $presentation = implode("\n\n", $lines);
+    
+    // Вывести исключение куда надо в зависимости от режима.
+    if ($app['debug']) {
+        print $presentation;
+    } else {
+        $app['monolog']->addError($presentation);
+        header('HTTP/1.1 500 Internal Server Error');
+        readfile(ERROR_DIR . '/500.html');
+    }
+    die;
+}
+
+// Выводим ответ и подставляем время выполнения.
 // TODO: Отдать бенчмаркинг на откуп FirePHP.
 
-$request = Request::createFromGlobals();
-$response = $app->handle($request);
 $content = $response->getContent();
 $search = '~SERVER_TIME~';
 if (strpos($content, $search)) {
