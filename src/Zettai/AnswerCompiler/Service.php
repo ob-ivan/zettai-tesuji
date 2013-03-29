@@ -14,14 +14,14 @@ class Service
     
     public function compile($source)
     {
-        return $this->parse($this->tokenize($source))->compile();
+        return $this->parse($this->tokenize($source))->build();
     }
     
     // private //
     
     private function parse(array $tokens)
     {
-        $node = new Node\Root;
+        $node = new Node\Group;
         foreach ($tokens as $token) {
             $node->append(new Node\Text($token->value));
         }
