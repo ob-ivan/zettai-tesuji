@@ -9,6 +9,10 @@ use Zettai\Tile;
 
 class Admin implements ControllerProviderInterface
 {
+    // const //
+    
+    const PER_PAGE = 20;
+    
     // var //
     
     private $app;
@@ -57,27 +61,30 @@ class Admin implements ControllerProviderInterface
     private function page ($page)
     {
         $exerciseCount = $this->app['model']->exercise->getCount(true);
-        $perPage = 20;
-        if (($page - 1) * $perPage > $exerciseCount) {
+        if (($page - 1) * self::PER_PAGE > $exerciseCount) {
             return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => 1]));
         }
-        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * $perPage, $perPage, true);
+        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
         
         return $this->app->render('admin/main.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
             'curPage'       => $page,
-            'perPage'       => $perPage,
+            'perPage'       => self::PER_PAGE,
         ]);
     }
     
     private function exerciseView(Request $request, $exercise_id)
     {
         $exercise = $this->app['model']->exercise->get($exercise_id);
-        $page = $request->query->get('page');
+        $prev = $this->app['model']->exercise->getPrevId($exercise_id, true);
+        $next = $this->app['model']->exercise->getNextId($exercise_id, true);
+        $page = $this->app['model']->exercise->getPage($exercise_id, self::PER_PAGE, true);
         return $this->app->render('admin/exercise/view.twig', [
-            'exercise' => $exercise,
-            'page'     => $page,
+            'exercise'  => $exercise,
+            'prev'      => $prev,
+            'next'      => $next,
+            'page'      => $page,
         ]);
     }
     
@@ -100,8 +107,7 @@ class Admin implements ControllerProviderInterface
             ]);
             return $this->app->redirect(
                 $this->app['url_generator']->generate('admin_exercise_edit', ['exercise_id' => $exercise_id]) .
-                '?page='    . $request->query->get('page') .
-                '&formKey=' . $formKey
+                '?formKey=' . $formKey
             );
         };
         
@@ -198,7 +204,6 @@ class Admin implements ControllerProviderInterface
             $csrfKey
         ) {
             return $this->app->render('admin/exercise/edit.twig', [
-                'page'        => $request->query->get('page'),
                 'exercise_id' => $exercise_id,
                 'csrf'        => $this->app['csrf']->generate($csrfKey),
                 'exercise'    => $exercise,

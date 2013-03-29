@@ -2,6 +2,7 @@
 namespace Zettai\Model;
 
 use Doctrine\DBAL\Connection;
+use Monolog\Logger;
 
 /**
  * Класс, дающий доступ к извлечению и изменению данных в базе.
@@ -10,8 +11,12 @@ use Doctrine\DBAL\Connection;
 **/
 class Service implements ServiceInterface
 {
+    // var //
+    
     private $db;
     private $debug;
+    private $logger;
+    
     private $entities = [];
     private $registry = [];
 
@@ -19,8 +24,8 @@ class Service implements ServiceInterface
     
     public function __construct (Connection $db, $debug)
     {
-        $this->db    = $db;
-        $this->debug = $debug;
+        $this->db     = $db;
+        $this->debug  = $debug;
     }
     
     public function getTableName(EntityInterface $entity)
@@ -33,20 +38,28 @@ class Service implements ServiceInterface
         $this->registry[$name] = $entityProvider;
     }
     
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+    }
+    
     // public : ServiceInterface : fetch //
     
     public function fetchAll($query, $parameters)
     {
+        $this->logQuery(__METHOD__, $query);
         return $this->db->fetchAll($query, $parameters);
     }
     
     public function fetchAssoc($query, $parameters)
     {
+        $this->logQuery(__METHOD__, $query);
         return $this->db->fetchAssoc($query, $parameters);
     }
     
     public function fetchColumn($query, $parameters)
     {
+        $this->logQuery(__METHOD__, $query);
         return $this->db->fetchColumn($query, $parameters);
     }
     
@@ -84,5 +97,14 @@ class Service implements ServiceInterface
     public function __isset($name)
     {
         return isset($this->entities[$name]) || isset($this->registry[$name]);
+    }
+    
+    // private //
+    
+    private function logQuery($method, $query)
+    {
+        if ($this->logger) {
+            $this->logger->addInfo($method . ': query = ' . $query);
+        }
     }
 }

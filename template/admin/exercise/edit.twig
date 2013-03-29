@@ -28,7 +28,7 @@
     {% endif %}
     <form
         id="admin_exercise_edit"
-        action="{{ path('admin_exercise_edit', { 'exercise_id' : exercise_id }) }}?page={{ page }}"
+        action="{{ path('admin_exercise_edit', { 'exercise_id' : exercise_id }) }}"
         method="post"
     >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
@@ -135,9 +135,9 @@
         <p>
             <input type="submit" name="save" value="Сохранить"/>
             {% if exercise_id == 'new' %}
-                {% set cancel = path('admin_page', { 'page' : page }) %}
+                {% set cancel = path('admin_page') %}
             {% else %}
-                {% set cancel = path('admin_exercise_view', { 'exercise_id' : exercise_id }) ~ '?page=' ~ page %}
+                {% set cancel = path('admin_exercise_view', { 'exercise_id' : exercise_id }) %}
             {% endif %}
             <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
             {% if exercise_id != 'new' %}

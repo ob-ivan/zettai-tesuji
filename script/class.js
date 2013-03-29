@@ -18,18 +18,19 @@
  *  @param  { <varName>    : <varValue> }   defaults
  *  @return function Конструктор
 **/
-var Class = function Class(methods, defaults) function () {
-    var local = Object.create(defaults || Object.prototype);
-    
-    for (var method in methods) {
-        local[method] = methods[method].bind(local);
-        if (! method.match(/^_/)) {
-            this[method] = local[method];
+var Class = function Class(methods, defaults) {
+    return function () {
+        var local = Object.create(defaults || Object.prototype);
+        
+        for (var method in methods) {
+            local[method] = methods[method].bind(local);
+            if (! method.match(/^_/)) {
+                this[method] = local[method];
+            }
         }
-    }
-    
-    if (typeof local.__construct !== 'undefined') {
-        local.__construct.apply(local, arguments);
-    }
+        
+        if (typeof local.__construct !== 'undefined') {
+            local.__construct.apply(local, arguments);
+        }
+    };
 };
-

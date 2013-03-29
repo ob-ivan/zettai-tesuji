@@ -2,6 +2,7 @@
 
 {% block body %}
     {% if exercise %}
+        {# Заголовок задачи #}
         <h2>
             Задача №{{ exercise.exercise_id|lpad('0', 3) }}.
             {{ exercise.title }}
@@ -9,15 +10,37 @@
                 (скрыта)
             {% endif %}
         </h2>
+        
+        {# Навигация на соседние задачи #}
+        {% if prev or next %}
+            <div>
+                {% if prev %}
+                    <div class="prev">
+                        <a href="{{ path('admin_exercise_view', { 'exercise_id' : prev }) }}">[предыдущая]</a>
+                    </div>
+                {% endif %}
+                {% if next %}
+                    <div class="next">
+                        <a href="{{ path('admin_exercise_view', { 'exercise_id' : next }) }}">[следующая]</a>
+                    </div>
+                {% endif %}
+                <br/>
+            </div>
+        {% endif %}
+        
+        {# Текст задачи #}
         {% include '_exercise_content.twig' with {
             content : exercise.content,
             mode    : 'admin',
         } only %}
-        <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}?page={{ page }}">[редактировать]</a></p>
+        
+        {# Ссылка на редактирование #}
+        <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
     
+    {# Кнопки возврата #}
     <p>
         <a href="{{ path('admin_page') }}">[на главную]</a>
         <a href="{{ path('admin_page', { 'page' : page }) }}">[к списку задач]</a>
