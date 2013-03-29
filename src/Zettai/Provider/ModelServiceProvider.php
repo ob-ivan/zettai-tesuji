@@ -10,7 +10,9 @@ class ModelServiceProvider implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
-        $app['model'] = new Service($app['db'], $app['debug']);
+        $app['model'] = $app->share(function ($app) {
+            return new Service($app['db'], $app['debug']);
+        });
     }
     
     public function boot(Application $app)

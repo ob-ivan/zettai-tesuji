@@ -41,11 +41,13 @@ class ParameterServiceProvider implements ServiceProviderInterface
     
     public function register(Application $app)
     {
-        $service = new Service();
-        foreach ($this->rules as $ruleName => $ruleOptions) {
-            $service[$ruleName] = $ruleOptions;
-        }
-        $app['parameter'] = $service;
+        $app['parameter'] = $app->share(function () {
+            $service = new Service();
+            foreach ($this->rules as $ruleName => $ruleOptions) {
+                $service[$ruleName] = $ruleOptions;
+            }
+            return $service;
+        });
     }
     
     public function boot(Application $app)
