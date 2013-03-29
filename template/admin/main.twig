@@ -6,7 +6,7 @@
         <ul>
             {% for exercise in exerciseList %}
                 <li>
-                    <a href="{{ path('admin_exercise_view', { 'exercise_id' : exercise.exercise_id }) }}?page={{ curPage }}">
+                    <a href="{{ path('admin_exercise_view', { 'exercise_id' : exercise.exercise_id }) }}">
                         №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
                     </a>
                     {% if exercise.is_hidden %}
@@ -25,5 +25,5 @@
     {% else %}
         <p class="empty">Нет задач</p>
     {% endif %}
-    <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : 'new' }) }}?page={{ curPage }}">[Создать задачу]</a></p>
+    <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : 'new' }) }}">[Создать задачу]</a></p>
 {% endblock %}
