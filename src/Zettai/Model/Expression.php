@@ -6,29 +6,39 @@ class Expression
     // const //
     
     // simple
-    const TYPE_ROOT         = __LINE__;
-    const TYPE_CONST        = __LINE__; // TODO
-    const TYPE_FIELD        = __LINE__;
-    const TYPE_PARAMETER    = __LINE__;
+    const TYPE_ROOT                 = __LINE__;
+    const TYPE_CONST                = __LINE__;
+    const TYPE_FIELD                = __LINE__;
+    const TYPE_PARAMETER            = __LINE__;
     // functions
-    const TYPE_COUNT        = __LINE__;
-    const TYPE_MAX          = __LINE__;
-    const TYPE_MIN          = __LINE__;
+    const TYPE_CEIL                 = __LINE__;
+    const TYPE_COUNT                = __LINE__;
+    const TYPE_MAX                  = __LINE__;
+    const TYPE_MIN                  = __LINE__;
+    // multiplicative
+    const TYPE_DIVIDE               = __LINE__;
     // comparison
-    const TYPE_EQUALS       = __LINE__;
-    const TYPE_GREATER_THAN = __LINE__;
-    const TYPE_LESS_THAN    = __LINE__;
+    const TYPE_EQUALS               = __LINE__;
+    const TYPE_GREATER_THAN         = __LINE__;
+    const TYPE_LESS_THAN            = __LINE__;
+    const TYPE_LESS_THAN_OR_EQUAL   = __LINE__;
     // logic
-    const TYPE_AND          = __LINE__;
+    const TYPE_AND                  = __LINE__;
     
     private static $METHOD_TO_TYPE = [
-        'count'         => self::TYPE_COUNT,
-        'max'           => self::TYPE_MAX,
-        'min'           => self::TYPE_MIN,
-        'equals'        => self::TYPE_EQUALS,
-        'greaterThan'   => self::TYPE_GREATER_THAN,
-        'lessThan'      => self::TYPE_LESS_THAN,
-        'andx'          => self::TYPE_AND,
+        'ceil'              => self::TYPE_CEIL,
+        'count'             => self::TYPE_COUNT,
+        'max'               => self::TYPE_MAX,
+        'min'               => self::TYPE_MIN,
+        
+        'divide'            => self::TYPE_DIVIDE,
+        
+        'equals'            => self::TYPE_EQUALS,
+        'greaterThan'       => self::TYPE_GREATER_THAN,
+        'lessThan'          => self::TYPE_LESS_THAN,
+        'lessThanOrEqual'   => self::TYPE_LESS_THAN_OR_EQUAL,
+        
+        'andx'              => self::TYPE_AND,
     ];
     
     // public //
@@ -48,6 +58,11 @@ class Expression
     public function __toString()
     {
         return $this->toString();
+    }
+    
+    public function addAnd($expression)
+    {
+        return new self(self::TYPE_AND, [$this, $expression]);
     }
     
     public static function create($expression = null)
@@ -87,14 +102,26 @@ class Expression
                 
             // functions //
             
+            case self::TYPE_CEIL:
+                return 'CEIL(' . $this->arguments[0] . ')';
+                
             case self::TYPE_COUNT:
-                return 'COUNT(' . $this->arguments[0] . ')';
+                if (isset($this->arguments[0])) {
+                    return 'COUNT(' . $this->arguments[0] . ')';
+                } else {
+                    return 'COUNT(*)';
+                }
                 
             case self::TYPE_MAX:
                 return 'MAX(' . $this->arguments[0] . ')';
                 
             case self::TYPE_MIN:
                 return 'MIN(' . $this->arguments[0] . ')';
+                
+            // multiplicative //
+            
+            case self::TYPE_DIVIDE:
+                return '(' . $this->arguments[0] . ') / (' . $this->arguments[1] . ')';
                 
             // comparison //
             
@@ -106,6 +133,9 @@ class Expression
                 
             case self::TYPE_LESS_THAN:
                 return '(' . $this->arguments[0] . ') < (' . $this->arguments[1] . ')';
+                
+            case self::TYPE_LESS_THAN_OR_EQUAL:
+                return '(' . $this->arguments[0] . ') <= (' . $this->arguments[1] . ')';
                 
             // logic //
             

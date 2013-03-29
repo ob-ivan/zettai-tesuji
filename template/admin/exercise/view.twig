@@ -16,12 +16,12 @@
             <div>
                 {% if prev %}
                     <div class="prev">
-                        <a href="{{ path('admin_exercise_view', { 'exercise_id' : prev }) }}?page={{ page }}">[предыдущая]</a>
+                        <a href="{{ path('admin_exercise_view', { 'exercise_id' : prev }) }}">[предыдущая]</a>
                     </div>
                 {% endif %}
                 {% if next %}
                     <div class="next">
-                        <a href="{{ path('admin_exercise_view', { 'exercise_id' : next }) }}?page={{ page }}">[следующая]</a>
+                        <a href="{{ path('admin_exercise_view', { 'exercise_id' : next }) }}">[следующая]</a>
                     </div>
                 {% endif %}
                 <br/>
@@ -35,7 +35,7 @@
         } only %}
         
         {# Ссылка на редактирование #}
-        <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}?page={{ page }}">[редактировать]</a></p>
+        <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}

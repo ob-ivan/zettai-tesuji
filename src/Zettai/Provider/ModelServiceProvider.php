@@ -15,6 +15,9 @@ class ModelServiceProvider implements ServiceProviderInterface
     
     public function boot(Application $app)
     {
+        if ($app['config']->model->logger_enable) {
+            $app['model']->setLogger($app['monolog']);
+        }
         $app['model']->register('exercise', function ($service) {
             return new Exercise($service);
         });

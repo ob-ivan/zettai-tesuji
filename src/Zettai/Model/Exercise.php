@@ -107,10 +107,7 @@ class Exercise extends Entity
         ->where(function ($expr) use ($includeHidden) {
             $exprNext = $expr->greaterThan('exercise_id', ':exercise_id');
             if (! $includeHidden) {
-                return $expr->andx(
-                    $exprNext,
-                    $expr->equals('is_hidden', 0)
-                );
+                return $exprNext->addAnd($expr->equals('is_hidden', 0));
             }
             return $exprNext;
         })
@@ -126,16 +123,29 @@ class Exercise extends Entity
         ->where(function ($expr) use ($includeHidden) {
             $exprPrev = $expr->lessThan('exercise_id', ':exercise_id');
             if (! $includeHidden) {
-                return $expr->andx(
-                    $exprPrev,
-                    $expr->equals('is_hidden', 0)
-                );
+                return $exprPrev->addAnd($expr->equals('is_hidden', 0));
             }
             return $exprPrev;
         })
         ->fetchColumn(['exercise_id' => $exercise_id]);
     }
 
+    public function getPage($exercise_id, $per_page, $includeHidden = false)
+    {
+        return $this->queryBuilder()
+        ->select(function ($expr) use ($per_page) {
+            return $expr->ceil($expr->divide($expr->count(), $per_page));
+        })
+        ->where(function ($expr) use ($includeHidden) {
+            $exprPrev = $expr->lessThanOrEqual('exercise_id', ':exercise_id');
+            if (! $includeHidden) {
+                return $exprPrev->addAnd($expr->equals('is_hidden', 0));
+            }
+            return $exprPrev;
+        })
+        ->fetchColumn(['exercise_id' => $exercise_id]);
+    }
+    
     public function delete($exercise_id)
     {
         // prepare

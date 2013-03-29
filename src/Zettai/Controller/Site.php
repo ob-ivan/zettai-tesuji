@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Site implements ControllerProviderInterface
 {
+    // const //
+    
+    const PER_PAGE = 20;
+    
     // var //
     
     private $app;
@@ -54,17 +58,16 @@ class Site implements ControllerProviderInterface
     private function page($page)
     {
         $exerciseCount = $this->app['model']->exercise->getCount(false);
-        $perPage = 20;
-        if (($page - 1) * $perPage > $exerciseCount) {
+        if (($page - 1) * self::PER_PAGE > $exerciseCount) {
             return $this->app->redirect($this->app['url_generator']->generate('site_page', ['page' => 1]));
         }
-        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * $perPage, $perPage, false);
+        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, false);
         
         return $this->app->render('site/page.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
             'curPage'       => $page,
-            'perPage'       => $perPage,
+            'perPage'       => self::PER_PAGE,
         ]);
     }
     
@@ -74,7 +77,7 @@ class Site implements ControllerProviderInterface
         if ($exercise && $exercise->is_hidden) {
             $exercise = null;
         }
-        $page = $request->query->get('page');
+        $page = $this->app['model']->exercise->getPage($exercise_id, self::PER_PAGE);
         return $this->app->render('site/exercise.twig', [
             'exercise'  => $exercise,
             'page'      => $page,
@@ -116,7 +119,7 @@ class Site implements ControllerProviderInterface
             $data['exercise_next'] = $this->app['url_generator']->generate(
                 'site_exercise',
                 ['exercise_id' => $this->app['model']->exercise->getNextId($exercise_id)]
-            ) . '?page=' . $request->query->get('page');
+            );
         }
         
         return $this->app->json($data);

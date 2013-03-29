@@ -2,6 +2,7 @@
 namespace Zettai\Model;
 
 use Doctrine\DBAL\Connection;
+use Monolog\Logger;
 
 interface ServiceInterface
 {
@@ -10,6 +11,8 @@ interface ServiceInterface
     public function getTableName(EntityInterface $entity);
     
     public function register($name, callable $entityProvider);
+    
+    public function setLogger(Logger $logger);
     
     // fetch //
     
