@@ -20,7 +20,7 @@
         <ul>
             {% for exercise in exerciseList %}
                 <li>
-                    <a href="{{ path('site_exercise', { 'exercise_id' : exercise.exercise_id }) }}?page={{ curPage }}">
+                    <a href="{{ path('site_exercise', { 'exercise_id' : exercise.exercise_id }) }}">
                         №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
                     </a>
                 </li>

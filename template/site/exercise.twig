@@ -27,7 +27,7 @@
         <script>
             $(function () {
                 new ExercisePage({
-                    ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}?page={{ page }}",
+                    ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
                     answers     : $('div.answer'),
                     buttons     : $('button[name]'),
                     csrf        : '{{ csrf }}',
