@@ -6,35 +6,32 @@
  *  1.  Примечание. "(* текст )" превращается в "[*]", при наводе на который
  *      появляется всплывашка с текстом "текст".
 **/
-namespace Zettai;
+namespace Zettai\AnswerCompiler;
 
-use Zettai\AnswerCompiler\Token;
-
-class AnswerCompiler
+class Service
 {
     // public //
     
     public function compile($source)
     {
-        return $this->build($this->tokenize($source));
+        return $this->parse($this->tokenize($source))->compile();
     }
     
     // private //
     
-    private function build(array $tokens)
+    private function parse(array $tokens)
     {
-        // TODO
+        $node = new Node\Root;
+        foreach ($tokens as $token) {
+            $node->append(new Node\Text($token->value));
+        }
+        return $node;
     }
     
     private function tokenize($source)
     {
         $tokens = [];
-        while (strlen($source) > 0) {
-            if (preg_match('/\s*\(\*([^)]*)\)/', $source, $matches)) {
-                $tokens[] = new Token(Token::TYPE_ANNOTATION, $matches[1]);
-                $source = substr($source, strlen($matches[0]));
-                continue;
-            }
-        }
+        $tokens[] = new Token\Text($source);
+        return $tokens;
     }
 }
