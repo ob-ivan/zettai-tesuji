@@ -17,6 +17,7 @@ class Expression
     // comparison
     const TYPE_EQUALS       = __LINE__;
     const TYPE_GREATER_THAN = __LINE__;
+    const TYPE_LESS_THAN    = __LINE__;
     // logic
     const TYPE_AND          = __LINE__;
     
@@ -26,6 +27,7 @@ class Expression
         'min'           => self::TYPE_MIN,
         'equals'        => self::TYPE_EQUALS,
         'greaterThan'   => self::TYPE_GREATER_THAN,
+        'lessThan'      => self::TYPE_LESS_THAN,
         'andx'          => self::TYPE_AND,
     ];
     
@@ -40,6 +42,7 @@ class Expression
             }
             return new self(self::$METHOD_TO_TYPE[$name], $expressions);
         }
+        throw new Exception('Unknown method "' . $name . '"', Exception::EXPRESSION_CALL_NAME_UNKNOWN);
     }
     
     public function __toString()
@@ -101,11 +104,15 @@ class Expression
             case self::TYPE_GREATER_THAN:
                 return '(' . $this->arguments[0] . ') > (' . $this->arguments[1] . ')';
                 
+            case self::TYPE_LESS_THAN:
+                return '(' . $this->arguments[0] . ') < (' . $this->arguments[1] . ')';
+                
             // logic //
             
             case self::TYPE_AND:
                 return '(' . $this->arguments[0] . ') AND (' . $this->arguments[1] . ')';
         }
+        throw new Exception('Unknown type "' . $this->type . '"', Exception::EXPRESSION_TO_STRING_TYPE_UNKNOWN);
     }
     
     // private //

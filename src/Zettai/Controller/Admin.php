@@ -74,10 +74,14 @@ class Admin implements ControllerProviderInterface
     private function exerciseView(Request $request, $exercise_id)
     {
         $exercise = $this->app['model']->exercise->get($exercise_id);
+        $prev = $this->app['model']->exercise->getPrevId($exercise_id, true);
+        $next = $this->app['model']->exercise->getNextId($exercise_id, true);
         $page = $request->query->get('page');
         return $this->app->render('admin/exercise/view.twig', [
-            'exercise' => $exercise,
-            'page'     => $page,
+            'exercise'  => $exercise,
+            'prev'      => $prev,
+            'next'      => $next,
+            'page'      => $page,
         ]);
     }
     

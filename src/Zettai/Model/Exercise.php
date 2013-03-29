@@ -98,17 +98,40 @@ class Exercise extends Entity
         ->fetchColumn() + 1;
     }
 
-    public function getNextId($exercise_id)
+    public function getNextId($exercise_id, $includeHidden = false)
     {
         return $this->queryBuilder()
         ->select(function ($expr) {
             return $expr->min('exercise_id');
         })
-        ->where(function ($expr) {
-            return $expr->andx(
-                $expr->greaterThan('exercise_id', ':exercise_id'),
-                $expr->equals('is_hidden', 0)
-            );
+        ->where(function ($expr) use ($includeHidden) {
+            $exprNext = $expr->greaterThan('exercise_id', ':exercise_id');
+            if (! $includeHidden) {
+                return $expr->andx(
+                    $exprNext,
+                    $expr->equals('is_hidden', 0)
+                );
+            }
+            return $exprNext;
+        })
+        ->fetchColumn(['exercise_id' => $exercise_id]);
+    }
+
+    public function getPrevId($exercise_id, $includeHidden = false)
+    {
+        return $this->queryBuilder()
+        ->select(function ($expr) {
+            return $expr->max('exercise_id');
+        })
+        ->where(function ($expr) use ($includeHidden) {
+            $exprPrev = $expr->lessThan('exercise_id', ':exercise_id');
+            if (! $includeHidden) {
+                return $expr->andx(
+                    $exprPrev,
+                    $expr->equals('is_hidden', 0)
+                );
+            }
+            return $exprPrev;
         })
         ->fetchColumn(['exercise_id' => $exercise_id]);
     }
