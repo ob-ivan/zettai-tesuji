@@ -47,25 +47,19 @@ class Service implements ServiceInterface
     
     public function fetchAll($query, $parameters)
     {
-        if ($this->logger) {
-            $this->logger->addInfo(__METHOD__ . ': query = ' . $query);
-        }
+        $this->logQuery(__METHOD__, $query);
         return $this->db->fetchAll($query, $parameters);
     }
     
     public function fetchAssoc($query, $parameters)
     {
-        if ($this->logger) {
-            $this->logger->addInfo(__METHOD__ . ': query = ' . $query);
-        }
+        $this->logQuery(__METHOD__, $query);
         return $this->db->fetchAssoc($query, $parameters);
     }
     
     public function fetchColumn($query, $parameters)
     {
-        if ($this->logger) {
-            $this->logger->addInfo(__METHOD__ . ': query = ' . $query);
-        }
+        $this->logQuery(__METHOD__, $query);
         return $this->db->fetchColumn($query, $parameters);
     }
     
@@ -107,10 +101,10 @@ class Service implements ServiceInterface
     
     // private //
     
-    private function log($message)
+    private function logQuery($method, $query)
     {
-        if (! $this->logger) {
-            continue;
+        if ($this->logger) {
+            $this->logger->addInfo($method . ': query = ' . $query);
         }
     }
 }

@@ -8,11 +8,17 @@ debug : false
 
 ### Перечисленные здесь пользователи будут иметь доступ к админке.
 security:
-    # username : digest
+    <username> :
+        password : <digest>
+        role     : ['ROLE_ADMIN']
     
 ### База данных.
-# db :
-#     host     : 
-#     dbname   : 
-#     user     : 
-#     password : 
+db :
+    host     : <host>
+    dbname   : <dbname>
+    user     : <user>
+    password : <password>
+
+### Настройки модели.
+model :
+    logger_enable : false
