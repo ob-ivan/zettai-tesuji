@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
 $app['answer_compiler'] = $app->share(function () {
-    return new Zettai\AnswerCompiler();
+    return new Zettai\AnswerCompiler\Service();
 });
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
