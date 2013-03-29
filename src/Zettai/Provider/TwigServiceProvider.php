@@ -10,8 +10,7 @@ class TwigServiceProvider implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
-        $wrapped = new WrappedProvider();
-        $app->register($wrapped);
+        $app->register(new WrappedProvider());
     }
     
     public function boot(Application $app)
