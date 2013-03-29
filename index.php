@@ -1,15 +1,25 @@
 <?php
+
+// Подготовка глобального состояния.
+
 $time = microtime(true);
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
+});
 
 // Пути.
+
 define ('DOCUMENT_ROOT', __DIR__);
 define ('AUTOLOAD_PATH',    DOCUMENT_ROOT . '/vendor/autoload.php');
 define ('DEPLOY_LOCK_PATH', DOCUMENT_ROOT . '/deploy.lock');
+define ('ERROR_DIR',        DOCUMENT_ROOT . '/error');
+define ('LOG_DIR',          DOCUMENT_ROOT . '/log');
 define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 
 // Зависимости.
 
 require_once AUTOLOAD_PATH;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 
 // Инициализируем приложение.
@@ -22,6 +32,54 @@ $app['answer_compiler'] = $app->share(function () {
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
+$app->register(new Silex\Provider\MonologServiceProvider(), [
+    'monolog.logfile'   => LOG_DIR . (
+        $app['debug']
+        ? '/debug.log'
+        : '/error.log'
+    ),
+    'monolog.level'     =>
+        $app['debug']
+        ? Logger::DEBUG
+        : Logger::ERROR,
+    'monolog.name'      => 'zettai-tesuji',
+]);
+$app->register(new Zettai\Provider\ParameterServiceProvider([
+    'page' => [
+        'assert'  => '\\d*',
+        'value'   => '1',
+        'convert' => function ($page) {
+            $page = intval($page);
+            if ($page < 1) {
+                $page = 1;
+            }
+            return $page;
+        },
+    ],
+    'exercise_id' => [
+        'assert'  => '\\d+',
+        'convert' => function ($exercise_id) {
+            $exercise_id = intval($exercise_id);
+            if ($exercise_id < 1) {
+                throw new Exception('Exercise id must be positive integer');
+            }
+            return $exercise_id;
+        },
+    ],
+    'exercise_id_new' => [
+        'assert' => '\\d+|new',
+        'convert' => function ($exercise_id) {
+            if ($exercise_id === 'new') {
+                return $exercise_id;
+            }
+            $exercise_id = intval($exercise_id);
+            if ($exercise_id < 1) {
+                throw new Exception('Exercise id must be "new" or positive integer');
+            }
+            return $exercise_id;
+        },
+    ],
+]));
 $app->register(new Silex\Provider\SecurityServiceProvider(), [
     'security.firewalls' => [
         'admin' => [
@@ -38,38 +96,9 @@ $app->register(new Silex\Provider\SecurityServiceProvider(), [
     ]
 ]);
 $app->register(new Silex\Provider\SessionServiceProvider());
-$app->register(new Silex\Provider\TwigServiceProvider(), [
+$app->register(new Zettai\Provider\TwigServiceProvider(), [
     'twig.path' => TEMPLATE_DIR,
 ]);
-$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
-
-    // фильтры //
-    
-    $twig->addFilter(new Twig_SimpleFilter('answer', function ($source) use ($app) {
-        return $app['answer_compiler']->compile($source);
-    }));
-    $twig->addFilter('wind', new \Twig_Filter_Function(function ($wind) use ($app) {
-        return $app['types']->wind->from($wind)->toRussian();
-    }));
-    $twig->addFilter('kyoku', new \Twig_Filter_Function(function ($kyoku) use ($app) {
-        return $app['types']->kyoku->from($kyoku)->toRussian();
-    }));
-    $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
-        return str_pad($input, $length, $char, STR_PAD_LEFT);
-    }));
-    $twig->addFilter(new Twig_SimpleFilter('tile', function ($tiles) use ($app) {
-        return $app['twig']->render('_tile.twig', ['tiles' => $tiles]);
-    }));
-    $twig->addFilter(new Twig_SimpleFilter('wind', function ($wind) use ($windName) {
-        return $windName($wind);
-    }));
-    
-    // функции //
-    
-    $twig->addFunction(new Twig_SimpleFunction('ceil',  function ($float) { return ceil  ($float); }));
-    $twig->addFunction(new Twig_SimpleFunction('floor', function ($float) { return floor ($float); }));
-    return $twig;
-}));
 $app->register(new Zettai\Provider\TypeServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
@@ -87,54 +116,8 @@ $app->before(function (Request $request) use ($app) {
 
 // Задаём рутинг и контроллеры.
 
-// Главная страница.
-$app->get('/{page}', function ($page) use ($app) {
-    $exerciseCount = $app['model']->getExerciseCount(false);
-    $perPage = 20;
-    if (($page - 1) * $perPage > $exerciseCount) {
-        return $app->redirect($app['url_generator']->generate('main', ['page' => 1]));
-    }
-    $exerciseList = $app['model']->getExerciseList(($page - 1) * $perPage, $perPage, false);
-    
-    return $app->render('main.twig', [
-        'exerciseList'  => $exerciseList,
-        'exerciseCount' => $exerciseCount,
-        'curPage'       => $page,
-        'perPage'       => $perPage,
-    ]);
-})
-->assert ('page', '\\d*')
-->value  ('page', '1')
-->convert('page', function ($page) {
-    $page = intval ($page);
-    if ($page < 1) {
-        $page = 1;
-    }
-    return $page;
-})
-->bind('main');
-
-// Просмотр одной задачи на сайте.
-$app->get('/exercise/{exercise_id}', function (Request $request, $exercise_id) use ($app) {
-    $exercise = $app['model']->getExercise($exercise_id);
-    if ($exercise->is_hidden) {
-        $exercise = null;
-    }
-    $page = $request->query->get('page');
-    return $app->render('exercise.twig', [
-        'exercise' => $exercise,
-        'page'     => $page,
-    ]);
-})
-->assert('exercise_id', '\\d+')
-->convert('exercise_id', function ($exercise_id) {
-    $exercise_id = intval ($exercise_id);
-    if ($exercise_id < 1) {
-        throw new Exception('Exercise id must be positive integer');
-    }
-    return $exercise_id;
-})
-->bind('exercise');
+$app->mount('/', new Zettai\Controller\Site());
+$app->mount('/admin', new Zettai\Controller\Admin());
 
 // Вход в админку.
 $app->get('/login', function (Request $request) use ($app) {
@@ -144,8 +127,6 @@ $app->get('/login', function (Request $request) use ($app) {
     ]);
 });
 
-$app->mount('/admin', new Zettai\Controller\Admin());
-
 // На дев-хосте добавляем генератор паролей.
 if ($app['debug']) {
     $app->get('/password/{password}/{salt}', function ($password, $salt) use ($app) {
@@ -154,8 +135,39 @@ if ($app['debug']) {
     ->value('salt', '');
 }
 
-// Запускаем приложение.
+// Запускаем приложение -- слегка модифицированная копипаста из Application->run().
+try {
+    $request = Request::createFromGlobals();
+    $response = $app->handle($request);
+} catch (Exception $e) {
 
-$app->run();
+    // Построить представление исключения.
+    $lines = [];
+    for (; $e; $e = $e->getPrevious()) {
+        $lines[] = 'Uncaught exception ' . get_class($e) . '(' . $e->getCode() . ') "' . $e->getMessage() . '"';
+        $lines[] = "<pre>\n" . $e->getTraceAsString() . "</pre>";
+    }
+    $presentation = implode("\n\n", $lines);
+    
+    // Вывести исключение куда надо в зависимости от режима.
+    if ($app['debug']) {
+        print $presentation;
+    } else {
+        $app['monolog']->addError($presentation);
+        header('HTTP/1.1 500 Internal Server Error');
+        readfile(ERROR_DIR . '/500.html');
+    }
+    die;
+}
 
-print '<!-- server time: ' . (microtime(true) - $time) . ' -->';
+// Выводим ответ и подставляем время выполнения.
+// TODO: Отдать бенчмаркинг на откуп FirePHP.
+
+$content = $response->getContent();
+$search = '~SERVER_TIME~';
+if (strpos($content, $search)) {
+    $response->setContent(str_replace($search, microtime(true) - $time, $content));
+}
+$response->send();
+$app->terminate($request, $response);
+die;

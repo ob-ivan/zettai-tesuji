@@ -1,5 +1,17 @@
 
+/* Общий хэдер с приветствием */
+
 div.welcome {
+    float : right;
+}
+
+/* Просмотр задачи */
+
+div.prev {
+    float : left;
+}
+
+div.next {
     float : right;
 }
 

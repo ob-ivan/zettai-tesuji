@@ -1,7 +1,11 @@
 {% extends 'admin/_layout.twig' %}
 
-{% block admin_body %}
+{% block script %}
+    {{ parent() }}
     <script src="/script/happy.js"></script>
+{% endblock %}
+
+{% block body %}
     <h2>Редактирование задачи</h2>
     {% if errors %}
         <ul class="error">
@@ -24,7 +28,7 @@
     {% endif %}
     <form
         id="admin_exercise_edit"
-        action="{{ path('admin_exercise_edit', { 'exercise_id' : exercise_id }) }}?page={{ page }}"
+        action="{{ path('admin_exercise_edit', { 'exercise_id' : exercise_id }) }}"
         method="post"
     >
         <input type="hidden" name="csrf" value="{{ csrf }}"/>
@@ -89,7 +93,7 @@
             </label>
         </p>
         <p><label>Очки: <input name="score" required value="{{ exercise.content.score }}"/></label></p>
-        <p><label>Рука: <input name="hand"  required value="{{ exercise.content.hand }}" /></label></p>
+        <p><label>Рука: <input name="hand"  value="{{ exercise.content.hand }}" /></label></p>
         <p>
             <label>
                 Набрал:
@@ -131,9 +135,9 @@
         <p>
             <input type="submit" name="save" value="Сохранить"/>
             {% if exercise_id == 'new' %}
-                {% set cancel = path('admin_page', { 'page' : page }) %}
+                {% set cancel = path('admin_page') %}
             {% else %}
-                {% set cancel = path('admin_exercise_view', { 'exercise_id' : exercise_id }) ~ '?page=' ~ page %}
+                {% set cancel = path('admin_exercise_view', { 'exercise_id' : exercise_id }) %}
             {% endif %}
             <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
             {% if exercise_id != 'new' %}
@@ -146,6 +150,7 @@
     </form>
     <script>
         $('#admin_exercise_edit').isHappy({
+            submitButton : 'input[type=submit][name=save]',
             fields : {
                 'input[name=exercise_id]' : {
                     required : true,
@@ -153,6 +158,10 @@
                     test : function checkExerciseId(exerciseId) {
                         return !! (exerciseId + '').match(/^\d{1,3}$/) && parseInt(exerciseId, 10) > 0;
                     }
+                },
+                'input[name=title]' : {
+                    required : true,
+                    message  : 'Заголовок должен быть не пуст'
                 },
                 'input[name=turn]' : {
                     required : true,
@@ -165,9 +174,9 @@
                         return parsed >= 1 && parsed <= 18;
                     }
                 },
-                'input[name=title]' : {
+                'input[name=hand]' : {
                     required : true,
-                    message  : 'Заголовок должен быть не пуст'
+                    message  : 'Набор тайлов на руке должен быть не пуст'
                 }
             }
         });

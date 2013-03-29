@@ -41,7 +41,7 @@ if ($payload->ref === 'refs/heads/master') {
     writeLog('Run ' . DEPLOY_PATH);
     // run deployment script
     try {
-        shell_exec('./' . DEPLOY_PATH . ' 2>&1 >>' . LOG_PATH . ' &');
+        shell_exec('./' . DEPLOY_PATH . ' >>' . LOG_PATH . ' 2>&1 &');
     } catch (Exception $e) {
         writeLog('Caught exception = ' . print_r($e, true));
     }

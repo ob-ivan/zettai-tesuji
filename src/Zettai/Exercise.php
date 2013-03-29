@@ -7,11 +7,11 @@ namespace Zettai;
 class Exercise
 {
     // const //
-    
+
     const PROPERTY_TYPE    = __LINE__;
     const PROPERTY_DEFAULT = __LINE__;
     const PROPERTY_SCHEMA  = __LINE__;
-    
+
     const TYPE_ABC      = __LINE__;
     const TYPE_BOOLEAN  = __LINE__;
     const TYPE_INTEGER  = __LINE__;
@@ -26,7 +26,7 @@ class Exercise
         'b' => 1,
         'c' => 1,
     ];
-    
+
     public static $KYOKUS = [
         'east-1'  => 1,
         'east-2'  => 1,
@@ -37,14 +37,14 @@ class Exercise
         'south-3' => 1,
         'south-4' => 1,
     ];
-    
+
     public static $WINDS = [
         'east'  => 1,
         'south' => 1,
         'west'  => 1,
         'north' => 1,
     ];
-    
+
     private static $DEFAULT = [
         self::TYPE_ABC      => 'a',
         self::TYPE_BOOLEAN  => false,
@@ -55,7 +55,7 @@ class Exercise
         self::TYPE_STRING   => '',
         self::TYPE_TILE     => '5z',
     ];
-    
+
     private static $FIELD_PROPERTIES = [
         'exercise_id' => [
             self::PROPERTY_TYPE    => self::TYPE_INTEGER,
@@ -65,8 +65,9 @@ class Exercise
         ],
         'is_hidden' => [
             self::PROPERTY_TYPE    => self::TYPE_BOOLEAN,
+            self::PROPERTY_DEFAULT => true,
         ],
-        'content'     => [ 
+        'content'     => [
             self::PROPERTY_TYPE    => self::TYPE_JSON,
             self::PROPERTY_SCHEMA  => [
                 'kyoku'     => [
@@ -138,22 +139,28 @@ class Exercise
             ],
         ],
     ];
-    
+
     // var //
-    
+
     private $data = [];
-    
+
     // public //
-    
+
     public function __construct(array $row)
     {
         foreach (self::$FIELD_PROPERTIES as $fieldName => $properties) {
+            $value = null;
             if (isset($row[$fieldName])) {
-                $this->data[$fieldName] = self::prepare($row[$fieldName], $properties);
+                $value = $row[$fieldName];
+            } elseif (isset($properties[self::PROPERTY_DEFAULT])) {
+                $value = $properties[self::PROPERTY_DEFAULT];
+            } else {
+                $value = self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
             }
+            $this->data[$fieldName] = self::prepare($value, $properties);
         }
     }
-    
+
     public function __get($name)
     {
         if (isset(self::$FIELD_PROPERTIES[$name])) {
@@ -167,12 +174,12 @@ class Exercise
             Exception::EXERCISE_GET_FIELD_UNKNOWN
         );
     }
-    
+
     public function __isset($name)
     {
         return isset(self::$FIELD_PROPERTIES[$name]);
     }
-    
+
     public function getData()
     {
         $data = $this->data;
@@ -183,9 +190,9 @@ class Exercise
         }
         return $data;
     }
-    
+
     // private //
-    
+
     private function prepare ($value, $properties)
     {
         switch ($properties[self::PROPERTY_TYPE]) {
@@ -197,10 +204,10 @@ class Exercise
                     return self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
                 }
                 return $value;
-                
+
             case self::TYPE_BOOLEAN:
                 return !! $value;
-                
+
             case self::TYPE_KYOKU:
                 if (! isset(self::$KYOKUS[$value])) {
                     if (isset($properties[self::PROPERTY_DEFAULT])) {
@@ -209,10 +216,10 @@ class Exercise
                     return self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
                 }
                 return $value;
-                
+
             case self::TYPE_INTEGER:
                 return intval($value);
-                
+
             case self::TYPE_POSITION:
                 if (! isset(self::$WINDS[$value])) {
                     if (isset($properties[self::PROPERTY_DEFAULT])) {
@@ -221,7 +228,7 @@ class Exercise
                     return self::$DEFAULT[$properties[self::PROPERTY_TYPE]];
                 }
                 return $value;
-                
+
             case self::TYPE_JSON:
                 if (is_string ($value)) {
                     $decoded = json_decode($value, true);
@@ -245,13 +252,13 @@ class Exercise
                     $prepared[$field] = self::prepare($subvalue, $subproperties);
                 }
                 return $prepared;
-                
+
             case self::TYPE_TILE:
                 return new Tile($value);
-                
+
             case self::TYPE_STRING:
                 return trim(strval($value));
-            
+
             default:
                 throw new Exception('Unknown type "' . $properties[self::PROPERTY_TYPE] . '"', Exception::EXERCISE_TYPE_UNKNOWN);
         }

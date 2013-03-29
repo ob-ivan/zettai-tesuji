@@ -9,6 +9,10 @@ use Zettai\Tile;
 
 class Admin implements ControllerProviderInterface
 {
+    // const //
+    
+    const PER_PAGE = 20;
+    
     // var //
     
     private $app;
@@ -22,49 +26,30 @@ class Admin implements ControllerProviderInterface
         $controllers = $app['controllers_factory'];
         
         // Главная страница админки.
-        $controllers->get('/{page}', function ($page) {
-            return $this->page($page);
-        })
-        ->assert ('page', '\\d*')
-        ->value  ('page', '1')
-        ->convert('page', function ($page) {
-            $page = intval($page);
-            if ($page < 1) {
-                $page = 1;
-            }
-            return $page;
-        })
+        $app['parameter']->setParameters(
+            $controllers->get('/{page}', function ($page) {
+                return $this->page($page);
+            }),
+            ['page' => 'page']
+        )
         ->bind('admin_page');
 
         // Страница просмотра задачи в админке.
-        $controllers->get('/exercise/view/{exercise_id}', function (Request $request, $exercise_id) {
-            return $this->exerciseView($request, $exercise_id);
-        })
-        ->assert('exercise_id', '\\d+')
-        ->convert('exercise_id', function ($exercise_id) {
-            $exercise_id = intval ($exercise_id);
-            if ($exercise_id < 1) {
-                throw new Exception('Exercise id must be positive integer');
-            }
-            return $exercise_id;
-        })
+        $app['parameter']->setParameters(
+            $controllers->get('/exercise/view/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exerciseView($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id']
+        )
         ->bind('admin_exercise_view');
 
         // Страница редактирования задачи в админке.
-        $controllers->match('/exercise/edit/{exercise_id}', function (Request $request, $exercise_id) {
-            return $this->exerciseEdit($request, $exercise_id);
-        })
-        ->assert('exercise_id', '\\d+|new')
-        ->convert('exercise_id', function ($exercise_id) {
-            if ($exercise_id === 'new') {
-                return $exercise_id;
-            }
-            $exercise_id = intval ($exercise_id);
-            if ($exercise_id < 1) {
-                throw new Exception('Exercise id must be "new" or positive integer');
-            }
-            return $exercise_id;
-        })
+        $app['parameter']->setParameters(
+            $controllers->match('/exercise/edit/{exercise_id}', function (Request $request, $exercise_id) {
+                return $this->exerciseEdit($request, $exercise_id);
+            }),
+            ['exercise_id' => 'exercise_id_new']
+        )
         ->method('GET|POST')
         ->bind('admin_exercise_edit');
 
@@ -75,28 +60,31 @@ class Admin implements ControllerProviderInterface
     
     private function page ($page)
     {
-        $exerciseCount = $this->app['model']->getExerciseCount(true);
-        $perPage = 20;
-        if (($page - 1) * $perPage > $exerciseCount) {
+        $exerciseCount = $this->app['model']->exercise->getCount(true);
+        if (($page - 1) * self::PER_PAGE > $exerciseCount) {
             return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => 1]));
         }
-        $exerciseList = $this->app['model']->getExerciseList(($page - 1) * $perPage, $perPage, true);
+        $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
         
         return $this->app->render('admin/main.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
             'curPage'       => $page,
-            'perPage'       => $perPage,
+            'perPage'       => self::PER_PAGE,
         ]);
     }
     
     private function exerciseView(Request $request, $exercise_id)
     {
-        $exercise = $this->app['model']->getExercise($exercise_id);
-        $page = $request->query->get('page');
+        $exercise = $this->app['model']->exercise->get($exercise_id);
+        $prev = $this->app['model']->exercise->getPrevId($exercise_id, true);
+        $next = $this->app['model']->exercise->getNextId($exercise_id, true);
+        $page = $this->app['model']->exercise->getPage($exercise_id, self::PER_PAGE, true);
         return $this->app->render('admin/exercise/view.twig', [
-            'exercise' => $exercise,
-            'page'     => $page,
+            'exercise'  => $exercise,
+            'prev'      => $prev,
+            'next'      => $next,
+            'page'      => $page,
         ]);
     }
     
@@ -119,8 +107,7 @@ class Admin implements ControllerProviderInterface
             ]);
             return $this->app->redirect(
                 $this->app['url_generator']->generate('admin_exercise_edit', ['exercise_id' => $exercise_id]) .
-                '?page='    . $request->query->get('page') .
-                '&formKey=' . $formKey
+                '?formKey=' . $formKey
             );
         };
         
@@ -145,12 +132,7 @@ class Admin implements ControllerProviderInterface
                     'score'         => $request->request->get('score'),
                     'hand'          => $request->request->get('hand'),
                     'draw'          => $request->request->get('draw'),
-                    'discard_a'     => $request->request->get('discard_a'),
-                    'answer_a'      => $request->request->get('answer_a'),
-                    'discard_b'     => $request->request->get('discard_b'),
-                    'answer_b'      => $request->request->get('answer_b'),
-                    'discard_c'     => $request->request->get('discard_c'),
-                    'answer_c'      => $request->request->get('answer_c'),
+                    'answer'        => $request->request->get('answer'),
                     'best_answer'   => $request->request->get('best_answer'),
                 ],
             ]);
@@ -167,7 +149,9 @@ class Admin implements ControllerProviderInterface
                         $errors[] = 'EXERCISE_ID:NOT_POSITIVE';
                     } else {
                         // Если новый номер не равен старому, то проверить, что задачи с новым номером ещё не существует.
-                        if ($exercise_id !== $exercise->exercise_id && $this->app['model']->getExercise($exercise->exercise_id)) {
+                        if ($exercise_id !== $exercise->exercise_id &&
+                            $this->app['model']->exercise->get($exercise->exercise_id)
+                        ) {
                             $errors[] = 'EXERCISE_ID:ALREADY_EXISTS';
                         }
                     }
@@ -182,11 +166,11 @@ class Admin implements ControllerProviderInterface
                 }
                 
                 // Создать задачу.
-                $this->app['model']->setExercise($exercise);
+                $this->app['model']->exercise->set($exercise);
                 
                 // Если старый номер не равен new, то после создания нового надо удалить старое.
                 if ($exercise_id !== 'new' && $exercise_id !== $exercise->exercise_id) {
-                    $this->app['model']->deleteExercise($exercise_id);
+                    $this->app['model']->exercise->delete($exercise_id);
                 }
                 
                 // Показать новую задачу в админке.
@@ -203,7 +187,7 @@ class Admin implements ControllerProviderInterface
                 }
                 
                 // Удалить задачу.
-                $this->app['model']->deleteExercise($exercise_id);
+                $this->app['model']->exercise->delete($exercise_id);
                 
                 // Показать список задач.
                 return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => $request->query->get('page')]));
@@ -220,7 +204,6 @@ class Admin implements ControllerProviderInterface
             $csrfKey
         ) {
             return $this->app->render('admin/exercise/edit.twig', [
-                'page'        => $request->query->get('page'),
                 'exercise_id' => $exercise_id,
                 'csrf'        => $this->app['csrf']->generate($csrfKey),
                 'exercise'    => $exercise,
@@ -238,11 +221,11 @@ class Admin implements ControllerProviderInterface
         
         // Отобразить свежую форму для новой задачи.
         if ($exercise_id === 'new') {
-            return $view(new Exercise (['exercise_id' => $this->app['model']->getExerciseNextId()]));
+            return $view(new Exercise (['exercise_id' => $this->app['model']->exercise->getNewId()]));
         }
         
         // Существует ли запрошенная задача?
-        $exercise = $this->app['model']->getExercise($exercise_id);
+        $exercise = $this->app['model']->exercise->get($exercise_id);
         if (! $exercise) {
             return $view(null, ['EXERCISE:DOES_NOT_EXIST']);
         }

@@ -1,0 +1,17 @@
+
+div.answers {
+    display : none;
+}
+
+div.fail {
+    border : 2px solid red;
+}
+
+div.win {
+    border : 2px solid green;
+}
+
+p.links a.next {
+    display : none;
+    float   : right;
+}
