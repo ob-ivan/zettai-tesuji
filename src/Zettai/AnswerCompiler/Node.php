@@ -5,7 +5,7 @@ class Node
 {
     // var //
     
-    private $value;
+    private $content;
     
     /**
      * Позиция, измеренная в токенах.

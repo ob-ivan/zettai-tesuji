@@ -15,7 +15,7 @@ class Token extends ParsingRule
     public function parseExisting(array $tokens, $position, $nodeClass = null)
     {
         $token = $tokens[$position];
-        if ($token instanceof Token && $token->type === $this->type) {
+        if ($token->type === $this->type) {
             return $this->produceNode($nodeClass, $token, $position, 1);
         }
         return null;

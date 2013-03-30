@@ -73,7 +73,9 @@ class Service
     
     public function compile($source)
     {
-        return $this->parse($this->tokenize($source))->build();
+        $node = $this->parse($this->tokenize($source));
+        $result = $node->build();
+        return $result;
     }
     
     // private : compile steps //
