@@ -9,14 +9,14 @@
  * Формальная грамматика:
  *  PARENTHESIS_OPEN        = "(" ;
  *  ASTERISK                = "*" ;
- *  PARENTTHESIS_CLOSE      = ")" ;
+ *  PARENTHESIS_CLOSE       = ")" ;
  *  NON_SPECIAL_CHARACTER   = /[^(*)]/ ;
  *  CommentCharacter        = PARENTHESIS_OPEN / ASTERISK / NON_SPECIAL_CHARACTER ;
- *  AnyCharacter            = PARENTHESIS_OPEN / ASTERISK / PARENTTHESIS_CLOSE / NON_SPECIAL_CHARACTER ;
+ *  AnyCharacter            = PARENTHESIS_OPEN / ASTERISK / PARENTHESIS_CLOSE / NON_SPECIAL_CHARACTER ;
  *  CommentText             = CommentCharacter* ;
- *  Comment                 = PARENTHESIS_OPEN ASTERISK CommentText PARENTTHESIS_CLOSE ;
+ *  Comment                 = PARENTHESIS_OPEN ASTERISK CommentText PARENTHESIS_CLOSE ;
  *  Block                   = Comment / AnyCharacter ;
- *  Text                    = Block* ;
+ *  Text                    = Block* ; // start symbol
 **/
 namespace Zettai\AnswerCompiler;
 
@@ -38,6 +38,38 @@ class Service
             $node->append(new Node\Text($token->value));
         }
         return $node;
+        
+        /*
+        (new Parser($tokens, [
+            'CommentCharacter' => new ParsingRule\OrderedChoice([
+                new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
+                new ParsingRule\Token(TokenType::ASTERISK),
+                new ParsingRule\Token(TokenType::NON_SPECIAL_CHARACTER),
+            ]),
+            'AnyCharacter' => new ParsingRule\OrderedChoice([
+                new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
+                new ParsingRule\Token(TokenType::ASTERISK),
+                new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
+                new ParsingRule\Token(TokenType::NON_SPECIAL_CHARACTER),
+            ]),
+            'CommentText' => new ParsingRule\ZeroOrMore([
+                new ParsingRule\SyntacticVariable('CommentCharacter'),
+            ]),
+            'Comment' => new ParsingRule\Sequence([
+                new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
+                new ParsingRule\Token(TokenType::ASTERISK),
+                new ParsingRule\SyntacticVariable('CommentText'),
+                new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
+            ]),
+            'Block' => new ParsingRule\OrderedChoice([
+                new ParsingRule\SyntacticVariable('Comment'),
+                new ParsingRule\SyntacticVariable('AnyCharacter'),
+            ]),
+            'Text' => new ParsingRule\ZeroOrMore([
+                new ParsingRule\SyntacticVariable('Block'),
+            ]),
+        ]))->parse();
+        */
     }
     
     /**
