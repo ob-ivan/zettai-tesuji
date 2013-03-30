@@ -5,6 +5,18 @@
  * Правила разметки:
  *  1.  Примечание. "(* текст )" превращается в "[*]", при наводе на который
  *      появляется всплывашка с текстом "текст".
+ *
+ * Формальная грамматика:
+ *  PARENTHESIS_OPEN        = "(" ;
+ *  ASTERISK                = "*" ;
+ *  PARENTTHESIS_CLOSE      = ")" ;
+ *  NON_SPECIAL_CHARACTER   = /[^(*)]/ ;
+ *  CommentCharacter        = PARENTHESIS_OPEN / ASTERISK / NON_SPECIAL_CHARACTER ;
+ *  AnyCharacter            = PARENTHESIS_OPEN / ASTERISK / PARENTTHESIS_CLOSE / NON_SPECIAL_CHARACTER ;
+ *  CommentText             = CommentCharacter* ;
+ *  Comment                 = PARENTHESIS_OPEN ASTERISK CommentText PARENTTHESIS_CLOSE ;
+ *  Block                   = Comment / AnyCharacter ;
+ *  Text                    = Block* ;
 **/
 namespace Zettai\AnswerCompiler;
 

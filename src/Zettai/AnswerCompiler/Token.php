@@ -5,10 +5,10 @@ class Token
 {
     // const //
     
-    const T_ASTERISK          = __LINE__;
-    const T_CHARACTER         = __LINE__;
-    const T_PARENTHESIS_CLOSE = __LINE__;
-    const T_PARENTHESIS_OPEN  = __LINE__;
+    const T_ASTERISK                = __LINE__;
+    const T_NON_SPECIAL_CHARACTER   = __LINE__;
+    const T_PARENTHESIS_CLOSE       = __LINE__;
+    const T_PARENTHESIS_OPEN        = __LINE__;
     
     // var //
     

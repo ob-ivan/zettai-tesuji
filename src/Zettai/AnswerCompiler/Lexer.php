@@ -64,10 +64,10 @@ class Lexer
         $char = $this->getChar();
         $type = null;
         switch ($char) {
-            case '(': $type = Token::T_PARENTHESIS_OPEN;    break;
-            case '*': $type = Token::T_ASTERISK;            break;
-            case ')': $type = Token::T_PARENTHESIS_CLOSE;   break;
-            default : $type = Token::T_CHARACTER;           break;
+            case '(': $type = Token::T_PARENTHESIS_OPEN;        break;
+            case '*': $type = Token::T_ASTERISK;                break;
+            case ')': $type = Token::T_PARENTHESIS_CLOSE;       break;
+            default : $type = Token::T_NON_SPECIAL_CHARACTER;   break;
         }
         return new Token($type, $char, $this->position, 1);
     }
