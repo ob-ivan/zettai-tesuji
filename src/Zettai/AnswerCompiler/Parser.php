@@ -10,10 +10,10 @@ class Parser
     
     // public //
     
-    public function __construct(array $tokens, $rules)
+    public function __construct(array $tokens, ParsingRuleSet $ruleSet)
     {
         $this->tokens  = $tokens;
-        $this->ruleSet = new ParsingRuleSet($rules);
+        $this->ruleSet = $ruleSet;
     }
     
     public function parse($ruleName, $position = 0)

@@ -1,9 +1,9 @@
 <?php
 namespace Zettai\AnswerCompiler\ParsingRule;
 
-use Zettai\AnswerCompiler\Node;
+use Zettai\AnswerCompiler\ParsingRule;
 
-class Token
+class Token extends ParsingRule
 {
     private $type;
     
@@ -12,14 +12,11 @@ class Token
         $this->type = $type;
     }
     
-    public function parse(array $tokens, $position, $nodeClass = null)
+    public function parseExisting(array $tokens, $position, $nodeClass = null)
     {
-        if (! isset($tokens[$position])) {
-            return null;
-        }
         $token = $tokens[$position];
         if ($token instanceof Token && $token->type === $this->type) {
-            return Node::produce($nodeClass, $token, $position, 1);
+            return $this->produceNode($nodeClass, $token, $position, 1);
         }
         return null;
     }

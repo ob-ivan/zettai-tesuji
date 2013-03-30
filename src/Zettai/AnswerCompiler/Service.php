@@ -22,19 +22,24 @@ namespace Zettai\AnswerCompiler;
 
 class Service
 {
+    // var //
+    
+    private $lexingRules;
+    private $parsingRules;
+    
     // public //
     
-    public function compile($source)
+    public function __construct()
     {
-        return $this->parse($this->tokenize($source))->build();
-    }
-    
-    // private : compile steps //
-    
-    private function parse(array $tokens)
-    {
-        // TODO: Завести ParserFactory(ParsingRuleSet), чтобы не конструировать массив правил каждый раз.
-        (new Parser($tokens, [
+        $this->lexingRules = [
+            '\\('       => TokenType::PARENTHESIS_OPEN,
+            '\\*'       => TokenType::ASTERISK,
+            '\\)'       => TokenType::PARENTHESIS_CLOSE,
+            '[^(*)]'    => TokenType::NON_SPECIAL_CHARACTER,
+        ];
+        
+        $ruleSet = new ParsingRuleSet;
+        $ruleSet->addRules([
             'CommentCharacter' => new ParsingRule\OrderedChoice([
                 new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
                 new ParsingRule\Token(TokenType::ASTERISK),
@@ -47,22 +52,35 @@ class Service
                 new ParsingRule\Token(TokenType::NON_SPECIAL_CHARACTER),
             ]),
             'CommentText' => new ParsingRule\ZeroOrMore(
-                new ParsingRule\Nonterminal('CommentCharacter')
+                new ParsingRule\Nonterminal($ruleSet, 'CommentCharacter')
             ),
             'Comment' => new ParsingRule\Sequence([
                 new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
                 new ParsingRule\Token(TokenType::ASTERISK),
-                new ParsingRule\Nonterminal('CommentText'),
+                new ParsingRule\Nonterminal($ruleSet, 'CommentText'),
                 new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
             ]),
             'Block' => new ParsingRule\OrderedChoice([
-                new ParsingRule\Nonterminal('Comment'),
-                new ParsingRule\Nonterminal('AnyCharacter'),
+                new ParsingRule\Nonterminal($ruleSet, 'Comment'),
+                new ParsingRule\Nonterminal($ruleSet, 'AnyCharacter'),
             ]),
             'Text' => new ParsingRule\ZeroOrMore(
-                new ParsingRule\Nonterminal('Block')
+                new ParsingRule\Nonterminal($ruleSet, 'Block')
             ),
-        ]))->parse('Text');
+        ]);
+        $this->parsingRuleSet = $ruleSet;
+    }
+    
+    public function compile($source)
+    {
+        return $this->parse($this->tokenize($source))->build();
+    }
+    
+    // private : compile steps //
+    
+    private function parse(array $tokens)
+    {
+        return (new Parser($tokens, $this->parsingRuleSet))->parse('Text');
     }
     
     /**
@@ -73,12 +91,8 @@ class Service
     **/
     private function tokenize($source)
     {
-        // TODO: Завести LexerFactory(LexingRuleSet), чтобы не конструировать массив правил каждый раз.
-        return (new Lexer($source, [
-            '\\('       => TokenType::PARENTHESIS_OPEN,
-            '\\*'       => TokenType::ASTERISK,
-            '\\)'       => TokenType::PARENTHESIS_CLOSE,
-            '[^(*)]'    => TokenType::NON_SPECIAL_CHARACTER,
-        ]))->tokenize();
+        // TODO: Завести LexerFactory(LexingRuleSet), чтобы лексер
+        // не копировал набор правил, а брал из фабркии по необходимости.
+        return (new Lexer($source, $this->lexingRules))->tokenize();
     }
 }
