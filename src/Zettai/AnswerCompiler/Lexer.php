@@ -61,8 +61,6 @@ class Lexer
      *
      * Внутренний счётчик при этом не передвигается.
      *
-     * TODO: Сделать перебор конфигурируемым.
-     *
      *  @return Token
     **/
     public function getToken()
@@ -92,7 +90,38 @@ class Lexer
         return $this->position >= $this->length;
     }
     
+    public function tokenize()
+    {
+        $tokens = [];
+        
+        while (! $this->isEndOfInput()) {
+            $token = $this->getToken();
+            if (! $token) {
+                break;
+            }
+            $tokens[] = $token;
+            $this->consume($token);
+        }
+        if (! $this->isEndOfInput()) {
+            throw new Exception(
+                'Unexpected characters at position ' . $this->getPosition() . ' in input: ' .
+                '"' . $this->ellipsis($this->getUnreadInput()) . '"',
+                Exception::LEXER_TOKENIZE_SOURCE_UNEXPECTED_CHARACTERS
+            );
+        }
+        
+        return $tokens;
+    }
+    
     // private //
+    
+    private function ellipsis($text, $length = 30)
+    {
+        if (mb_strlen($text) < $length) {
+            return $text;
+        }
+        return mb_substr($text, 0, $length) . '...';
+    }
     
     private function getChar()
     {
