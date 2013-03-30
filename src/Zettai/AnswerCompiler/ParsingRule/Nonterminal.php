@@ -21,7 +21,7 @@ class Nonterminal extends ParsingRule
     
     public function parseExisting(array $tokens, $position, $nodeClass = null)
     {
-        $subNode = $this->ruleSet[$ruleName]->parse($tokens, $position, $ruleName);
+        $subNode = $this->ruleSet[$this->ruleName]->parse($tokens, $position, $this->ruleName);
         if (! $subNode) {
             return null;
         }
