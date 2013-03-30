@@ -8,14 +8,24 @@ class Lexer
     private $input;
     private $length;
     
-    // Позиция в input'е, измеренная в мультибайтовых оффсетах.
+    /**
+     * Позиция в input'е, измеренная в мультибайтовых оффсетах.
+    **/
     private $position;
+    
+    /**
+     * Правила распознавания лексем.
+     *
+     *  @var [<string regexp> => <integer type>]
+    **/
+    private $rules;
     
     // public //
     
-    public function __construct($input)
+    public function __construct($input, array $rules)
     {
         $this->input = $input;
+        $this->rules = $rules;
         
         $this->length = mb_strlen($input);
         $this->position = 0;
@@ -61,15 +71,12 @@ class Lexer
             return null;
         }
         
-        $char = $this->getChar();
-        $type = null;
-        switch ($char) {
-            case '(': $type = Token::T_PARENTHESIS_OPEN;        break;
-            case '*': $type = Token::T_ASTERISK;                break;
-            case ')': $type = Token::T_PARENTHESIS_CLOSE;       break;
-            default : $type = Token::T_NON_SPECIAL_CHARACTER;   break;
+        foreach ($this->rules as $regexp => $type) {
+            if (preg_match('/^' . $regexp . '/u', $this->getUnreadInput(), $matches)) {
+                return new Token($type, $matches[0], $this->position, mb_strlen($matches[0]));
+            }
         }
-        return new Token($type, $char, $this->position, 1);
+        return null;
     }
     
     public function getUnreadInput()

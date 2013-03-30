@@ -3,8 +3,8 @@
  * Преобразовывает сырой текст ответа в соответствии с разметкой в готовый html-код.
  *
  * Правила разметки:
- *  1.  Примечание. "(* текст )" превращается в "[*]", при наводе на который
- *      появляется всплывашка с текстом "текст".
+ *  1.  Примечание. "(* комментарий )" превращается в "[*]", при наводе на который
+ *      появляется всплывашка с текстом "комментарий".
  *
  * Формальная грамматика:
  *  PARENTHESIS_OPEN        = "(" ;
@@ -50,7 +50,13 @@ class Service
     {
         $tokens = [];
         
-        $lexer = new Lexer($source);
+        $lexer = new Lexer($source, [
+            '\\('       => TokenType::PARENTHESIS_OPEN,
+            '\\*'       => TokenType::ASTERISK,
+            '\\)'       => TokenType::PARENTHESIS_CLOSE,
+            '[^(*)]'    => TokenType::NON_SPECIAL_CHARACTER,
+        ]);
+        
         while (! $lexer->isEndOfInput()) {
             $token = $lexer->getToken();
             if (! $token) {
