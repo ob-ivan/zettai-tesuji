@@ -1,6 +1,7 @@
 <?php
 namespace Zettai\AnswerCompiler\ParsingRule;
 
+use Zettai\AnswerCompiler\NodeCollection;
 use Zettai\AnswerCompiler\ParsingRule;
 use Zettai\AnswerCompiler\ParsingRuleSet;
 

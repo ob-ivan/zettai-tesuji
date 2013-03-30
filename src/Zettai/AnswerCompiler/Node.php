@@ -7,6 +7,9 @@ class Node
     
     private $token;
     
+    /**
+     * @var NodeCollection
+    **/
     private $children;
     
     /**
@@ -21,7 +24,7 @@ class Node
     
     // public //
     
-    public function __construct(Token $token = null, array $children, $position, $length)
+    public function __construct(Token $token = null, NodeCollection $children = null, $position, $length)
     {
         $this->token    = $token;
         $this->children = $children;
@@ -43,14 +46,18 @@ class Node
             return $this->token->value;
         }
         
-        $output = [];
-        foreach ($this->children as $child) {
-            $output[] = $child->build();
+        if ($this->children) {
+            $output = [];
+            foreach ($this->children as $child) {
+                $output[] = $child->build();
+            }
+            return implode('', $output);
         }
-        return implode('', $output);
+        
+        return '';
     }
     
-    public static function produce($className, Token $token = null, array $children, $position, $length)
+    public static function produce($className, Token $token = null, NodeCollection $children, $position, $length)
     {
         $class = __CLASS__ . ($className ? '\\' . $className : '');
         return new $class($token, $children, $position, $length);

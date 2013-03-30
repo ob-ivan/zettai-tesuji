@@ -2,6 +2,7 @@
 namespace Zettai\AnswerCompiler;
 
 use Zettai\AnswerCompiler\Node;
+use Zettai\AnswerCompiler\NodeCollection;
 use Zettai\AnswerCompiler\Token;
 
 abstract class ParsingRule implements ParsingRuleInterface
@@ -18,8 +19,14 @@ abstract class ParsingRule implements ParsingRuleInterface
     
     abstract protected function parseExisting(array $tokens, $position, $nodeClass = null);
     
-    protected function produceNode($nodeClass, Token $token = null, array $children, $position, $length)
+    protected function produceNode($nodeClass, Token $token = null, array $children = null, $position, $length)
     {
-        return Node::produce($nodeClass, $token, $children, $position, $length);
+        $collection = new NodeCollection;
+        if ($children) {
+            foreach ($children as $child) {
+                $collection->append($child);
+            }
+        }
+        return Node::produce($nodeClass, $token, $collection, $position, $length);
     }
 }
