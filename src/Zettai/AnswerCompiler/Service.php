@@ -31,24 +31,26 @@ class Service
     /**
      * Разбивает входной текст на лексические элементы -- токены.
      *
-     * TODO: Абстрагировать заложенные механизмы и описывать как набор правил.
+     *  @param  string  $source
+     *  @return [Token]
     **/
     private function tokenize($source)
     {
         $tokens = [];
         
-        while (! empty($source)) {
-            $length = strlen($source);
-            
-            // TODO
-            
-            if ($length === strlen($source)) {
+        $lexer = new Lexer($source);
+        while (! $lexer->isEndOfInput()) {
+            $token = $lexer->getToken();
+            if (! $token) {
                 break;
             }
+            $tokens[] = $token;
+            $lexer->consume($token);
         }
-        if (! empty($source)) {
+        if (! $lexer->isEndOfInput()) {
             throw new Exception(
-                'Unexpected characters at end of source: "' . $this->ellipsis($source) . '"',
+                'Unexpected characters at position ' . $lexer->getPosition() . ' in input: ' .
+                '"' . $this->ellipsis($lexer->getUnreadInput()) . '"',
                 Exception::SERVICE_TOKENIZE_SOURCE_UNEXPECTED_CHARACTERS
             );
         }
