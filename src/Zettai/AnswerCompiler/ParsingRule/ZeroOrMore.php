@@ -25,6 +25,6 @@ class ZeroOrMore extends ParsingRule
             }
             $children[] = $subNode;
         }
-        return $this->produceNode($nodeClass, $children, $position, $offset);
+        return $this->produceNode($nodeClass, null, $children, $position, $offset);
     }
 }

@@ -25,6 +25,6 @@ class Nonterminal extends ParsingRule
         if (! $subNode) {
             return null;
         }
-        return $this->produceNode($nodeClass, $subNode, $position, $subNode->length);
+        return $this->produceNode($nodeClass, null, [$subNode], $position, $subNode->length);
     }
 }

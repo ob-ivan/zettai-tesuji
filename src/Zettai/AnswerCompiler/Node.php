@@ -5,7 +5,9 @@ class Node
 {
     // var //
     
-    private $content;
+    private $token;
+    
+    private $children;
     
     /**
      * Позиция, измеренная в токенах.
@@ -19,9 +21,10 @@ class Node
     
     // public //
     
-    public function __construct($content, $position, $length)
+    public function __construct(Token $token = null, array $children, $position, $length)
     {
-        $this->content  = $content;
+        $this->token    = $token;
+        $this->children = $children;
         $this->position = $position;
         $this->length   = $length;
     }
@@ -36,12 +39,20 @@ class Node
     
     public function build()
     {
-        return $this->content;
+        if ($this->token) {
+            return $this->token->value;
+        }
+        
+        $output = [];
+        foreach ($this->children as $child) {
+            $output[] = $child->build();
+        }
+        return implode('', $output);
     }
     
-    public static function produce($className, $content, $position, $length)
+    public static function produce($className, Token $token = null, array $children, $position, $length)
     {
         $class = __CLASS__ . ($className ? '\\' . $className : '');
-        return new $class($content, $position, $length);
+        return new $class($token, $children, $position, $length);
     }
 }

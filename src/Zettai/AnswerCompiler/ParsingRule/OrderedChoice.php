@@ -20,7 +20,7 @@ class OrderedChoice extends ParsingRule
         foreach ($this->variants as $subRule) {
             $subNode = $subRule->parse($tokens, $position);
             if ($subNode) {
-                return $this->produceNode($nodeClass, $subNode, $position, $subNode->length);
+                return $this->produceNode($nodeClass, null, [$subNode], $position, $subNode->length);
             }
         }
         return null;

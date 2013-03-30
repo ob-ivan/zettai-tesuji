@@ -29,6 +29,6 @@ class Sequence extends ParsingRule
             $children[] = $subNode;
             $offset += $subNode->length;
         }
-        return $this->produceNode($nodeClass, $children, $position, $offset);
+        return $this->produceNode($nodeClass, null, $children, $position, $offset);
     }
 }

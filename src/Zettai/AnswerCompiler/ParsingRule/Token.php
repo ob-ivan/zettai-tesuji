@@ -16,7 +16,7 @@ class Token extends ParsingRule
     {
         $token = $tokens[$position];
         if ($token->type === $this->type) {
-            return $this->produceNode($nodeClass, $token, $position, 1);
+            return $this->produceNode($nodeClass, $token, [], $position, 1);
         }
         return null;
     }
