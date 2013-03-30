@@ -5,6 +5,6 @@ use Zettai\Exception as VendorException;
 
 class Exception extends VendorException
 {
-    const TYPE_UNKNOWN      = 0x0201;
-    const GET_UNKNOWN_FIELD = 0x0202;
+    const SERVICE_TOKENIZE_SOURCE_UNEXPECTED_CHARACTERS = 0x0201;
+    const TOKEN_GET_NAME_UNKNOWN                        = 0x0202;
 }

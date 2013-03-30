@@ -17,7 +17,7 @@ class Service
         return $this->parse($this->tokenize($source))->build();
     }
     
-    // private //
+    // private : compile steps //
     
     private function parse(array $tokens)
     {
@@ -28,10 +28,41 @@ class Service
         return $node;
     }
     
+    /**
+     * Разбивает входной текст на лексические элементы -- токены.
+     *
+     * TODO: Абстрагировать заложенные механизмы и описывать как набор правил.
+    **/
     private function tokenize($source)
     {
         $tokens = [];
-        $tokens[] = new Token\Text($source);
+        
+        while (! empty($source)) {
+            $length = strlen($source);
+            
+            // TODO
+            
+            if ($length === strlen($source)) {
+                break;
+            }
+        }
+        if (! empty($source)) {
+            throw new Exception(
+                'Unexpected characters at end of source: "' . $this->ellipsis($source) . '"',
+                Exception::SERVICE_TOKENIZE_SOURCE_UNEXPECTED_CHARACTERS
+            );
+        }
+        
         return $tokens;
+    }
+    
+    // private : helpers //
+    
+    private function ellipsis($text, $length = 30)
+    {
+        if (mb_strlen($text) < $length) {
+            return $text;
+        }
+        return mb_substr($text, 0, $length) . '...';
     }
 }

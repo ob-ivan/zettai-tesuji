@@ -3,6 +3,7 @@
 // Подготовка глобального состояния.
 
 $time = microtime(true);
+mb_internal_encoding('utf-8');
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
