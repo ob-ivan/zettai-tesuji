@@ -1,18 +1,47 @@
 <?php
 namespace Zettai\AnswerCompiler;
 
-abstract class Node
+class Node
 {
     // var //
     
-    protected $children = [];
+    private $value;
+    
+    /**
+     * Позиция, измеренная в токенах.
+    **/
+    private $position;
+    
+    /**
+     * Длина в токенах.
+    **/
+    private $length;
     
     // public //
     
-    public function append(self $child)
+    public function __construct($content, $position, $length)
     {
-        $this->children[] = $child;
+        $this->content  = $content;
+        $this->position = $position;
+        $this->length   = $length;
     }
     
-    abstract public function build();
+    public function __get($name)
+    {
+        if (isset($this->$name)) {
+            return $this->$name;
+        }
+        throw new Exception('Unknown field "' . $name . '"', Exception::NODE_GET_NAME_UNKNOWN);
+    }
+    
+    public function build()
+    {
+        return $this->content;
+    }
+    
+    public static function produce($className, $content, $position, $length)
+    {
+        $class = __CLASS__ . ($className ? '\\' . $className : '');
+        return new $class($content, $position, $length);
+    }
 }

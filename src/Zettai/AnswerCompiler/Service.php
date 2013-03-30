@@ -33,13 +33,7 @@ class Service
     
     private function parse(array $tokens)
     {
-        $node = new Node\Group;
-        foreach ($tokens as $token) {
-            $node->append(new Node\Text($token->value));
-        }
-        return $node;
-        
-        /*
+        // TODO: Завести ParserFactory(ParsingRuleSet), чтобы не конструировать массив правил каждый раз.
         (new Parser($tokens, [
             'CommentCharacter' => new ParsingRule\OrderedChoice([
                 new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
@@ -52,24 +46,23 @@ class Service
                 new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
                 new ParsingRule\Token(TokenType::NON_SPECIAL_CHARACTER),
             ]),
-            'CommentText' => new ParsingRule\ZeroOrMore([
-                new ParsingRule\SyntacticVariable('CommentCharacter'),
-            ]),
+            'CommentText' => new ParsingRule\ZeroOrMore(
+                new ParsingRule\Nonterminal('CommentCharacter')
+            ),
             'Comment' => new ParsingRule\Sequence([
                 new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
                 new ParsingRule\Token(TokenType::ASTERISK),
-                new ParsingRule\SyntacticVariable('CommentText'),
+                new ParsingRule\Nonterminal('CommentText'),
                 new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
             ]),
             'Block' => new ParsingRule\OrderedChoice([
-                new ParsingRule\SyntacticVariable('Comment'),
-                new ParsingRule\SyntacticVariable('AnyCharacter'),
+                new ParsingRule\Nonterminal('Comment'),
+                new ParsingRule\Nonterminal('AnyCharacter'),
             ]),
-            'Text' => new ParsingRule\ZeroOrMore([
-                new ParsingRule\SyntacticVariable('Block'),
-            ]),
-        ]))->parse();
-        */
+            'Text' => new ParsingRule\ZeroOrMore(
+                new ParsingRule\Nonterminal('Block')
+            ),
+        ]))->parse('Text');
     }
     
     /**
@@ -80,6 +73,7 @@ class Service
     **/
     private function tokenize($source)
     {
+        // TODO: Завести LexerFactory(LexingRuleSet), чтобы не конструировать массив правил каждый раз.
         return (new Lexer($source, [
             '\\('       => TokenType::PARENTHESIS_OPEN,
             '\\*'       => TokenType::ASTERISK,
