@@ -1,4 +1,17 @@
 <?php
+/**
+ * Грамматика -- вместилище правил и породитель парсера для этих правил.
+ *
+ * Правила задаются вызывающим кодом в форме:
+ *  $grammar->setRule('имя_правила', $grammar->тип_правила(аргументы_правила));
+ *
+ * Вызывающий код обязан предоставить фабрику узлов -- наследников OI\C\Node, --
+ * производящую узел для каждого нетерминального правила.
+ *
+ * Когда все правила заданы, можно создать Parser для разбора конкретного
+ * потока токенов:
+ *  $parser = $grammar->produceParser($tokens);
+**/
 namespace Ob_Ivan\Compiler;
 
 class Grammar
@@ -26,9 +39,9 @@ class Grammar
         return new Parser($this, $tokens);
     }
     
-    public function produceNode($nodeClass, $position, $length, NodeCollection $collection, $value = null)
+    public function produceNode($nodeType, $position, $length, NodeCollection $collection, $value = null)
     {
-        return $this->nodeFactory->produce($nodeClass, $position, $length, $collection, $value);
+        return $this->nodeFactory->produce($nodeType, $position, $length, $collection, $value);
     }
     
     // public : rule manipulation //
