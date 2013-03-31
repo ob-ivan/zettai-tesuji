@@ -41,7 +41,6 @@ class Service
             '[^(*)]'    => TokenType::NON_SPECIAL_CHARACTER,
         ];
         
-        // NEW
         $grammar = new Grammar(new NodeFactory);
         $grammar->setRule('PARENTHESIS_OPEN',       $grammar->terminal(TokenType::PARENTHESIS_OPEN));
         $grammar->setRule('ASTERISK',               $grammar->terminal(TokenType::ASTERISK));

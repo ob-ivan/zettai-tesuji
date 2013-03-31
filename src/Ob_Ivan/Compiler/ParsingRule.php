@@ -30,6 +30,7 @@ abstract class ParsingRule implements ParsingRuleInterface
                 $collection->append($child);
             }
         }
+        $collection->freeze();
         return $this->grammar->produceNode($nodeClass, $position, $length, $collection, $value);
     }
 }
