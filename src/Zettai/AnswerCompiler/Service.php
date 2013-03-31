@@ -20,8 +20,9 @@
 **/
 namespace Zettai\AnswerCompiler;
 
-use Ob_Ivan\Compiler\Lexer;
 use Ob_Ivan\Compiler\Grammar;
+use Ob_Ivan\Compiler\Lexer;
+use Ob_Ivan\Compiler\TokenCollection;
 
 class Service
 {
@@ -38,7 +39,7 @@ class Service
             '\\('       => TokenType::PARENTHESIS_OPEN,
             '\\*'       => TokenType::ASTERISK,
             '\\)'       => TokenType::PARENTHESIS_CLOSE,
-            '[^(*)]'    => TokenType::NON_SPECIAL_CHARACTER,
+            '[^(*)]+'   => TokenType::NON_SPECIAL_CHARACTER,
         ];
         
         $grammar = new Grammar(new NodeFactory);
@@ -59,14 +60,12 @@ class Service
     
     public function compile($source)
     {
-        $node = $this->parse($this->tokenize($source));
-        $result = $node->build();
-        return $result;
+        return $this->parse($this->tokenize($source))->build();
     }
     
     // private : compile steps //
     
-    private function parse(array $tokens)
+    private function parse(TokenCollection $tokens)
     {
         return $this->grammar->produceParser($tokens)->parse('Text');
     }
@@ -74,8 +73,8 @@ class Service
     /**
      * Разбивает входной текст на лексические элементы -- токены.
      *
-     *  @param  string  $source
-     *  @return [Terminal]
+     *  @param  string          $source
+     *  @return TokenCollection
     **/
     private function tokenize($source)
     {

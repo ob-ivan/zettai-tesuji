@@ -34,7 +34,7 @@ class Grammar
         $this->nodeFactory = $nodeFactory;
     }
     
-    public function produceParser(array $tokens)
+    public function produceParser(TokenCollection $tokens)
     {
         return new Parser($this, $tokens);
     }

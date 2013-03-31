@@ -10,7 +10,7 @@ class Parser
     
     // public //
     
-    public function __construct(Grammar $grammar, array $tokens)
+    public function __construct(Grammar $grammar, TokenCollection $tokens)
     {
         $this->grammar  = $grammar;
         $this->tokens   = $tokens;
@@ -18,6 +18,6 @@ class Parser
     
     public function parse($ruleName, $position = 0)
     {
-        return $this->grammar->getRule($ruleName)->parse($this->tokens, $position, $ruleName);
+        return $this->grammar->getRule($ruleName)->parse(new TokenStream($this->tokens, $position), $ruleName);
     }
 }

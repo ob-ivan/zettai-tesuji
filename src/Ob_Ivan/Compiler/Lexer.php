@@ -90,16 +90,21 @@ class Lexer
         return $this->position >= $this->length;
     }
     
+    /**
+     * Разбирает весь вход.
+     *
+     *  @return TokenCollection
+    **/
     public function tokenize()
     {
-        $tokens = [];
+        $tokens = new TokenCollection;
         
         while (! $this->isEndOfInput()) {
             $token = $this->getToken();
             if (! $token) {
                 break;
             }
-            $tokens[] = $token;
+            $tokens->append($token);
             $this->consume($token);
         }
         if (! $this->isEndOfInput()) {

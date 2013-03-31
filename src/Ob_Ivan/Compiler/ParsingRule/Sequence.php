@@ -3,6 +3,7 @@ namespace Ob_Ivan\Compiler\ParsingRule;
 
 use Ob_Ivan\Compiler\Grammar;
 use Ob_Ivan\Compiler\ParsingRule;
+use Ob_Ivan\Compiler\TokenStream;
 
 class Sequence extends ParsingRule
 {
@@ -17,18 +18,18 @@ class Sequence extends ParsingRule
         $this->components   = $components;
     }
     
-    public function parseExisting(array $tokens, $position, $nodeType = null)
+    public function parseExisting(TokenStream $stream, $nodeType = null)
     {
         $offset = 0;
         $children = [];
         foreach ($this->components as $ruleName) {
-            $subNode = $this->grammar->getRule($ruleName)->parse($tokens, $position + $offset, $ruleName);
+            $subNode = $this->grammar->getRule($ruleName)->parse($stream->offset($offset), $ruleName);
             if (! $subNode) {
                 return null;
             }
             $children[] = $subNode;
             $offset += $subNode->length;
         }
-        return $this->produceNode($nodeType, $position, $offset, $children);
+        return $this->produceNode($nodeType, $stream->getPosition(), $offset, $children);
     }
 }

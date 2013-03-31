@@ -1,5 +1,5 @@
 <?php
-namespace Ob_Ivan/Compiler;
+namespace Ob_Ivan\Compiler;
 
 use Exception as ParentException;
 
@@ -14,5 +14,10 @@ class Exception extends ParentException
     
     const PARSING_RULE_SET_OFFSET_SET_VALUE_TYPE_WRONG  = 0x010301;
     
-    const TOKEN_GET_NAME_UNKNOWN                        = 0x010401;
+    const TOKEN_COLLECTION_GET_NAME_UNKNOWN             = 0x010401;
+    const TOKEN_COLLECTION_OFFSET_SET_PROHIBITED        = 0x010402;
+    const TOKEN_COLLECTION_OFFSET_UNSET_PROHIBITED      = 0x010403;
+    
+    const TOKEN_GET_NAME_UNKNOWN                        = 0x010501;
+    
 }

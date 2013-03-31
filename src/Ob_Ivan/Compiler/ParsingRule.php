@@ -10,17 +10,17 @@ abstract class ParsingRule implements ParsingRuleInterface
         $this->grammar = $grammar;
     }
     
-    public function parse(array $tokens, $position, $nodeClass = null)
+    public function parse(TokenStream $stream, $nodeClass = null)
     {
-        if (! isset($tokens[$position])) {
+        if ($stream->isEndOfStream()) {
             return null;
         }
-        return $this->parseExisting($tokens, $position, $nodeClass);
+        return $this->parseExisting($stream, $nodeClass);
     }
     
     // protected //
     
-    abstract protected function parseExisting(array $tokens, $position, $nodeClass = null);
+    abstract protected function parseExisting(TokenStream $stream, $nodeClass = null);
     
     protected function produceNode($nodeClass, $position, $length, array $children = null, $value = null)
     {

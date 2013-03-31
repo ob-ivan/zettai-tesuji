@@ -3,6 +3,7 @@ namespace Ob_Ivan\Compiler\ParsingRule;
 
 use Ob_Ivan\Compiler\Grammar;
 use Ob_Ivan\Compiler\ParsingRule;
+use Ob_Ivan\Compiler\TokenStream;
 
 class OrderedChoice extends ParsingRule
 {
@@ -17,12 +18,12 @@ class OrderedChoice extends ParsingRule
         $this->variants = $variants;
     }
     
-    public function parseExisting(array $tokens, $position, $nodeType = null)
+    public function parseExisting(TokenStream $stream, $nodeType = null)
     {
         foreach ($this->variants as $ruleName) {
-            $subNode = $this->grammar->getRule($ruleName)->parse($tokens, $position, $ruleName);
+            $subNode = $this->grammar->getRule($ruleName)->parse($stream, $ruleName);
             if ($subNode) {
-                return $this->produceNode($nodeType, $position, $subNode->length, [$subNode]);
+                return $this->produceNode($nodeType, $stream->getPosition(), $subNode->length, [$subNode]);
             }
         }
         return null;
