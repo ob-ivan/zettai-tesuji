@@ -22,7 +22,7 @@ class ZeroOrMore extends ParsingRule
     {
         $children = [];
         for ($subStream = $stream; ! $subStream->isEndOfStream(); $subStream = $subStream->offset($subNode->length)) {
-            $subNode = $this->grammar->getRule($this->ruleName)->parse($subStream, $this->ruleName);
+            $subNode = $this->grammar->parse($subStream, $this->ruleName);
             if (! $subNode) {
                 break;
             }

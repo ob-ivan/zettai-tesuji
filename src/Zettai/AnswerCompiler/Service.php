@@ -23,6 +23,7 @@ namespace Zettai\AnswerCompiler;
 use Ob_Ivan\Compiler\Grammar;
 use Ob_Ivan\Compiler\Lexer;
 use Ob_Ivan\Compiler\TokenCollection;
+use Ob_Ivan\Compiler\TokenStream;
 
 class Service
 {
@@ -67,7 +68,7 @@ class Service
     
     private function parse(TokenCollection $tokens)
     {
-        return $this->grammar->produceParser($tokens)->parse('Text');
+        return $this->grammar->parse(new TokenStream($tokens), 'Text');
     }
     
     /**

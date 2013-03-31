@@ -23,7 +23,7 @@ class Sequence extends ParsingRule
         $offset = 0;
         $children = [];
         foreach ($this->components as $ruleName) {
-            $subNode = $this->grammar->getRule($ruleName)->parse($stream->offset($offset), $ruleName);
+            $subNode = $this->grammar->parse($stream->offset($offset), $ruleName);
             if (! $subNode) {
                 return null;
             }

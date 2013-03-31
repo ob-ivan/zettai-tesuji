@@ -21,7 +21,7 @@ class OrderedChoice extends ParsingRule
     public function parseExisting(TokenStream $stream, $nodeType = null)
     {
         foreach ($this->variants as $ruleName) {
-            $subNode = $this->grammar->getRule($ruleName)->parse($stream, $ruleName);
+            $subNode = $this->grammar->parse($stream, $ruleName);
             if ($subNode) {
                 return $this->produceNode($nodeType, $stream->getPosition(), $subNode->length, [$subNode]);
             }
