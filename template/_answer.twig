@@ -24,7 +24,7 @@
     </span>
     <div class="comment">
         {% if mode == 'admin' %}
-            {{ fields.comment }}
+            {{ fields.comment|answer|raw }}
         {% endif %}
     </div>
 </div>

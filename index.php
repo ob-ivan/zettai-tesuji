@@ -3,6 +3,7 @@
 // Подготовка глобального состояния.
 
 $time = microtime(true);
+mb_internal_encoding('utf-8');
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
@@ -26,6 +27,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
+$app['answer_compiler'] = $app->share(function () {
+    return new Zettai\AnswerCompiler\Service();
+});
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
