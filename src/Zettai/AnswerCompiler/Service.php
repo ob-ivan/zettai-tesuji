@@ -20,6 +20,11 @@
 **/
 namespace Zettai\AnswerCompiler;
 
+use Ob_Ivan\Compiler\Lexer;
+use Ob_Ivan\Compiler\ParserFactory;
+use Ob_Ivan\Compiler\ParsingRule;
+use Ob_Ivan\Compiler\ParsingRuleSet;
+
 class Service
 {
     // var //
@@ -41,24 +46,24 @@ class Service
         $ruleSet = new ParsingRuleSet;
         $ruleSet->addRules([
             'CommentCharacter' => new ParsingRule\OrderedChoice([
-                new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
-                new ParsingRule\Token(TokenType::ASTERISK),
-                new ParsingRule\Token(TokenType::NON_SPECIAL_CHARACTER),
+                new ParsingRule\Terminal(TokenType::PARENTHESIS_OPEN),
+                new ParsingRule\Terminal(TokenType::ASTERISK),
+                new ParsingRule\Terminal(TokenType::NON_SPECIAL_CHARACTER),
             ]),
             'AnyCharacter' => new ParsingRule\OrderedChoice([
-                new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
-                new ParsingRule\Token(TokenType::ASTERISK),
-                new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
-                new ParsingRule\Token(TokenType::NON_SPECIAL_CHARACTER),
+                new ParsingRule\Terminal(TokenType::PARENTHESIS_OPEN),
+                new ParsingRule\Terminal(TokenType::ASTERISK),
+                new ParsingRule\Terminal(TokenType::PARENTHESIS_CLOSE),
+                new ParsingRule\Terminal(TokenType::NON_SPECIAL_CHARACTER),
             ]),
             'CommentText' => new ParsingRule\ZeroOrMore(
                 new ParsingRule\Nonterminal($ruleSet, 'CommentCharacter')
             ),
             'Comment' => new ParsingRule\Sequence([
-                new ParsingRule\Token(TokenType::PARENTHESIS_OPEN),
-                new ParsingRule\Token(TokenType::ASTERISK),
+                new ParsingRule\Terminal(TokenType::PARENTHESIS_OPEN),
+                new ParsingRule\Terminal(TokenType::ASTERISK),
                 new ParsingRule\Nonterminal($ruleSet, 'CommentText'),
-                new ParsingRule\Token(TokenType::PARENTHESIS_CLOSE),
+                new ParsingRule\Terminal(TokenType::PARENTHESIS_CLOSE),
             ]),
             'Block' => new ParsingRule\OrderedChoice([
                 new ParsingRule\Nonterminal($ruleSet, 'Comment'),
@@ -68,7 +73,8 @@ class Service
                 new ParsingRule\Nonterminal($ruleSet, 'Block')
             ),
         ]);
-        $this->parsingRuleSet = $ruleSet;
+        
+        $this->parserFactory = new ParserFactory($ruleSet, new NodeFactory);
     }
     
     public function compile($source)
@@ -82,14 +88,14 @@ class Service
     
     private function parse(array $tokens)
     {
-        return (new Parser($tokens, $this->parsingRuleSet))->parse('Text');
+        return $this->parserFactory->produce($tokens)->parse('Text');
     }
     
     /**
      * Разбивает входной текст на лексические элементы -- токены.
      *
      *  @param  string  $source
-     *  @return [Token]
+     *  @return [Terminal]
     **/
     private function tokenize($source)
     {

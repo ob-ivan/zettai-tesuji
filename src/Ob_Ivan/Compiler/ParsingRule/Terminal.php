@@ -1,9 +1,9 @@
 <?php
-namespace Zettai\AnswerCompiler\ParsingRule;
+namespace Ob_Ivan\Compiler\ParsingRule;
 
-use Zettai\AnswerCompiler\ParsingRule;
+use Ob_Ivan\Compiler\ParsingRule;
 
-class Token extends ParsingRule
+class Terminal extends ParsingRule
 {
     private $type;
     

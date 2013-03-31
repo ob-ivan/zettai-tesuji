@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\AnswerCompiler;
+namespace Ob_Ivan\Compiler;
 
 class Parser
 {
@@ -7,13 +7,15 @@ class Parser
     
     private $tokens;
     private $ruleSet;
+    private $nodeFactory;
     
     // public //
     
-    public function __construct(array $tokens, ParsingRuleSet $ruleSet)
+    public function __construct(array $tokens, ParsingRuleSet $ruleSet, NodeFactoryInterface $nodeFactory)
     {
-        $this->tokens  = $tokens;
-        $this->ruleSet = $ruleSet;
+        $this->tokens       = $tokens;
+        $this->ruleSet      = $ruleSet;
+        $this->nodeFactory  = $nodeFactory;
     }
     
     public function parse($ruleName, $position = 0)

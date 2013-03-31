@@ -1,9 +1,9 @@
 <?php
-namespace Zettai\AnswerCompiler\ParsingRule;
+namespace Ob_Ivan\Compiler\ParsingRule;
 
-use Zettai\AnswerCompiler\NodeCollection;
-use Zettai\AnswerCompiler\ParsingRule;
-use Zettai\AnswerCompiler\ParsingRuleSet;
+use Ob_Ivan\Compiler\NodeCollection;
+use Ob_Ivan\Compiler\ParsingRule;
+use Ob_Ivan\Compiler\ParsingRuleSet;
 
 class Nonterminal extends ParsingRule
 {

@@ -1,7 +1,7 @@
 <?php
-namespace Zettai\AnswerCompiler;
+namespace Ob_Ivan\Compiler;
 
-class Node
+abstract class Node
 {
     // var //
     
@@ -40,26 +40,5 @@ class Node
         throw new Exception('Unknown field "' . $name . '"', Exception::NODE_GET_NAME_UNKNOWN);
     }
     
-    public function build()
-    {
-        if ($this->token) {
-            return $this->token->value;
-        }
-        
-        if ($this->children) {
-            $output = [];
-            foreach ($this->children as $child) {
-                $output[] = $child->build();
-            }
-            return implode('', $output);
-        }
-        
-        return '';
-    }
-    
-    public static function produce($className, Token $token = null, NodeCollection $children, $position, $length)
-    {
-        $class = __CLASS__ . ($className ? '\\' . $className : '');
-        return new $class($token, $children, $position, $length);
-    }
+    abstract public function build();
 }

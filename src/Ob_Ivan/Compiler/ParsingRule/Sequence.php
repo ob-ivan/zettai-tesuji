@@ -1,7 +1,7 @@
 <?php
-namespace Zettai\AnswerCompiler\ParsingRule;
+namespace Ob_Ivan\Compiler\ParsingRule;
 
-use Zettai\AnswerCompiler\ParsingRule;
+use Ob_Ivan\Compiler\ParsingRule;
 
 class Sequence extends ParsingRule
 {

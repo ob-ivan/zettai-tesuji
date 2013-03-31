@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\AnswerCompiler;
+namespace Ob_Ivan\Compiler;
 
 use Zettai\AnswerCompiler\Node;
 use Zettai\AnswerCompiler\NodeCollection;

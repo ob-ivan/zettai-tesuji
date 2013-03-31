@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\AnswerCompiler;
+namespace Ob_Ivan\Compiler;
 
 class Lexer
 {
