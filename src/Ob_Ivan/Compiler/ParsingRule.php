@@ -24,13 +24,6 @@ abstract class ParsingRule implements ParsingRuleInterface
     
     protected function produceNode($nodeClass, $position, $length, array $children = null, $value = null)
     {
-        $collection = new NodeCollection;
-        if ($children) {
-            foreach ($children as $child) {
-                $collection->append($child);
-            }
-        }
-        $collection->freeze();
-        return $this->grammar->produceNode($nodeClass, $position, $length, $collection, $value);
+        return $this->grammar->produceNode($nodeClass, $position, $length, NodeCollection::fromArray($children), $value);
     }
 }
