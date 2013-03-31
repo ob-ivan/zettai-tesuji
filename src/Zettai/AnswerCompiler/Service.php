@@ -48,14 +48,17 @@ class Service
         $grammar->setRule('ASTERISK',               $grammar->terminal(TokenType::ASTERISK));
         $grammar->setRule('PARENTHESIS_CLOSE',      $grammar->terminal(TokenType::PARENTHESIS_CLOSE));
         $grammar->setRule('NON_SPECIAL_CHARACTER',  $grammar->terminal(TokenType::NON_SPECIAL_CHARACTER));
-        $grammar->setRule('CommentCharacter',       $grammar->orderedChoice('PARENTHESIS_OPEN', 'ASTERISK', 'NON_SPECIAL_CHARACTER'));
-        $grammar->setRule('AnyCharacter',           $grammar->orderedChoice(
+        
+        $grammar->setRule('CommentCharacter', $grammar->orderedChoice(
+            'PARENTHESIS_OPEN', 'ASTERISK', 'NON_SPECIAL_CHARACTER'
+        ));
+        $grammar->setRule('AnyCharacter', $grammar->orderedChoice(
             'PARENTHESIS_OPEN', 'ASTERISK', 'PARENTHESIS_CLOSE', 'NON_SPECIAL_CHARACTER'
         ));
-        $grammar->setRule('CommentText',            $grammar->zeroOrMore('CommentCharacter'));
-        $grammar->setRule('Comment',                $grammar->sequence('PARENTHESIS_OPEN', 'ASTERISK', 'CommentText', 'PARENTHESIS_CLOSE'));
-        $grammar->setRule('Block',                  $grammar->orderedChoice('Comment', 'AnyCharacter'));
-        $grammar->setRule('Text',                   $grammar->zeroOrMore('Block'));
+        $grammar->setRule('Comment', $grammar->sequence(
+            'PARENTHESIS_OPEN', 'ASTERISK', $grammar->zeroOrMore('CommentCharacter'), 'PARENTHESIS_CLOSE'
+        ));
+        $grammar->setRule('Text', $grammar->zeroOrMore($grammar->orderedChoice('Comment', 'AnyCharacter')));
         $this->grammar = $grammar;
     }
     

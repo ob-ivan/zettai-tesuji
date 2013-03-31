@@ -15,17 +15,17 @@ class NodeType
     
     public static function fragment()
     {
-        return $this->get(self::FRAGMENT);
+        return self::get(self::FRAGMENT);
     }
     
     // private //
     
-    private function get($value)
+    private static function get($value)
     {
-        if (! isset($this->registry[$value])) {
-            $this->registry[$value] = new self($value);
+        if (! isset(self::$registry[$value])) {
+            self::$registry[$value] = new self($value);
         }
-        return $this->registry[$value];
+        return self::$registry[$value];
     }
     
     private function __construct($value)
