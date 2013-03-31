@@ -8,21 +8,24 @@ use Ob_Ivan\Compiler\TokenStream;
 class ZeroOrMore extends ParsingRule
 {
     /**
-     *  @var <ParsingRule>
+     *  @var <string ruleName | ParsingRule rule>
     **/
-    private $ruleName;
+    private $rule;
     
-    public function __construct(Grammar $grammar, $ruleName)
+    public function __construct(Grammar $grammar, $rule)
     {
         parent::__construct($grammar);
-        $this->ruleName = $ruleName;
+        $this->rule = $rule;
     }
     
     public function parseExisting(TokenStream $stream, $nodeType = null)
     {
         $children = [];
-        for ($subStream = $stream; ! $subStream->isEndOfStream(); $subStream = $subStream->offset($subNode->length)) {
-            $subNode = $this->grammar->parse($subStream, $this->ruleName);
+        for ($subStream = $stream;
+            ! $subStream->isEndOfStream();
+            $subStream = $subStream->offset($subNode->length)
+        ) {
+            $subNode = $this->grammar->parse($subStream, $this->rule);
             if (! $subNode) {
                 break;
             }

@@ -8,7 +8,7 @@ use Ob_Ivan\Compiler\TokenStream;
 class OrderedChoice extends ParsingRule
 {
     /**
-     *  @var [<ruleName>]
+     *  @var [<string ruleName | ParsingRule rule>]
     **/
     private $variants;
     
@@ -20,8 +20,8 @@ class OrderedChoice extends ParsingRule
     
     public function parseExisting(TokenStream $stream, $nodeType = null)
     {
-        foreach ($this->variants as $ruleName) {
-            $subNode = $this->grammar->parse($stream, $ruleName);
+        foreach ($this->variants as $rule) {
+            $subNode = $this->grammar->parse($stream, $rule);
             if ($subNode) {
                 return $this->produceNode($nodeType, $stream->getPosition(), $subNode->length, [$subNode]);
             }
