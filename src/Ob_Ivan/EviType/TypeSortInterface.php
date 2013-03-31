@@ -3,5 +3,20 @@ namespace Ob_Ivan\EviType;
 
 interface TypeSortInterface
 {
-    public function __invoke($args);
+    /**
+     * Обрабатывает вызовы методов на типе.
+     *
+     *  @param  Type    $type
+     *  @param  string  $method
+     *  @param  array   $arguments
+    **/
+    public function call(Type $type, $method, array $arguments);
+    
+    /**
+     * Конструирует тип по переданным аргументам.
+     *
+     *  @param  array   $arguments
+     *  @return Type
+    **/
+    public function produce(array $arguments);
 }
