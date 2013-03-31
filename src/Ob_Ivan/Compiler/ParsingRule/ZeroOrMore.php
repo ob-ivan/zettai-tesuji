@@ -1,6 +1,7 @@
 <?php
 namespace Ob_Ivan\Compiler\ParsingRule;
 
+use Ob_Ivan\Compiler\Grammar;
 use Ob_Ivan\Compiler\ParsingRule;
 
 class ZeroOrMore extends ParsingRule
@@ -8,23 +9,24 @@ class ZeroOrMore extends ParsingRule
     /**
      *  @var <ParsingRule>
     **/
-    private $subRule;
+    private $ruleName;
     
-    public function __construct(ParsingRule $subRule)
+    public function __construct(Grammar $grammar, $ruleName)
     {
-        $this->subRule = $subRule;
+        parent::__construct($grammar);
+        $this->ruleName = $ruleName;
     }
     
-    public function parseExisting(array $tokens, $position, $nodeClass = null)
+    public function parseExisting(array $tokens, $position, $nodeType = null)
     {
         $children = [];
         for ($offset = 0; isset($tokens[$position + $offset]); $offset += $subNode->length) {
-            $subNode = $this->subRule->parse($tokens, $position + $offset);
+            $subNode = $this->grammar->getRule($this->ruleName)->parse($tokens, $position + $offset, $this->ruleName);
             if (! $subNode) {
                 break;
             }
             $children[] = $subNode;
         }
-        return $this->produceNode($nodeClass, null, $children, $position, $offset);
+        return $this->produceNode($nodeType, $position, $offset, $children);
     }
 }

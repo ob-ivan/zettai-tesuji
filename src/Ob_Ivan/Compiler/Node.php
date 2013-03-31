@@ -5,13 +5,6 @@ abstract class Node
 {
     // var //
     
-    private $token;
-    
-    /**
-     * @var NodeCollection
-    **/
-    private $children;
-    
     /**
      * Позиция, измеренная в токенах.
     **/
@@ -22,14 +15,21 @@ abstract class Node
     **/
     private $length;
     
+    /**
+     * @var NodeCollection
+    **/
+    private $children;
+    
+    private $value;
+    
     // public //
     
-    public function __construct(Token $token = null, NodeCollection $children = null, $position, $length)
+    public function __construct($position, $length, NodeCollection $children = null, $value = null)
     {
-        $this->token    = $token;
-        $this->children = $children;
         $this->position = $position;
         $this->length   = $length;
+        $this->children = $children;
+        $this->value    = $value;
     }
     
     public function __get($name)

@@ -1,7 +1,7 @@
 <?php
 namespace Zettai\AnswerCompiler\Node;
 
-use Zettai\AnswerCompiler\Node;
+use Ob_Ivan\Compiler\Node;
 
 class Comment extends Node
 {
@@ -10,7 +10,7 @@ class Comment extends Node
         foreach ($this->children as $child) {
             if ($child instanceof CommentText) {
                 $text = $child->build();
-                return '<a href="javascript:void(0)" title="' . htmlcharacters($text) . '"><sup>[*]</sup></a>';
+                return '<a href="javascript:void(0)" title="' . htmlspecialchars($text) . '"><sup>[*]</sup></a>';
             }
         }
     }

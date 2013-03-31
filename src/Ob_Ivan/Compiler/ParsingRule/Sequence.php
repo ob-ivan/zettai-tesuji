@@ -1,34 +1,34 @@
 <?php
 namespace Ob_Ivan\Compiler\ParsingRule;
 
+use Ob_Ivan\Compiler\Grammar;
 use Ob_Ivan\Compiler\ParsingRule;
 
 class Sequence extends ParsingRule
 {
-    private $ruleName;
-    
     /**
-     *  @var [<ParsingRule>]
+     *  @var [<ruleName>]
     **/
     private $components;
     
-    public function __construct(array $components)
+    public function __construct(Grammar $grammar, array $components)
     {
-        $this->components = $components;
+        parent::__construct($grammar);
+        $this->components   = $components;
     }
     
-    public function parseExisting(array $tokens, $position, $nodeClass = null)
+    public function parseExisting(array $tokens, $position, $nodeType = null)
     {
         $offset = 0;
         $children = [];
-        foreach ($this->components as $subRule) {
-            $subNode = $subRule->parse($tokens, $position + $offset);
+        foreach ($this->components as $ruleName) {
+            $subNode = $this->grammar->getRule($ruleName)->parse($tokens, $position + $offset, $ruleName);
             if (! $subNode) {
                 return null;
             }
             $children[] = $subNode;
             $offset += $subNode->length;
         }
-        return $this->produceNode($nodeClass, null, $children, $position, $offset);
+        return $this->produceNode($nodeType, $position, $offset, $children);
     }
 }

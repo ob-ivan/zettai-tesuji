@@ -21,16 +21,14 @@
 namespace Zettai\AnswerCompiler;
 
 use Ob_Ivan\Compiler\Lexer;
-use Ob_Ivan\Compiler\ParserFactory;
-use Ob_Ivan\Compiler\ParsingRule;
-use Ob_Ivan\Compiler\ParsingRuleSet;
+use Ob_Ivan\Compiler\Grammar;
 
 class Service
 {
     // var //
     
     private $lexingRules;
-    private $parsingRules;
+    private $grammar;
     
     // public //
     
@@ -43,38 +41,21 @@ class Service
             '[^(*)]'    => TokenType::NON_SPECIAL_CHARACTER,
         ];
         
-        $ruleSet = new ParsingRuleSet;
-        $ruleSet->addRules([
-            'CommentCharacter' => new ParsingRule\OrderedChoice([
-                new ParsingRule\Terminal(TokenType::PARENTHESIS_OPEN),
-                new ParsingRule\Terminal(TokenType::ASTERISK),
-                new ParsingRule\Terminal(TokenType::NON_SPECIAL_CHARACTER),
-            ]),
-            'AnyCharacter' => new ParsingRule\OrderedChoice([
-                new ParsingRule\Terminal(TokenType::PARENTHESIS_OPEN),
-                new ParsingRule\Terminal(TokenType::ASTERISK),
-                new ParsingRule\Terminal(TokenType::PARENTHESIS_CLOSE),
-                new ParsingRule\Terminal(TokenType::NON_SPECIAL_CHARACTER),
-            ]),
-            'CommentText' => new ParsingRule\ZeroOrMore(
-                new ParsingRule\Nonterminal($ruleSet, 'CommentCharacter')
-            ),
-            'Comment' => new ParsingRule\Sequence([
-                new ParsingRule\Terminal(TokenType::PARENTHESIS_OPEN),
-                new ParsingRule\Terminal(TokenType::ASTERISK),
-                new ParsingRule\Nonterminal($ruleSet, 'CommentText'),
-                new ParsingRule\Terminal(TokenType::PARENTHESIS_CLOSE),
-            ]),
-            'Block' => new ParsingRule\OrderedChoice([
-                new ParsingRule\Nonterminal($ruleSet, 'Comment'),
-                new ParsingRule\Nonterminal($ruleSet, 'AnyCharacter'),
-            ]),
-            'Text' => new ParsingRule\ZeroOrMore(
-                new ParsingRule\Nonterminal($ruleSet, 'Block')
-            ),
-        ]);
-        
-        $this->parserFactory = new ParserFactory($ruleSet, new NodeFactory);
+        // NEW
+        $grammar = new Grammar(new NodeFactory);
+        $grammar->setRule('PARENTHESIS_OPEN',       $grammar->terminal(TokenType::PARENTHESIS_OPEN));
+        $grammar->setRule('ASTERISK',               $grammar->terminal(TokenType::ASTERISK));
+        $grammar->setRule('PARENTHESIS_CLOSE',      $grammar->terminal(TokenType::PARENTHESIS_CLOSE));
+        $grammar->setRule('NON_SPECIAL_CHARACTER',  $grammar->terminal(TokenType::NON_SPECIAL_CHARACTER));
+        $grammar->setRule('CommentCharacter',       $grammar->orderedChoice('PARENTHESIS_OPEN', 'ASTERISK', 'NON_SPECIAL_CHARACTER'));
+        $grammar->setRule('AnyCharacter',           $grammar->orderedChoice(
+            'PARENTHESIS_OPEN', 'ASTERISK', 'PARENTHESIS_CLOSE', 'NON_SPECIAL_CHARACTER'
+        ));
+        $grammar->setRule('CommentText',            $grammar->zeroOrMore('CommentCharacter'));
+        $grammar->setRule('Comment',                $grammar->sequence('PARENTHESIS_OPEN', 'ASTERISK', 'CommentText', 'PARENTHESIS_CLOSE'));
+        $grammar->setRule('Block',                  $grammar->orderedChoice('Comment', 'AnyCharacter'));
+        $grammar->setRule('Text',                   $grammar->zeroOrMore('Block'));
+        $this->grammar = $grammar;
     }
     
     public function compile($source)
@@ -88,7 +69,7 @@ class Service
     
     private function parse(array $tokens)
     {
-        return $this->parserFactory->produce($tokens)->parse('Text');
+        return $this->grammar->produceParser($tokens)->parse('Text');
     }
     
     /**

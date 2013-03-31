@@ -5,21 +5,19 @@ class Parser
 {
     // var //
     
+    private $grammar;
     private $tokens;
-    private $ruleSet;
-    private $nodeFactory;
     
     // public //
     
-    public function __construct(array $tokens, ParsingRuleSet $ruleSet, NodeFactoryInterface $nodeFactory)
+    public function __construct(Grammar $grammar, array $tokens)
     {
-        $this->tokens       = $tokens;
-        $this->ruleSet      = $ruleSet;
-        $this->nodeFactory  = $nodeFactory;
+        $this->grammar  = $grammar;
+        $this->tokens   = $tokens;
     }
     
     public function parse($ruleName, $position = 0)
     {
-        return $this->ruleSet[$ruleName]->parse($this->tokens, $position, $ruleName);
+        return $this->grammar->getRule($ruleName)->parse($this->tokens, $position, $ruleName);
     }
 }

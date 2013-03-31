@@ -1,12 +1,15 @@
 <?php
 namespace Ob_Ivan\Compiler;
 
-use Zettai\AnswerCompiler\Node;
-use Zettai\AnswerCompiler\NodeCollection;
-use Zettai\AnswerCompiler\Token;
-
 abstract class ParsingRule implements ParsingRuleInterface
 {
+    protected $grammar;
+    
+    public function __construct(Grammar $grammar)
+    {
+        $this->grammar = $grammar;
+    }
+    
     public function parse(array $tokens, $position, $nodeClass = null)
     {
         if (! isset($tokens[$position])) {
@@ -19,7 +22,7 @@ abstract class ParsingRule implements ParsingRuleInterface
     
     abstract protected function parseExisting(array $tokens, $position, $nodeClass = null);
     
-    protected function produceNode($nodeClass, Token $token = null, array $children = null, $position, $length)
+    protected function produceNode($nodeClass, $position, $length, array $children = null, $value = null)
     {
         $collection = new NodeCollection;
         if ($children) {
@@ -27,6 +30,6 @@ abstract class ParsingRule implements ParsingRuleInterface
                 $collection->append($child);
             }
         }
-        return Node::produce($nodeClass, $token, $collection, $position, $length);
+        return $this->grammar->produceNode($nodeClass, $position, $length, $collection, $value);
     }
 }
