@@ -3,11 +3,13 @@ namespace Zettai;
 
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Application as BaseApplication;
+use Zettai\Provider\ModelServiceProvider;
 
 class Application extends BaseApplication
 {
     // include //
     
+    use BaseApplication\MonologTrait;
     use BaseApplication\TwigTrait;
     use BaseApplication\UrlGeneratorTrait;
     
@@ -52,9 +54,6 @@ class Application extends BaseApplication
     
     private function registerModel()
     {
-        $app = $this;
-        $this['model'] = $this->share(function () use ($app) {
-            return new Model($app['db']);
-        });
+        $this->register(new ModelServiceProvider());
     }
 }

@@ -1,6 +1,5 @@
-composer.lock
 config/config.yml
 deploy.sh
-dummy.lock
+deploy.lock
 log
 vendor

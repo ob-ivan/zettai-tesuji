@@ -9,7 +9,7 @@
  *  - При выводе формы вставляем токен:
  *      <input type="hidden" name="csrf" value="{{ csrfHandler.generate('operation_name_' ~ operation_id) }}"/>
  *  - В обработчике формы сравниваем токен с ранее сохранённым:
- *      if (! $csrfHandler->validate ($request->request->get('csrf'), 'operation_name_' . $operation_id)) {
+ *      if (! $csrfHandler->validate($request->request->get('csrf'), 'operation_name_' . $operation_id)) {
  *          throw new Exception('Попытка взлома');
  *      }
 **/
@@ -33,6 +33,9 @@ class CsrfHandler
     
     /**
      * Порождает хэш для вывода в форму.
+     *
+     *  @param  string  $seed   Значение, с которым сравнивать при валидации.
+     *  @return string          Хэш, который выводить на страницу и получать обратно в запросе.
     **/
     public function generate($seed)
     {
@@ -43,8 +46,11 @@ class CsrfHandler
     }
     
     /**
-     * Проверяет, соответствует ли переданный формой хэш
-     * ранее сохранённому значению.
+     * Проверяет, соответствует ли переданный формой хэш ранее сохранённому значению.
+     *
+     *  @param  string  $csrf   Выведенный на страницу и полученный при запросе хэш.
+     *  @param  string  $test   Значение, переданное при генерации.
+     *  @return boolean         Соответствует ли хэш сохранённому значению.
     **/
     public function validate($csrf, $test)
     {

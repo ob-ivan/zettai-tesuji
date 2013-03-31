@@ -1,29 +1,56 @@
 {#
     Подключаемый шаблон для вывода пагинации.
     На входе должен иметь параметры:
-    {
-        'totalCount'    :
-        'perPage'       :
-        'curPage'       :
-        'linkTemplate'  :
-    }
+        totalCount      Общее количество предметов в списке.
+        perPage         Количество предметов для вывода на одной странице.
+        curPage         Номер текущей страницы.
+        adjacentPages   Количество соседних страниц, которые выводить без сокращения.
+        linkTemplate    Имя ссылки в таблице рутинга, на которую ведёт номер страницы.
 #}
+{% import _self as paginator %}
+
+{% macro link(linkTemplate, page) %}
+    <a href="{{ path(linkTemplate, { 'page' : page }) }}">{{ page }}</a>
+{% endmacro %}
+
 {% if totalCount > perPage %}
-    {# На предыдущую страницу #}
+    {# Предыдущие страницы #}
     {% if curPage > 1 %}
-        {% if curPage > 2%}
-            ...
+        {% if curPage > adjacentPages + 1 %}
+            {{ paginator.link(linkTemplate, 1) }}
+            {% if curPage > adjacentPages + 3 %}
+                &hellip;
+            {% elseif curPage > adjacentPages + 2 %}
+                {{ paginator.link(linkTemplate, 2) }}
+            {% endif %}
         {% endif %}
-        <a href="{{ path(linkTemplate, { 'page' : curPage - 1 }) }}">{{ curPage - 1 }}</a>
+        {% if adjacentPages > 0 %}
+            {% set fromPage = max(1, curPage - adjacentPages) %}
+            {% for page in fromPage .. curPage - 1 %}
+                {{ paginator.link(linkTemplate, page) }}
+            {% endfor %}
+        {% endif %}
     {% endif %}
+    
     {# Текущая страница #}
     <b>{{ curPage }}</b>
-    {# На следующую страницу #}
-    {% set totalPages = ceil(totalCount / perPage) %}
-    {% if curPage < totalPages %}
-        <a href="{{ path(linkTemplate, { 'page' : curPage + 1 }) }}">{{ curPage + 1 }}</a>
-        {% if curPage < totalPages - 1 %}
-            ...
+    
+    {# Следующие страницы #}
+    {% set lastPage = ceil(totalCount / perPage) %}
+    {% if curPage < lastPage %}
+        {% if adjacentPages > 0 %}
+            {% set toPage = min(curPage + adjacentPages, lastPage) %}
+            {% for page in curPage + 1 .. toPage %}
+                {{ paginator.link(linkTemplate, page) }}
+            {% endfor %}
+        {% endif %}
+        {% if curPage < lastPage - adjacentPages %}
+            {% if curPage < lastPage - adjacentPages - 2 %}
+                &hellip;
+            {% elseif curPage < lastPage - adjacentPages - 1 %}
+                {{ paginator.link(linkTemplate, lastPage - 1) }}
+            {% endif %}
+            {{ paginator.link(linkTemplate, lastPage) }}
         {% endif %}
     {% endif %}
 {% endif %}

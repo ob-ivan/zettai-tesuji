@@ -11,7 +11,9 @@ class TypeServiceProvider implements ServiceProviderInterface
     
     public function register(Application $app)
     {
-        $app['types'] = new TypeService();
+        $app['types'] = $app->share(function () {
+            return new TypeService();
+        });
     }
     
     public function boot(Application $app)
