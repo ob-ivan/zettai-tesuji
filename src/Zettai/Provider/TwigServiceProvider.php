@@ -19,6 +19,9 @@ class TwigServiceProvider implements ServiceProviderInterface
 
             // фильтры : обычные //
             
+            $twig->addFilter(new Twig_SimpleFilter('answer', function ($source) use ($app) {
+                return $app['answer_compiler']->compile($source);
+            }));
             $twig->addFilter(new Twig_SimpleFilter('lpad', function ($input, $char, $length) {
                 return str_pad($input, $length, $char, STR_PAD_LEFT);
             }));
