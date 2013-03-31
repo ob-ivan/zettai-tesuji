@@ -5,8 +5,4 @@ use Ob_Ivan\Compiler\Node;
 
 class Terminal extends Node
 {
-    public function build()
-    {
-        return '';
-    }
 }
