@@ -34,13 +34,26 @@ class Grammar
         $this->nodeFactory = $nodeFactory;
     }
     
-    public function parse(TokenStream $stream, $ruleName)
+    /**
+     *  @param  TokenStream             $stream
+     *  @param  string | ParsingRule    $rule
+     *  @return null | Node
+    **/
+    public function parse(TokenStream $stream, $rule)
     {
-        return $this->getRule($ruleName)->parse($stream, $ruleName);
+        if ($rule instanceof ParsingRule) {
+            return $rule->parse($stream, NodeType::fragment());
+        }
+        return $this->getRule($rule)->parse($stream, $rule);
     }
     
     public function produceNode($nodeType, $position, $length, NodeCollection $collection, $value = null)
     {
+        if ($nodeType instanceof NodeType) {
+            if ($nodeType === NodeType::fragment()) {
+                return new Node\Fragment($position, $length, $collection, $value);
+            }
+        }
         return $this->nodeFactory->produce($nodeType, $position, $length, $collection, $value);
     }
     

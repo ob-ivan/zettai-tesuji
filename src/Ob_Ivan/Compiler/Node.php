@@ -39,6 +39,4 @@ abstract class Node
         }
         throw new Exception('Unknown field "' . $name . '"', Exception::NODE_GET_NAME_UNKNOWN);
     }
-    
-    abstract public function build();
 }

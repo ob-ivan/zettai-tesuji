@@ -8,22 +8,22 @@ use Ob_Ivan\Compiler\TokenStream;
 class Sequence extends ParsingRule
 {
     /**
-     *  @var [<ruleName>]
+     *  @var [<string ruleName | ParsingRule rule>]
     **/
     private $components;
     
     public function __construct(Grammar $grammar, array $components)
     {
         parent::__construct($grammar);
-        $this->components   = $components;
+        $this->components = $components;
     }
     
     public function parseExisting(TokenStream $stream, $nodeType = null)
     {
         $offset = 0;
         $children = [];
-        foreach ($this->components as $ruleName) {
-            $subNode = $this->grammar->parse($stream->offset($offset), $ruleName);
+        foreach ($this->components as $rule) {
+            $subNode = $this->grammar->parse($stream->offset($offset), $rule);
             if (! $subNode) {
                 return null;
             }

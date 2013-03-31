@@ -26,26 +26,18 @@ class NodeCollection implements ArrayAccess, IteratorAggregate
     
     public function offsetSet($offset, $value)
     {
-        if ($this->isFrozen) {
-            throw new Exception('Cannot add values to a frozen collection', Exception::NODE_COLLECTION_IS_FROZEN);
-        }
-        if (! $value instanceof Node) {
-            throw new Exception(
-                'Value must implement Node',
-                Exception::NODE_COLLECTION_OFFSET_SET_VALUE_TYPE_WRONG
-            );
-        }
-        
-        // TODO: Если value -- узел-пустышка, вобрать его потомков.
-        $this->nodes[$offset] = $value;
+        throw new Exception(
+            'Setting explicit offsets is not allowed; use append() instead',
+            Exception::NODE_COLLECTION_OFFSET_SET_PROHIBITED
+        );
     }
     
     public function offsetUnset($offset)
     {
-        if ($this->isFrozen) {
-            throw new Exception('Cannot unset in a frozen collection', Exception::NODE_COLLECTION_IS_FROZEN);
-        }
-        unset($this->nodes[$offset]);
+        throw new Exception(
+            'Unsetting offsets is not allowed',
+            Exception::NODE_COLLECTION_OFFSET_UNSET_PROHIBITED
+        );
     }
     
     // public : IteratorAggregate //
@@ -57,13 +49,30 @@ class NodeCollection implements ArrayAccess, IteratorAggregate
     
     // public : NodeCollection //
     
+    public static function fromArray(array $array = null)
+    {
+        $collection = new self;
+        if ($array) {
+            foreach ($array as $node) {
+                $collection->append($node);
+            }
+        }
+        $collection->freeze();
+        return $collection;
+    }
+    
     public function append(Node $node)
     {
         if ($this->isFrozen) {
             throw new Exception('Cannot append to a frozen collection', Exception::NODE_COLLECTION_IS_FROZEN);
         }
-        // TODO: Если node -- узел-пустышка, вобрать его потомков.
-        $this->nodes[] = $node;
+        if ($node instanceof Node\Fragment) {
+            foreach ($node->children as $child) {
+                $this->append($child);
+            }
+        } else {
+            $this->nodes[] = $node;
+        }
     }
     
     public function freeze()

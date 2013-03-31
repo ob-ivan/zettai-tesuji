@@ -7,11 +7,12 @@ class Comment extends Node
 {
     public function build()
     {
+        $text = [];
         foreach ($this->children as $child) {
-            if ($child instanceof CommentText) {
-                $text = $child->build();
-                return '<a href="javascript:void(0)" title="' . htmlspecialchars($text) . '"><sup>[*]</sup></a>';
+            if ($child instanceof CommentCharacter) {
+                $text[] = $child->build();
             }
         }
+        return '<a href="javascript:void(0)" title="' . htmlspecialchars(implode('', $text)) . '"><sup>[*]</sup></a>';
     }
 }
