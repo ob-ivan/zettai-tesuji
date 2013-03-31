@@ -105,7 +105,7 @@ class Site implements ControllerProviderInterface
             $answers[$letter] = [
                 // TODO: Устранить дублирование с TwigServiceProvider/addFilter('tile').
                 'discard' => $this->app['twig']->render('_tile.twig', ['tiles' => $answer['discard']]),
-                'comment' => $answer['comment'],
+                'comment' => $this->app['answer_compiler']->compile($answer['comment']),
             ];
         }
         $nextId = $this->app['model']->exercise->getNextId($exercise_id);
