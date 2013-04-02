@@ -21,15 +21,16 @@ class TypeServiceProvider implements ServiceProviderInterface
         $typeService = $app['types'];
         
         $typeService->register('roundWind', function ($typeService) {
-            return $typeService->enum(['east', 'south'])
-            ->view
-                ->register('english', 'dictionary', ['east',   'south'])
-                ->register('e',       'dictionary', ['e',      's'    ])
-                ->register('russian', 'dictionary', ['восток', 'юг'   ])
-                ->register('r',       'dictionary', ['в',      'ю'    ])
-                ->register('tenhou',  'dictionary', ['1z',     '2z'   ])
-                ->register('tile', 'cast', 'tenhou', 'tile', 'tenhou')
-            ->type;
+            $type = $typeService->enum(['east', 'south']);
+            $type->view->register([
+                'english' => $type->view->dictionary(['east',   'south']),
+                'e'       => $type->view->dictionary(['e',      's'    ]),
+                'russian' => $type->view->dictionary(['восток', 'юг'   ]),
+                'r'       => $type->view->dictionary(['в',      'ю'    ]),
+                'tenhou'  => $type->view->dictionary(['1z',     '2z'   ]),
+                'tile'    => $type->view->cast('tenhou', 'tile', 'tenhou'),
+            ]);
+            return $type;
         });
         $typeService->register('squareWind', function ($typeService) {
             return $typeService->enum(['west', 'north'])

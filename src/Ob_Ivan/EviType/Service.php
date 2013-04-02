@@ -49,4 +49,14 @@ class Service implements ServiceInterface
         $this->container = new TypeContainer();
         $this->factory   = new TypeFactory();
     }
+    
+    public function __get($name)
+    {
+        return $this[$name];
+    }
+    
+    public function __call($name, $args)
+    {
+        return $this->factory->produce($name, $args);
+    }
 }
