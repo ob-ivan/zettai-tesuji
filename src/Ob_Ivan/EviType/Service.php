@@ -31,10 +31,10 @@ class Service implements ServiceInterface
             if (! isset($this->registry[$offset])) {
                 throw new Exception(
                     'Unknown type "' . $offset . '"',
-                    Exception::TYPE_CONTAINER_OFFSET_GET_OFFSET_UNKNOWN
+                    Exception::SERVICE_OFFSET_GET_OFFSET_UNKNOWN
                 );
             }
-            $this->types[$offset] = $this->registry[$offset]($this);
+            $this[$offset] = $this->registry[$offset]($this);
         }
         return $this->types[$offset];
     }
@@ -44,13 +44,13 @@ class Service implements ServiceInterface
         if (isset($this[$name])) {
             throw new Exception(
                 'Type "' . $name . '" already exists',
-                Exception::TYPE_CONTAINER_REGISTER_NAME_ALREADY_EXISTS
+                Exception::SERVICE_OFFSET_SET_NAME_ALREADY_EXISTS
             );
         }
         if (! $value instanceof TypeInterface) {
             throw new Exception(
                 'Value for offset "' . $offset . '" must implement TypeInterface',
-                Exception::TYPE_CONTAINER_OFFSET_SET_VALUE_WRONG_TYPE
+                Exception::SERVICE_OFFSET_SET_VALUE_WRONG_TYPE
             );
         }
         $this->types[$offset] = $value;
@@ -60,7 +60,7 @@ class Service implements ServiceInterface
     {
         throw new Exception(
             'Unsetting types is not supported',
-            Exception::TYPE_CONTAINER_OFFSET_UNSET_UNSUPPORTED
+            Exception::SERVICE_OFFSET_UNSET_UNSUPPORTED
         );
     }
     
@@ -71,7 +71,7 @@ class Service implements ServiceInterface
         if (isset($this[$name])) {
             throw new Exception(
                 'Type "' . $name . '" already exists',
-                Exception::TYPE_CONTAINER_REGISTER_NAME_ALREADY_EXISTS
+                Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS
             );
         }
         $this->registry[$name] = $producer;

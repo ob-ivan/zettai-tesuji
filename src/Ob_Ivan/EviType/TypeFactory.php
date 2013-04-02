@@ -1,20 +1,47 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-use ArrayAccess;
-
-class TypeFactory implements ArrayAccess
+class TypeFactory
 {
     /**
-     * @var [<string name> => <Type(args...) producer>]
+     * @var [<string name> => <TypeSortInterface producer()>]
     **/
-    private $producers = [];
+    private $registry = [];
     
-    public function offsetExists($offset) {}
-    public function offsetGet($offset) {}
-    public function offsetSet($offset, $value) {}
-    public function offsetUnset($offset) {}
+    /**
+     * @var [<string name> => <TypeSortInterface typeSort>]
+    **/
+    private $sorts = [];
     
-    public function __call($name, $args) {}
-    public function __invoke($name, $args) {}
+    public function produce($name, $arguments)
+    {
+        if (! isset($this->sorts[$name])) {
+            if (! isset($this->registry[$name])) {
+                throw new Exception(
+                    'Unknown type sort "' . $name . '"',
+                    Exception::TYPE_FACTORY_PRODUCE_NAME_UNKNOWN
+                );
+            }
+            $sort = $this->registry[$name]();
+            if (! $sort instanceof TypeSortInterface) {
+                throw new Exception(
+                    'Value for "' . $name . '" must implement TypeSortInterface',
+                    Exception::TYPE_FACTORY_PRODUCE_SORT_WRONG_TYPE
+                );
+            }
+            $this->sorts[$name] = $sort;
+        }
+        return $this->sorts[$name]->produce($arguments);
+    }
+    
+    public function register($name, callable $producer)
+    {
+        if (isset($this->sorts[$name]) || isset($this->registry[$name])) {
+            throw new Exception(
+                'Type sort "' . $name . '" already exists',
+                Exception::TYPE_FACTORY_REGISTRY_NAME_ALREADY_EXISTS
+            );
+        }
+        $this->registry[$name] = $producer;
+    }
 }
