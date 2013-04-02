@@ -4,50 +4,89 @@ namespace Ob_Ivan\EviType;
 class Service implements ServiceInterface
 {
     /**
-     * @var TypeContainer
-    **/
-    private $container;
-    
-    /**
      * @var TypeFactory
     **/
     private $factory;
+    
+    /**
+     * @var [<string name> => <Type type>]
+    **/
+    private $registry = [];
+    
+    /**
+     * @var [<string name> => <Type(args...) producer>]
+    **/
+    private $types    = [];
     
     // public : ArrayAccess //
     
     public function offsetExists($offset)
     {
-        return $this->container->offsetExists($offset);
+        return isset($this->types[$offset]) || isset($this->registry[$offset]);
     }
     
     public function offsetGet($offset)
     {
-        return $this->container->offsetGet($offset);
+        if (! isset($this->types[$offset])) {
+            if (! isset($this->registry[$offset])) {
+                throw new Exception(
+                    'Unknown type "' . $offset . '"',
+                    Exception::TYPE_CONTAINER_OFFSET_GET_OFFSET_UNKNOWN
+                );
+            }
+            $this->types[$offset] = $this->registry[$offset]($this);
+        }
+        return $this->types[$offset];
     }
     
     public function offsetSet($offset, $value)
     {
-        return $this->container->offsetSet($offset, $value);
+        if (isset($this[$name])) {
+            throw new Exception(
+                'Type "' . $name . '" already exists',
+                Exception::TYPE_CONTAINER_REGISTER_NAME_ALREADY_EXISTS
+            );
+        }
+        if (! $value instanceof TypeInterface) {
+            throw new Exception(
+                'Value for offset "' . $offset . '" must implement TypeInterface',
+                Exception::TYPE_CONTAINER_OFFSET_SET_VALUE_WRONG_TYPE
+            );
+        }
+        $this->types[$offset] = $value;
     }
     
     public function offsetUnset($offset)
     {
-        return $this->container->offsetUnset($offset);
+        throw new Exception(
+            'Unsetting types is not supported',
+            Exception::TYPE_CONTAINER_OFFSET_UNSET_UNSUPPORTED
+        );
     }
     
     // public : ServiceInterface //
     
     public function register($name, callable $producer)
     {
-        return $this->container->register($name, $producer);
+        if (isset($this[$name])) {
+            throw new Exception(
+                'Type "' . $name . '" already exists',
+                Exception::TYPE_CONTAINER_REGISTER_NAME_ALREADY_EXISTS
+            );
+        }
+        $this->registry[$name] = $producer;
     }
     
     // public : Service //
     
     public function __construct()
     {
-        $this->container = new TypeContainer();
-        $this->factory   = new TypeFactory();
+        $this->factory = new TypeFactory();
+    }
+    
+    public function __call($name, $args)
+    {
+        return $this->factory->produce($name, $args);
     }
     
     public function __get($name)
@@ -55,8 +94,8 @@ class Service implements ServiceInterface
         return $this[$name];
     }
     
-    public function __call($name, $args)
+    public function __isset($name)
     {
-        return $this->factory->produce($name, $args);
+        return isset($this[$name]);
     }
 }
