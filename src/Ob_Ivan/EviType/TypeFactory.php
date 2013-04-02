@@ -34,14 +34,29 @@ class TypeFactory
         return $this->sorts[$name]->produce($arguments);
     }
     
-    public function register($name, callable $producer)
+    /**
+     * Регистрирует один или несколько сортов типа.
+     *
+     *  @param  string              $name
+     *  @param  TypeSortInterface() $producer
+     * OR
+     *  @param  [string => TypeSortInterface()] $producerMap
+    **/
+    public function register($name, callable $producer = null)
     {
-        if (isset($this->sorts[$name]) || isset($this->registry[$name])) {
-            throw new Exception(
-                'Type sort "' . $name . '" already exists',
-                Exception::TYPE_FACTORY_REGISTRY_NAME_ALREADY_EXISTS
-            );
+        if (is_array($name)) {
+            foreach ($name as $sortName => $producer) {
+                $this->register($sortName, $producer);
+            }
+        } else {
+            if (isset($this->sorts[$name]) || isset($this->registry[$name])) {
+                throw new Exception(
+                    'Type sort "' . $name . '" already exists',
+                    Exception::TYPE_FACTORY_REGISTRY_NAME_ALREADY_EXISTS
+                );
+            }
+            $this->registry[$name] = $producer;
         }
-        $this->registry[$name] = $producer;
+        return $this;
     }
 }

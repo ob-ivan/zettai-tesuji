@@ -9,14 +9,9 @@ class Type implements TypeInterface
     private $sort;
     
     /**
-     * @var ViewContainer
+     * @var ViewService
     **/
-    private $views;
-    
-    /**
-     * @var ViewFactory
-    **/
-    private $viewFactory;
+    private $view;
     
     public function __construct(TypeSortInterface $sort)
     {

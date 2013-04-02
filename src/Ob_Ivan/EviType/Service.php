@@ -66,15 +66,32 @@ class Service implements ServiceInterface
     
     // public : ServiceInterface //
     
-    public function register($name, callable $producer)
+    /**
+     * Регистрирует один или несколько производителей типов.
+     *
+     *  @param  string              $name
+     *  @param  TypeInterface(self) $producer
+     * OR
+     *  @param  [string => TypeInterface(self)] $producerMap
+     *
+     *  @return self
+    **/
+    public function register($name, callable $producer = null)
     {
-        if (isset($this[$name])) {
-            throw new Exception(
-                'Type "' . $name . '" already exists',
-                Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS
-            );
+        if (is_array($name)) {
+            foreach ($name as $typeName => $producer) {
+                $this->register($typeName, $producer);
+            }
+        } else {
+            if (isset($this[$name])) {
+                throw new Exception(
+                    'Type "' . $name . '" already exists',
+                    Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS
+                );
+            }
+            $this->registry[$name] = $producer;
         }
-        $this->registry[$name] = $producer;
+        return $this;
     }
     
     // public : Service //
@@ -82,6 +99,18 @@ class Service implements ServiceInterface
     public function __construct()
     {
         $this->factory = new TypeFactory();
+        
+        // Стандартные типы.
+        // $this->register('boolean', function () { ? });
+        // $this->register('integer', function () { ? });
+        // $this->register('string',  function () { ? });
+        
+        // Стандартные сорта.
+        $this->factory->register([
+            'enum'      => function () { return new TypeSort\Enum;    },
+            'product'   => function () { return new TypeSort\Product; },
+            'union'     => function () { return new TypeSort\Union;   },
+        ]);
     }
     
     public function __call($name, $args)
