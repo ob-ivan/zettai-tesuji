@@ -19,4 +19,12 @@ interface TypeSortInterface
      *  @return Type
     **/
     public function produce(array $arguments);
+    
+    /**
+     * Конструирует стандартный для этого сорта сервис представлений.
+     *
+     *  @param  Type        $type
+     *  @return ViewService
+    **/
+    public function view(Type $type);
 }

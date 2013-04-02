@@ -22,7 +22,7 @@ class TypeServiceProvider implements ServiceProviderInterface
         
         $typeService->register('roundWind', function ($typeService) {
             $type = $typeService->enum(['east', 'south']);
-            $type->register([
+            $type->view->register([
                 'english' => $type->view->dictionary(['east',   'south']),
                 'e'       => $type->view->dictionary(['e',      's'    ]),
                 'russian' => $type->view->dictionary(['восток', 'юг'   ]),
@@ -53,13 +53,17 @@ class TypeServiceProvider implements ServiceProviderInterface
             ->type;
         });
         $typeService->register('kyoku', function ($typeService) {
-            return $typeService->product($typeService['roundWind'], range(1, 4))
-            ->view
-                ->register('english',   'separator', '-', ['english',   'default'])
-                ->register('e',         'concat',         ['e',         'default'])
-                ->register('russian',   'separator', '-', ['russian',   'default'])
-                ->register('r',         'concat',         ['r',         'default'])
-            ->type;
+            $type = $typeService->product(
+                $typeService['roundWind'],
+                $typeService->enum(range(1, 4))
+            );
+            $type->view->register([
+                ['english',   'separator', '-', ['english',   'default']],
+                ['e',         'concat',         ['e',         'default']],
+                ['russian',   'separator', '-', ['russian',   'default']],
+                ['r',         'concat',         ['r',         'default']],
+            ]);
+            return $type;
         });
     }
     

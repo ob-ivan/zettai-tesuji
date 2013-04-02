@@ -3,14 +3,14 @@ namespace Ob_Ivan\EviType\TypeSort;
 
 use Ob_Ivan\EviType\Type;
 use Ob_Ivan\EviType\TypeSortInterface;
+use Ob_Ivan\EviType\ViewService;
 
 class Enum implements TypeSortInterface
 {
     public function produce(array $arguments)
     {
-        $type = new Type($this);
+        $type = new Type($this, $arguments);
         
-        /*
         $type->to('Default', function ($primitive) use ($arguments) {
             return $arguments[$primitive];
         });
@@ -21,7 +21,6 @@ class Enum implements TypeSortInterface
             }
             return $primitive;
         });
-        */
         
         return $type;
     }
@@ -33,5 +32,11 @@ class Enum implements TypeSortInterface
                 // TODO
                 break;
         }
+    }
+    
+    public function view(Type $type)
+    {
+        $viewService = new ViewService($type);
+        return $viewService;
     }
 }
