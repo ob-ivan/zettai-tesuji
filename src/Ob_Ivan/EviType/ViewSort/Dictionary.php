@@ -16,4 +16,13 @@ class Dictionary implements ViewSortInterface
     {
         return function () use ($arguments) { return new View($this, $arguments); };
     }
+
+    public function from(array $arguments, $presentation)
+    {
+        foreach ($arguments as $index => $value) {
+            if ($presentation === $value) {
+                // TODO: Кто инстанциирует Value и как?
+            }
+        }
+    }
 }

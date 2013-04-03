@@ -4,10 +4,10 @@ namespace Ob_Ivan\EviType;
 interface ViewSortInterface
 {
     /**
-     * Конструирует представление с заданными параметрами.
+     * Возвращает производитель представления с заданными параметрами.
      *
      *  @param  array           $arguments
-     *  @return ViewInterface
+     *  @return ViewInterface()
     **/
     public function produce(array $arguments);
 
