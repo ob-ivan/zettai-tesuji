@@ -1,6 +1,8 @@
 <?php
 namespace Ob_Ivan\EviType;
 
+use ArrayIterator;
+
 class ViewService implements ViewServiceInterface
 {
     // var //
@@ -9,11 +11,6 @@ class ViewService implements ViewServiceInterface
      * @var ViewFactory
     **/
     private $factory;
-
-    /**
-     * @var ViewFactory
-    **/
-    private $fallback;
 
     /**
      * @var [<string name> => <ViewInterface(self) producer>]
@@ -25,13 +22,13 @@ class ViewService implements ViewServiceInterface
     **/
     private $views = [];
 
-    // public //
+    // public : ArrayAccess //
 
     public function offsetExists($offset)
     {
         return isset($this->views[$offset]) ||
             isset($this->registry[$offset]) ||
-            $this->fallback->has($offset);
+            $this->factory->has($offset);
     }
 
     public function offsetGet($offset)
@@ -59,7 +56,7 @@ class ViewService implements ViewServiceInterface
         if (! $value instanceof ViewInterface) {
             throw new Exception(
                 'Value for offset "' . $offset . '" must implement ViewInterface',
-                Exception::VIEWSERVICE_OFFSET_SET_VALUE_WRONG_TYPE
+                Exception::VIEW_SERVICE_OFFSET_SET_VALUE_WRONG_TYPE
             );
         }
         $this->types[$offset] = $value;
@@ -71,6 +68,13 @@ class ViewService implements ViewServiceInterface
             'Unsetting views is not supported',
             Exception::VIEW_SERVICE_OFFSET_UNSET_UNSUPPORTED
         );
+    }
+
+    // public : IteratorAggregate //
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->views);
     }
 
     // public : ViewServiceInterface //
@@ -105,19 +109,15 @@ class ViewService implements ViewServiceInterface
 
     // public //
 
-    public function __construct(ViewFactory $fallback = null)
+    public function __construct(ViewFactory $factory = null)
     {
-        $this->factory  = new ViewFactory();
-        $this->fallback = $fallback;
+        $this->factory = $factory;
     }
 
     public function __call($name, $args)
     {
         if ($this->factory->has($name)) {
             return $this->factory->produce($name, $args);
-        }
-        if ($this->fallback->has($name)) {
-            return $this->fallback->produce($name, $args);
         }
         throw new Exception(
             'Unknown view sort "' . $name . '"',
