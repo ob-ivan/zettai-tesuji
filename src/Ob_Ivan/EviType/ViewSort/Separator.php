@@ -12,8 +12,8 @@ class Separator implements ViewSortInterface
      *  @param  array   $arguments
      *  @return View()
     **/
-    public function produce($arguments)
+    public function produce(array $arguments)
     {
-        return function () use ($arguments) { return new View($arguments); };
+        return function () use ($arguments) { return new View($this, $arguments); };
     }
 }

@@ -40,7 +40,7 @@ class ViewService implements ViewServiceInterface
                     Exception::VIEW_SERVICE_OFFSET_GET_OFFSET_UNKNOWN
                 );
             }
-            $this[$offset] = $this->registry[$offset]();
+            $this->set($offset, $this->registry[$offset]());
         }
         return $this->views[$offset];
     }
@@ -53,13 +53,7 @@ class ViewService implements ViewServiceInterface
                 Exception::VIEW_SERVICE_OFFSET_SET_NAME_ALREADY_EXISTS
             );
         }
-        if (! $value instanceof ViewInterface) {
-            throw new Exception(
-                'Value for offset "' . $offset . '" must implement ViewInterface',
-                Exception::VIEW_SERVICE_OFFSET_SET_VALUE_WRONG_TYPE
-            );
-        }
-        $this->types[$offset] = $value;
+        $this->set($offset, $value);
     }
 
     public function offsetUnset($offset)
@@ -74,6 +68,11 @@ class ViewService implements ViewServiceInterface
 
     public function getIterator()
     {
+        foreach ($this->registry as $name => $producer) {
+            if (! isset($this->views[$name])) {
+                $this->set($name, $this->registry[$name]());
+            }
+        }
         return new ArrayIterator($this->views);
     }
 
@@ -133,5 +132,19 @@ class ViewService implements ViewServiceInterface
     public function __isset($name)
     {
         return isset($this[$name]);
+    }
+
+    // private //
+
+    private function set($offset, $value)
+    {
+        if (! $value instanceof ViewInterface) {
+            die; // debug
+            throw new Exception(
+                'Value for offset "' . $offset . '" must implement ViewInterface',
+                Exception::VIEW_SERVICE_SET_VALUE_WRONG_TYPE
+            );
+        }
+        $this->views[$offset] = $value;
     }
 }

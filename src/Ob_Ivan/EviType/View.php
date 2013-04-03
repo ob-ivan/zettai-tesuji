@@ -1,7 +1,7 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-class View
+class View implements ViewInterface
 {
     private $arguments;
 
@@ -14,5 +14,15 @@ class View
     {
         $this->sort      = $sort;
         $this->arguments = $arguments;
+    }
+
+    public function from($presentation)
+    {
+        return $this->sort->from($this->arguments, $presentation);
+    }
+
+    public function to($internal)
+    {
+        return $this->sort->to($this->arguments, $internal);
     }
 }
