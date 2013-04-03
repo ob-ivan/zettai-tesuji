@@ -19,7 +19,8 @@ class Product implements TypeSortInterface
         $this->factory = new ViewFactory();
 
         $this->factory->register([
-            // TODO
+            'concat'    => function () { return new ViewSort\Concat();    },
+            'separator' => function () { return new ViewSort\Separator(); },
         ]);
     }
 
