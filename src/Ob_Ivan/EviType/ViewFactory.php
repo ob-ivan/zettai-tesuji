@@ -13,6 +13,11 @@ class ViewFactory
     **/
     private $sorts = [];
 
+    public function has($name)
+    {
+        return isset($this->sorts[$name]) || isset($this->registry[$name]);
+    }
+
     public function produce($name, $arguments)
     {
         if (! isset($this->sorts[$name])) {
@@ -49,7 +54,7 @@ class ViewFactory
                 $this->register($sortName, $producer);
             }
         } else {
-            if (isset($this->sorts[$name]) || isset($this->registry[$name])) {
+            if ($this->has($name)) {
                 throw new Exception(
                     'View sort "' . $name . '" already exists',
                     Exception::VIEW_FACTORY_REGISTRY_NAME_ALREADY_EXISTS

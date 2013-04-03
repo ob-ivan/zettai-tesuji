@@ -11,7 +11,7 @@ class ViewService implements ViewServiceInterface
     private $factory;
 
     /**
-     * @var ViewServiceInterface
+     * @var ViewFactory
     **/
     private $fallback;
 
@@ -38,13 +38,10 @@ class ViewService implements ViewServiceInterface
     {
         if (! isset($this->views[$offset])) {
             if (! isset($this->registry[$offset])) {
-                if (! isset($this->fallback[$offset])) {
-                    throw new Exception(
-                        'Unknown view "' . $offset . '"',
-                        Exception::VIEW_SERVICE_OFFSET_GET_OFFSET_UNKNOWN
-                    );
-                }
-                return $this->fallback[$offset];
+                throw new Exception(
+                    'Unknown view "' . $offset . '"',
+                    Exception::VIEW_SERVICE_OFFSET_GET_OFFSET_UNKNOWN
+                );
             }
             $this[$offset] = $this->registry[$offset]();
         }
@@ -108,7 +105,7 @@ class ViewService implements ViewServiceInterface
 
     // public //
 
-    public function __construct(ViewServiceInterface $fallback = null)
+    public function __construct(ViewFactory $fallback = null)
     {
         $this->factory  = new ViewFactory();
         $this->fallback = $fallback;
@@ -116,7 +113,16 @@ class ViewService implements ViewServiceInterface
 
     public function __call($name, $args)
     {
-        return $this->factory->produce($name, $args);
+        if ($this->factory->has($name)) {
+            return $this->factory->produce($name, $args);
+        }
+        if ($this->fallback->has($name)) {
+            return $this->fallback->produce($name, $args);
+        }
+        throw new Exception(
+            'Unknown view sort "' . $name . '"',
+            Exception::VIEW_SERVICE_CALL_NAME_UNKNOWN
+        );
     }
 
     public function __get($name)
