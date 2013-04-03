@@ -1,5 +1,5 @@
 {
-    "hash": "bc632739cc759691d2bbea085e7bfbee",
+    "hash": "12c38170fbf08ea4fb0a6d11012ce778",
     "packages": [
         {
             "name": "andyet/Happy.js",
@@ -157,16 +157,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Seldaek/monolog",
-                "reference": "1.4.0"
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "1.4.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1.4.0",
-                "reference": "1.4.0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1.4.1",
+                "reference": "1.4.1",
                 "shasum": ""
             },
             "require": {
@@ -215,7 +215,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2013-02-13 18:06:51"
+            "time": "2013-04-01 10:04:58"
         },
         {
             "name": "pimple/pimple",
@@ -307,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Silex.git",
-                "reference": "59e7dbd338b5caba9879ae11524da4a5905f80c1"
+                "reference": "31139babedb2a4f504737d1d8c5255fca102dae2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Silex/zipball/a5cb55ced63ece76550de1599ddcc60719373594",
-                "reference": "59e7dbd338b5caba9879ae11524da4a5905f80c1",
+                "url": "https://api.github.com/repos/fabpot/Silex/zipball/31139babedb2a4f504737d1d8c5255fca102dae2",
+                "reference": "31139babedb2a4f504737d1d8c5255fca102dae2",
                 "shasum": ""
             },
             "require": {
@@ -380,7 +380,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2013-03-08 16:56:52"
+            "time": "2013-04-03 19:59:11"
         },
         {
             "name": "symfony/browser-kit",
