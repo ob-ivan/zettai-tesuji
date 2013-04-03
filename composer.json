@@ -5,7 +5,7 @@
         "doctrine/dbal"                 : "v2.3.2",
         "jquery/jquery"                 : "1.8.3",
         "monolog/monolog"               : ">=1.0.0",
-        "silex/silex"                   : "dev-master#59e7dbd338b5caba9879ae11524da4a5905f80c1",
+        "silex/silex"                   : "dev-master",
         "symfony/browser-kit"           : "v2.1.7",
         "symfony/class-loader"          : "v2.1.7",
         "symfony/config"                : "v2.1.7",
@@ -45,7 +45,7 @@
                     "type": "file"
                 }
             }
-        },        
+        },
         {
             "type": "package",
             "package": {
