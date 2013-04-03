@@ -3,23 +3,23 @@ namespace Zettai\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Ob_Ivan\EviType\Service as TypeService;
+use Ob_Ivan\EviType\TypeService;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
     // NEW
-    
+
     public function register(Application $app)
     {
         $app['types'] = $app->share(function () {
             return new TypeService();
         });
     }
-    
+
     public function boot(Application $app)
     {
         $typeService = $app['types'];
-        
+
         $typeService->register('roundWind', function ($typeService) {
             $type = $typeService->enum(['east', 'south']);
             $type->view->register([
@@ -66,13 +66,13 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $type;
         });
     }
-    
+
     // OLD
-    
+
     public function _boot(Application $app)
     {
         $service = $app['types'];
-        
+
         $service->register('roundWind', function ($service) {
             return $service->viewable([
                 ['1z', 'east',  'e', 'восток', 'в'],
@@ -121,7 +121,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $internal = [];
                 while (! empty($presentation)) {
                     $prevLength = strlen($presentation);
-                    
+
                     $presentation = trim($presentation);
                     $candidate = $this->element->fromView($view, $presentation);
                     if ($candidate) {
@@ -140,7 +140,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                     } else {
                         break;
                     }
-                    
+
                     if ($prevLength <= strlen($presentation)) {
                         break;
                     }
@@ -148,9 +148,9 @@ class TypeServiceProvider implements ServiceProviderInterface
                 return $this->value($internal);
             })
             ->setHook('toView', function ($view, $internal) {
-            
+
                 $isLong = in_array($view, ['English', 'Russian']);
-            
+
                 $prevRankPresentation = null;
                 $prevSuitPresentation = null;
                 $presentations = [];
@@ -159,7 +159,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                     if (preg_match('/^(\d)(\D+)$/', $newPresentation, $matches)) {
                         $newRankPresentation = $matches[1];
                         $newSuitPresentation = $matches[2];
-                        
+
                         if (! is_null($prevRankPresentation) && ! is_null($prevSuitPresentation)) {
                             $presentations[] = $prevRankPresentation;
                             if ($prevSuitPresentation !== $newSuitPresentation) {

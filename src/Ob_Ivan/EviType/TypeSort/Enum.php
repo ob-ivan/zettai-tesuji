@@ -7,24 +7,31 @@ use Ob_Ivan\EviType\ViewService;
 
 class Enum implements TypeSortInterface
 {
+    public function __construct()
+    {
+        $this->view = new ViewService();
+    }
+
     public function produce(array $arguments)
     {
         $type = new Type($this, $arguments);
-        
-        $type->to('Default', function ($primitive) use ($arguments) {
-            return $arguments[$primitive];
+
+        /*
+        $type->to('Default', function ($internal) use ($arguments) {
+            return $arguments[$internal];
         });
         $type->from('Default', function ($presentation) use ($arguments) {
-            $primitive = array_search($presentation, $arguments);
-            if ($primitive === false) {
+            $internal = array_search($presentation, $arguments);
+            if ($internal === false) {
                 return null;
             }
-            return $primitive;
+            return $internal;
         });
-        
+        */
+
         return $type;
     }
-    
+
     public function call(Type $type, $method, array $arguments)
     {
         switch ($method) {
@@ -33,10 +40,9 @@ class Enum implements TypeSortInterface
                 break;
         }
     }
-    
+
     public function view(Type $type)
     {
-        $viewService = new ViewService($type);
-        return $viewService;
+        return new ViewService($this->view);
     }
 }
