@@ -34,7 +34,7 @@ class TypeService implements TypeServiceInterface
                     Exception::TYPE_SERVICE_OFFSET_GET_OFFSET_UNKNOWN
                 );
             }
-            $this[$offset] = $this->registry[$offset]($this);
+            $this->set($offset, $this->registry[$offset]($this));
         }
         return $this->types[$offset];
     }
@@ -47,13 +47,7 @@ class TypeService implements TypeServiceInterface
                 Exception::TYPE_SERVICE_OFFSET_SET_NAME_ALREADY_EXISTS
             );
         }
-        if (! $value instanceof TypeInterface) {
-            throw new Exception(
-                'Value for offset "' . $offset . '" must implement TypeInterface',
-                Exception::TYPE_SERVICE_OFFSET_SET_VALUE_WRONG_TYPE
-            );
-        }
-        $this->types[$offset] = $value;
+        $this->set($offset, $value);
     }
 
     public function offsetUnset($offset)
@@ -126,5 +120,18 @@ class TypeService implements TypeServiceInterface
     public function __isset($name)
     {
         return isset($this[$name]);
+    }
+
+    // private /
+
+    private function set($offset, $value)
+    {
+        if (! $value instanceof TypeInterface) {
+            throw new Exception(
+                'Value for offset "' . $offset . '" must implement TypeInterface',
+                Exception::TYPE_SERVICE_SET_VALUE_WRONG_TYPE
+            );
+        }
+        $this->types[$offset] = $value;
     }
 }

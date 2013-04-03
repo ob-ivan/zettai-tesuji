@@ -7,7 +7,7 @@ use Ob_Ivan\EviType\ViewFactory;
 use Ob_Ivan\EviType\ViewService;
 use Ob_Ivan\EviType\ViewSort;
 
-class Enum implements TypeSortInterface
+class Product implements TypeSortInterface
 {
     /**
      * @var ViewFactory;
@@ -19,17 +19,13 @@ class Enum implements TypeSortInterface
         $this->factory = new ViewFactory();
 
         $this->factory->register([
-            'dictionary' => function () { return new ViewSort\Dictionary(); },
+            // TODO
         ]);
     }
 
     public function call(Type $type, $method, array $arguments)
     {
-        switch ($method) {
-            case 'each':
-                // TODO
-                break;
-        }
+        // TODO
     }
 
     public function produce(array $arguments)

@@ -31,7 +31,7 @@ class ViewService implements ViewServiceInterface
     {
         return isset($this->views[$offset]) ||
             isset($this->registry[$offset]) ||
-            isset($this->fallback[$offset]);
+            $this->fallback->has($offset);
     }
 
     public function offsetGet($offset)

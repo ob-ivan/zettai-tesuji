@@ -28,7 +28,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'russian' => $type->view->dictionary(['восток', 'юг'   ]),
                 'r'       => $type->view->dictionary(['в',      'ю'    ]),
                 'tenhou'  => $type->view->dictionary(['1z',     '2z'   ]),
-                'tile'    => $type->view->cast('tenhou', 'tile', 'tenhou'),
+                // 'tile'    => $type->view->cast('tenhou', 'tile', 'tenhou'),
             ]);
             return $type;
         });
@@ -58,10 +58,10 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $typeService->enum(range(1, 4))
             );
             $type->view->register([
-                ['english',   'separator', '-', ['english',   'default']],
-                ['e',         'concat',         ['e',         'default']],
-                ['russian',   'separator', '-', ['russian',   'default']],
-                ['r',         'concat',         ['r',         'default']],
+                'english'   => $type->view->separator('-',  ['english', 'default']),
+                'e'         => $type->view->concat   (      ['e',       'default']),
+                'russian'   => $type->view->separator('-',  ['russian', 'default']),
+                'r'         => $type->view->concat   (      ['r',       'default']),
             ]);
             return $type;
         });
