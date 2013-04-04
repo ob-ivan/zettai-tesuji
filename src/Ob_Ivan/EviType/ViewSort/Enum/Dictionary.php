@@ -14,7 +14,7 @@ class Dictionary implements ViewSortInterface
     **/
     public function produce(array $arguments)
     {
-        return function () use ($arguments) { return new View($this, $arguments); };
+        return new View($this, $arguments);
     }
 
     public function from(array $arguments, $presentation)

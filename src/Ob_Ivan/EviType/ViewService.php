@@ -116,7 +116,7 @@ class ViewService implements ViewServiceInterface
     public function __call($name, $args)
     {
         if ($this->factory->has($name)) {
-            return $this->factory->produce($name, $args);
+            return function () use ($name, $args) { return $this->factory->produce($name, $args); };
         }
         throw new Exception(
             'Unknown view sort "' . $name . '"',

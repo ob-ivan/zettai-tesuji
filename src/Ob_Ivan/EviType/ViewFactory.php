@@ -30,7 +30,7 @@ class ViewFactory
             $sort = $this->registry[$name]();
             if (! $sort instanceof ViewSortInterface) {
                 throw new Exception(
-                    'Value for "' . $name . '" must implement ViewSortInterface',
+                    'Produced view sort "' . $name . '" must implement ViewSortInterface',
                     Exception::VIEW_FACTORY_PRODUCE_SORT_WRONG_TYPE
                 );
             }
