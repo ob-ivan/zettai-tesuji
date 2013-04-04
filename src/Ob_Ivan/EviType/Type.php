@@ -3,6 +3,8 @@ namespace Ob_Ivan\EviType;
 
 class Type implements TypeInterface
 {
+    // var //
+
     private $arguments;
 
     /**
@@ -16,16 +18,24 @@ class Type implements TypeInterface
     private $sort;
 
     /**
+     *  @var ValueService
+    **/
+    private $valueSevice = [];
+
+    /**
      * @var ViewService
     **/
     private $viewService;
+
+    // public //
 
     public function __construct(TypeSortInterface $sort, array $arguments = null)
     {
         $this->sort         = $sort;
         $this->arguments    = $arguments;
 
-        $this->viewService  = $sort->view($this);
+        $this->valueService = new ValueService($this);
+        $this->viewService  = $this->sort->view($this);
     }
 
     public function __call($name, $arguments) {
@@ -47,14 +57,9 @@ class Type implements TypeInterface
         if (! array_key_exists($presentation, $this->fromCache)) {
             $value = null;
             foreach ($this->viewService as $viewName => $view) {
-                $value = $view->from($presentation);
-                if ($value) {
-                    if (! $value instanceof Value) {
-                        throw new Exception(
-                            'Value from view "' . $viewName . '" must be an instance of Value',
-                            Exception::TYPE_FROM_VALUE_WRONG_TYPE
-                        );
-                    }
+                $internal = $view->from($presentation);
+                if ($internal) {
+                    $value = $this->valueService->produce($internal);
                     break;
                 }
             }
