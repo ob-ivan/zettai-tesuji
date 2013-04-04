@@ -67,4 +67,22 @@ class Type implements TypeInterface
         }
         return $this->fromCache[$presentation];
     }
+
+    public function to($viewName, $internal)
+    {
+        if (! isset($this->viewService[$viewName])) {
+            throw new Exception(
+                'Unknown view "' . $viewName . '"',
+                Exception::TYPE_TO_VIEW_NAME_UNKNOWN
+            );
+        }
+        $presentation = $this->viewService[$viewName]->to($internal);
+        if (is_null($presentation)) {
+            throw new Exception(
+                'Value cannot be converted to view "' . $viewName . '"',
+                Exception::TYPE_TO_PRESENTATION_IS_NULL
+            );
+        }
+        return $presentation;
+    }
 }

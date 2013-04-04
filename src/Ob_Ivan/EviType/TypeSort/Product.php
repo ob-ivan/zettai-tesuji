@@ -5,7 +5,8 @@ use Ob_Ivan\EviType\Type;
 use Ob_Ivan\EviType\TypeSortInterface;
 use Ob_Ivan\EviType\ViewFactory;
 use Ob_Ivan\EviType\ViewService;
-use Ob_Ivan\EviType\ViewSort;
+use Ob_Ivan\EviType\ViewSort\Product\Concat;
+use Ob_Ivan\EviType\ViewSort\Product\Separator;
 
 class Product implements TypeSortInterface
 {
@@ -19,8 +20,8 @@ class Product implements TypeSortInterface
         $this->factory = new ViewFactory();
 
         $this->factory->register([
-            'concat'    => function () { return new ViewSort\Concat();    },
-            'separator' => function () { return new ViewSort\Separator(); },
+            'concat'    => function () { return new Concat();    },
+            'separator' => function () { return new Separator(); },
         ]);
     }
 

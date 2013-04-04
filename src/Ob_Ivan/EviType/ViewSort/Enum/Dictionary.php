@@ -1,5 +1,5 @@
 <?php
-namespace Ob_Ivan\EviType\ViewSort;
+namespace Ob_Ivan\EviType\ViewSort\Enum;
 
 use Ob_Ivan\EviType\View;
 use Ob_Ivan\EviType\ViewSortInterface;
@@ -19,10 +19,19 @@ class Dictionary implements ViewSortInterface
 
     public function from(array $arguments, $presentation)
     {
-        foreach ($arguments as $index => $value) {
-            if ($presentation === $value) {
-                // TODO: Кто инстанциирует Value и как?
+        foreach ($arguments as $internal => $candidate) {
+            if ($candidate === $presentation) {
+                return $internal;
             }
         }
+        return null;
+    }
+
+    public function to(array $arguments, $internal)
+    {
+        if (isset($arguments[$internal])) {
+            return $arguments[$internal];
+        }
+        return null;
     }
 }

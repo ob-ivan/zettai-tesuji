@@ -5,7 +5,7 @@ use Ob_Ivan\EviType\Type;
 use Ob_Ivan\EviType\TypeSortInterface;
 use Ob_Ivan\EviType\ViewFactory;
 use Ob_Ivan\EviType\ViewService;
-use Ob_Ivan\EviType\ViewSort;
+use Ob_Ivan\EviType\ViewSort\Enum\Dictionary;
 
 class Enum implements TypeSortInterface
 {
@@ -19,7 +19,7 @@ class Enum implements TypeSortInterface
         $this->factory = new ViewFactory();
 
         $this->factory->register([
-            'dictionary' => function () { return new ViewSort\Dictionary(); },
+            'dictionary' => function () { return new Dictionary(); },
         ]);
     }
 

@@ -1,10 +1,10 @@
 <?php
-namespace Ob_Ivan\EviType\ViewSort;
+namespace Ob_Ivan\EviType\ViewSort\Product;
 
 use Ob_Ivan\EviType\View;
 use Ob_Ivan\EviType\ViewSortInterface;
 
-class Concat implements ViewSortInterface
+class Separator implements ViewSortInterface
 {
     /**
      * Возвращает проивзодитель представления.
