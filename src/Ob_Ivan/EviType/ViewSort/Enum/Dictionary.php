@@ -9,8 +9,8 @@ class Dictionary implements ViewSortInterface
     /**
      * Возвращает проивзодитель представления.
      *
-     *  @param  array   $arguments
-     *  @return View()
+     *  @param  [<internal> => <presentation>]  $arguments
+     *  @return View
     **/
     public function produce(array $arguments)
     {

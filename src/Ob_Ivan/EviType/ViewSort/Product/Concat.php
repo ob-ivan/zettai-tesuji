@@ -10,7 +10,7 @@ class Concat implements ViewSortInterface
      * Возвращает проивзодитель представления.
      *
      *  @param  array   $arguments
-     *  @return View()
+     *  @return View
     **/
     public function produce(array $arguments)
     {
