@@ -126,6 +126,22 @@ class Theme extends Entity
         ->fetchColumn(['theme_id' => $theme_id]);
     }
 
+    public function getPrevId($theme_id, $includeHidden = false)
+    {
+        return $this->queryBuilder()
+        ->select(function ($expr) {
+            return $expr->max('theme_id');
+        })
+        ->where(function ($expr) use ($includeHidden) {
+            $exprPrev = $expr->lessThan('theme_id', ':theme_id');
+            if (! $includeHidden) {
+                return $exprPrev->addAnd($expr->equals('is_hidden', 0));
+            }
+            return $exprPrev;
+        })
+        ->fetchColumn(['theme_id' => $theme_id]);
+    }
+
     // protected //
 
     protected function queryBuilder_selectAll()
