@@ -10,6 +10,8 @@ interface ServiceInterface
 
     public function getTableName(EntityInterface $entity);
 
+    public function queryBuilder(EntityInterface $entity);
+
     public function register($name, callable $entityProvider);
 
     public function setLogger(Logger $logger);

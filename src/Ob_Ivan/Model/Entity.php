@@ -12,6 +12,6 @@ abstract class Entity implements EntityInterface
 
     protected function queryBuilder()
     {
-        return new QueryBuilder($this->service, $this);
+        return $this->service->queryBuilder($this);
     }
 }

@@ -5,6 +5,7 @@ use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Ob_Ivan\Model\Service;
 use Zettai\Entity\Exercise;
+use Zettai\Entity\Theme;
 
 class ModelServiceProvider implements ServiceProviderInterface
 {
@@ -22,6 +23,9 @@ class ModelServiceProvider implements ServiceProviderInterface
         }
         $app['model']->register('exercise', function ($service) {
             return new Exercise($service);
+        });
+        $app['model']->register('theme', function ($service) use ($app) {
+            return new Theme($service, $app['types']->theme);
         });
     }
 }

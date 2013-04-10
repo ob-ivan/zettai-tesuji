@@ -33,6 +33,11 @@ class Service implements ServiceInterface
         return ($this->debug ? '_test_' : '') . $entity->getTableName();
     }
 
+    public function queryBuilder(EntityInterface $entity)
+    {
+        return new QueryBuilder($this, $entity);
+    }
+
     public function register($name, callable $entityProvider)
     {
         $this->registry[$name] = $entityProvider;
