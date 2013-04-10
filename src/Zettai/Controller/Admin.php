@@ -10,21 +10,21 @@ use Zettai\Tile;
 class Admin implements ControllerProviderInterface
 {
     // const //
-    
+
     const PER_PAGE = 20;
-    
+
     // var //
-    
+
     private $app;
-    
+
     // public : ControllerProviderInterface //
-    
+
     public function connect(Application $app)
     {
         $this->app = $app;
-        
+
         $controllers = $app['controllers_factory'];
-        
+
         // Главная страница админки.
         $app['parameter']->setParameters(
             $controllers->get('/{page}', function ($page) {
@@ -55,9 +55,9 @@ class Admin implements ControllerProviderInterface
 
         return $controllers;
     }
-    
+
     // private : controllers //
-    
+
     private function page ($page)
     {
         $exerciseCount = $this->app['model']->exercise->getCount(true);
@@ -65,7 +65,7 @@ class Admin implements ControllerProviderInterface
             return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => 1]));
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
-        
+
         return $this->app->render('admin/main.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
@@ -73,7 +73,7 @@ class Admin implements ControllerProviderInterface
             'perPage'       => self::PER_PAGE,
         ]);
     }
-    
+
     private function exerciseView(Request $request, $exercise_id)
     {
         $exercise = $this->app['model']->exercise->get($exercise_id);
@@ -87,7 +87,7 @@ class Admin implements ControllerProviderInterface
             'page'      => $page,
         ]);
     }
-    
+
     private function exerciseEdit(Request $request, $exercise_id)
     {
         $csrfKey = 'admin_exercise_edit_' . $exercise_id;
@@ -110,16 +110,16 @@ class Admin implements ControllerProviderInterface
                 '?formKey=' . $formKey
             );
         };
-        
+
         // Обработать присланную форму.
         if ($request->getMethod() === 'POST') {
             $errors = [];
-            
+
             // Проверить csrf-токен.
             if (! $this->app['csrf']->validate($request->request->get('csrf'), $csrfKey)) {
                 $errors[] = 'CSRF';
             }
-            
+
             $exercise = new Exercise ([
                 'exercise_id' => $request->request->get('exercise_id'),
                 'title'     => $request->request->get('title'),
@@ -136,10 +136,10 @@ class Admin implements ControllerProviderInterface
                     'best_answer'   => $request->request->get('best_answer'),
                 ],
             ]);
-            
+
             if ($request->request->get('save')) {
                 // Попросили сохранить задачу.
-                
+
                 // Проверить поля.
                 // TODO: Прикрутить валидатор.
                 if (! preg_match ('/\\d{1,3}/', $exercise->exercise_id)) {
@@ -159,41 +159,48 @@ class Admin implements ControllerProviderInterface
                 if (empty ($exercise->title)) {
                     $errors[] = 'TITLE:EMPTY';
                 }
-                
+
                 // Если есть ошибки, редиректнуть на форму и показать ошибки.
                 if (! empty ($errors)) {
                     return $redirect ($exercise, $errors);
                 }
-                
+
                 // Создать задачу.
                 $this->app['model']->exercise->set($exercise);
-                
+
                 // Если старый номер не равен new, то после создания нового надо удалить старое.
                 if ($exercise_id !== 'new' && $exercise_id !== $exercise->exercise_id) {
                     $this->app['model']->exercise->delete($exercise_id);
                 }
-                
+
                 // Показать новую задачу в админке.
                 return $this->app->redirect(
-                    $this->app['url_generator']->generate('admin_exercise_view', ['exercise_id' => $exercise->exercise_id]) .
-                    '?page=' . $request->query->get('page')
+                    $this->app['url_generator']->generate(
+                        'admin_exercise_view',
+                        ['exercise_id' => $exercise->exercise_id]
+                    )
                 );
             } elseif ($request->request->get('delete')) {
                 // Попросили удалить задачу.
-                
+
                 // Если есть ошибки, редиректнуть на форму и показать ошибки.
                 if (! empty ($errors)) {
                     return $redirect ($exercise, $errors);
                 }
-                
+
+                // Заранее посчитать, на какую страницу потом перенаправить пользователя.
+                $page = $this->app['model']->exercise->getPage($exercise_id, self::PER_PAGE, true);
+
                 // Удалить задачу.
                 $this->app['model']->exercise->delete($exercise_id);
-                
+
                 // Показать список задач.
-                return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => $request->query->get('page')]));
+                return $this->app->redirect(
+                    $this->app['url_generator']->generate('admin_page', ['page' => $page])
+                );
             }
         }
-        
+
         // Процедура отображения формы с задачей.
         $view = function (
             $exercise,
@@ -211,25 +218,25 @@ class Admin implements ControllerProviderInterface
                 'TILES'       => Tile::$TILES,
             ]);
         };
-        
+
         // Отобразить старую форму после редиректа.
         $formKey = $request->query->get('formKey');
         if ($formKey) {
             $data = $this->app['session']->get($formKey);
             return $view($data['exercise'], $data['errors']);
         }
-        
+
         // Отобразить свежую форму для новой задачи.
         if ($exercise_id === 'new') {
             return $view(new Exercise (['exercise_id' => $this->app['model']->exercise->getNewId()]));
         }
-        
+
         // Существует ли запрошенная задача?
         $exercise = $this->app['model']->exercise->get($exercise_id);
         if (! $exercise) {
             return $view(null, ['EXERCISE:DOES_NOT_EXIST']);
         }
-        
+
         // Отобразить свежую форму для старой задачи.
         return $view($exercise);
     }
