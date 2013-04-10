@@ -11,14 +11,14 @@ class ZeroOrMore extends ParsingRule
      *  @var <string ruleName | ParsingRule rule>
     **/
     private $rule;
-    
+
     public function __construct(Grammar $grammar, $rule)
     {
         parent::__construct($grammar);
         $this->rule = $rule;
     }
-    
-    public function parseExisting(TokenStream $stream, $nodeType = null)
+
+    public function parse(TokenStream $stream, $nodeType = null)
     {
         $children = [];
         for ($subStream = $stream;
