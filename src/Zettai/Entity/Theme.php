@@ -3,6 +3,7 @@ namespace Zettai\Entity;
 
 use Ob_Ivan\Model\Entity;
 use Zettai\Type\TypeInterface;
+use Zettai\Type\Value;
 
 class Theme extends Entity
 {
@@ -140,6 +141,23 @@ class Theme extends Entity
             return $exprPrev;
         })
         ->fetchColumn(['theme_id' => $theme_id]);
+    }
+
+    public function set(Value $theme)
+    {
+        // validate
+        if (! $this->type->has($
+        if (! ($theme->theme_id > 0)) {
+            throw new Exception('Theme id is empty', Exception::THEME_ID_EMPTY);
+        }
+        if (! (strlen($theme->title) > 0)) {
+            throw new Exception('Theme title is empty', Exception::THEME_TITLE_EMPTY);
+        }
+
+        if ($this->get($theme->theme_id)) {
+            return $this->queryBuilder()->update($theme->toDatabase(), ['theme_id' => $theme->theme_id]);
+        }
+        return $this->queryBuilder()->insert($theme->toDatabase());
     }
 
     // protected //

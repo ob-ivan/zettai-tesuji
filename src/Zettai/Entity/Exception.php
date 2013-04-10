@@ -9,4 +9,5 @@ class Exception extends ParentException
     const EXERCISE_TITLE_EMPTY  = 0x020102;
 
     const THEME_ID_EMPTY        = 0x020201;
+    const THEME_TITLE_EMPTY     = 0x020202;
 }
