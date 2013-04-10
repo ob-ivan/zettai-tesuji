@@ -75,7 +75,7 @@ class Exercise extends Entity
         return $qb->fetchColumn();
     }
 
-    public function getList ($offset = 0, $limit = 20, $includeHidden = false)
+    public function getList($offset = 0, $limit = 20, $includeHidden = false)
     {
         // prepare
         $offset = intval ($offset);
