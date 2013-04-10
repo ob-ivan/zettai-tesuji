@@ -28,12 +28,12 @@ use Ob_Ivan\Compiler\TokenStream;
 class Service
 {
     // var //
-    
+
     private $lexingRules;
     private $grammar;
-    
+
     // public //
-    
+
     public function __construct()
     {
         $this->lexingRules = [
@@ -42,13 +42,13 @@ class Service
             '\\)'       => TokenType::PARENTHESIS_CLOSE,
             '[^(*)]+'   => TokenType::NON_SPECIAL_CHARACTER,
         ];
-        
+
         $grammar = new Grammar(new NodeFactory);
         $grammar->setRule('PARENTHESIS_OPEN',       $grammar->terminal(TokenType::PARENTHESIS_OPEN));
         $grammar->setRule('ASTERISK',               $grammar->terminal(TokenType::ASTERISK));
         $grammar->setRule('PARENTHESIS_CLOSE',      $grammar->terminal(TokenType::PARENTHESIS_CLOSE));
         $grammar->setRule('NON_SPECIAL_CHARACTER',  $grammar->terminal(TokenType::NON_SPECIAL_CHARACTER));
-        
+
         $grammar->setRule('CommentCharacter', $grammar->orderedChoice(
             'PARENTHESIS_OPEN', 'ASTERISK', 'NON_SPECIAL_CHARACTER'
         ));
@@ -61,19 +61,24 @@ class Service
         $grammar->setRule('Text', $grammar->zeroOrMore($grammar->orderedChoice('Comment', 'AnyCharacter')));
         $this->grammar = $grammar;
     }
-    
+
     public function compile($source)
     {
-        return $this->parse($this->tokenize($source))->build();
+        $tree = $this->parse($this->tokenize($source));
+        if (! $tree) {
+            // TODO: Вывести ошибку разбора, когда Grammar научится это делать.
+            return '[parse error]';
+        }
+        return $tree->build();
     }
-    
+
     // private : compile steps //
-    
+
     private function parse(TokenCollection $tokens)
     {
         return $this->grammar->parse(new TokenStream($tokens), 'Text');
     }
-    
+
     /**
      * Разбивает входной текст на лексические элементы -- токены.
      *

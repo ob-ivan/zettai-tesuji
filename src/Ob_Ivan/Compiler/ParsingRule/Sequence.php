@@ -11,14 +11,14 @@ class Sequence extends ParsingRule
      *  @var [<string ruleName | ParsingRule rule>]
     **/
     private $components;
-    
+
     public function __construct(Grammar $grammar, array $components)
     {
         parent::__construct($grammar);
         $this->components = $components;
     }
-    
-    public function parseExisting(TokenStream $stream, $nodeType = null)
+
+    public function parse(TokenStream $stream, $nodeType = null)
     {
         $offset = 0;
         $children = [];
