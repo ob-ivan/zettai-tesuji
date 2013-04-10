@@ -18,7 +18,7 @@ class Exercise extends Entity
     public function delete($exercise_id)
     {
         // prepare
-        $exercise_id  = intval ($exercise_id);
+        $exercise_id = intval($exercise_id);
 
         // validate
         if (! ($exercise_id > 0)) {

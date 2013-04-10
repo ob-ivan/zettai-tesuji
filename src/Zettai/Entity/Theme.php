@@ -23,4 +23,18 @@ class Theme extends Entity
     }
 
     // public : Theme //
+
+    public function delete($theme_id)
+    {
+        // prepare
+        $theme_id = intval($theme_id);
+
+        // validate
+        if (! ($theme_id > 0)) {
+            throw new Exception('Theme id is empty', Exception::THEME_ID_EMPTY);
+        }
+
+        // execute
+        $this->queryBuilder()->delete(['theme_id' => $theme_id]);
+    }
 }
