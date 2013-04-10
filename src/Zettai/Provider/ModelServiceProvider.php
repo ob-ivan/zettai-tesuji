@@ -3,8 +3,8 @@ namespace Zettai\Provider;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Zettai\Model\Exercise;
-use Zettai\Model\Service;
+use Ob_Ivan\Model\Service;
+use Zettai\Entity\Exercise;
 
 class ModelServiceProvider implements ServiceProviderInterface
 {
@@ -14,7 +14,7 @@ class ModelServiceProvider implements ServiceProviderInterface
             return new Service($app['db'], $app['debug']);
         });
     }
-    
+
     public function boot(Application $app)
     {
         if ($app['config']->model->logger_enable) {
