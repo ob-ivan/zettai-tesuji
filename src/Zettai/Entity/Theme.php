@@ -75,18 +75,23 @@ class Theme extends Entity
         return $this->type->from($row);
     }
 
-    public function getList($offset = 0, $limit = 20)
+    public function getList($offset = 0, $limit = 20, $includeHidden = false)
     {
         // prepare
         $offset = intval($offset);
         $limit  = intval($limit);
 
         // execute
-        $rows = $this->queryBuilder_selectAll()
+        $qb = $this->queryBuilder_selectAll()
         ->orderBy('theme_id', 'ASC')
         ->offset($offset)
-        ->limit($limit)
-        ->fetchAll();
+        ->limit($limit);
+        if (! $includeHidden) {
+            $qb->where(function ($expr) {
+                return $expr->equals('is_hidden', 0);
+            });
+        }
+        $rows = $qb->fetchAll();
 
         // convert to records
         $records = [];
@@ -105,14 +110,18 @@ class Theme extends Entity
         ->fetchColumn() + 1;
     }
 
-    public function getNextId($theme_id)
+    public function getNextId($theme_id, $includeHidden = false)
     {
         return $this->queryBuilder()
         ->select(function ($expr) {
             return $expr->min('theme_id');
         })
-        ->where(function ($expr) {
-            return $expr->greaterThan('theme_id', ':theme_id');
+        ->where(function ($expr) use ($includeHidden) {
+            $exprNext = $expr->greaterThan('theme_id', ':theme_id');
+            if (! $includeHidden) {
+                return $exprNext->addAnd($expr->equals('is_hidden', 0));
+            }
+            return $exprNext;
         })
         ->fetchColumn(['theme_id' => $theme_id]);
     }
@@ -124,6 +133,7 @@ class Theme extends Entity
         return $this->queryBuilder()
         ->select('theme_id')
         ->select('title')
+        ->select('is_hidden')
         ->select('intro')
         ->select('min_exercise_id')
         ->select('max_exercise_id')

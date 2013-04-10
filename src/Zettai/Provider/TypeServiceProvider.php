@@ -176,6 +176,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $service->record([
                 'theme_id'              => $service->integer(),
                 'title'                 => $service->text(),
+                'is_hidden'             => $service->boolean(),
                 'intro'                 => $service->text(),
                 'min_exercise_id'       => $service->integer(),
                 'max_exercise_id'       => $service->integer(),
