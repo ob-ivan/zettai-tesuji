@@ -96,6 +96,27 @@ class Theme extends Entity
         return $records;
     }
 
+    public function getNewId()
+    {
+        return $this->queryBuilder()
+        ->select(function ($expr) {
+            return $expr->max('theme_id');
+        })
+        ->fetchColumn() + 1;
+    }
+
+    public function getNextId($theme_id)
+    {
+        return $this->queryBuilder()
+        ->select(function ($expr) {
+            return $expr->min('theme_id');
+        })
+        ->where(function ($expr) {
+            return $expr->greaterThan('theme_id', ':theme_id');
+        })
+        ->fetchColumn(['theme_id' => $theme_id]);
+    }
+
     // protected //
 
     protected function queryBuilder_selectAll()
