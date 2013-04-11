@@ -94,6 +94,10 @@ class Exercise
                 'draw'      => [
                     self::PROPERTY_TYPE    => self::TYPE_TILE,
                 ],
+                'is_answered' => [
+                    self::PROPERTY_TYPE    => self::TYPE_BOOLEAN,
+                    self::PROPERTY_DEFAULT => false,
+                ],
                 'answer' => [
                     self::PROPERTY_TYPE    => self::TYPE_JSON,
                     self::PROPERTY_DEFAULT => '{}',

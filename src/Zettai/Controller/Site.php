@@ -8,21 +8,21 @@ use Symfony\Component\HttpFoundation\Request;
 class Site implements ControllerProviderInterface
 {
     // const //
-    
+
     const PER_PAGE = 20;
-    
+
     // var //
-    
+
     private $app;
-    
+
     // public : ControllerProviderInterface //
-    
+
     public function connect(Application $app)
     {
         $this->app = $app;
-        
+
         $controllers = $app['controllers_factory'];
-        
+
         // Главная страница -- список задач.
         $app['parameter']->setParameters(
             $controllers->get('/{page}', function ($page) {
@@ -40,7 +40,7 @@ class Site implements ControllerProviderInterface
             ['exercise_id' => 'exercise_id']
         )
         ->bind('site_exercise');
-        
+
         // Аякс для получения ответов к задаче.
         $app['parameter']->setParameters(
             $controllers->post('/exercise/answer/{exercise_id}', function (Request $request, $exercise_id) {
@@ -52,9 +52,9 @@ class Site implements ControllerProviderInterface
 
         return $controllers;
     }
-    
+
     // private : controllers //
-    
+
     private function page($page)
     {
         $exerciseCount = $this->app['model']->exercise->getCount(false);
@@ -62,7 +62,7 @@ class Site implements ControllerProviderInterface
             return $this->app->redirect($this->app['url_generator']->generate('site_page', ['page' => 1]));
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, false);
-        
+
         return $this->app->render('site/page.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
@@ -70,7 +70,7 @@ class Site implements ControllerProviderInterface
             'perPage'       => self::PER_PAGE,
         ]);
     }
-    
+
     private function exercise(Request $request, $exercise_id)
     {
         $exercise = $this->app['model']->exercise->get($exercise_id);
@@ -84,7 +84,7 @@ class Site implements ControllerProviderInterface
             'csrf'      => $this->app['csrf']->generate($this->csrfKey($exercise_id)),
         ]);
     }
-    
+
     private function exerciseAnswer(Request $request, $exercise_id)
     {
         // Проверить входные данные.
@@ -109,7 +109,7 @@ class Site implements ControllerProviderInterface
             ];
         }
         $nextId = $this->app['model']->exercise->getNextId($exercise_id);
-        
+
         // Собрать выходной массив.
         $data = [
             'answers'       => $answers,
@@ -121,15 +121,14 @@ class Site implements ControllerProviderInterface
                 ['exercise_id' => $this->app['model']->exercise->getNextId($exercise_id)]
             );
         }
-        
+
         return $this->app->json($data);
     }
-    
+
     // private : helpers //
-    
+
     private function csrfKey($exercise_id)
     {
         return 'site_exercise_answer_' . $exercise_id;
     }
 }
-

@@ -22,9 +22,9 @@ var ExercisePage = Class({
      *              span.letter     Куда поместить букву ответа.
      *              span.discard    Куда поместить картинку фишки сброса.
      *              div.comment     Куда поместить текст ответа.
-     *                                  
+     *
      *      buttons     : <jQuery>,
-     *          Кнопки ответов, на которые навесить обработчик.
+     *          Элементы с ответами, на которые навесить обработчик.
      *          Должны обладать атрибутом name, значение которого
      *          и считается выбором пользователя.
      *
@@ -45,12 +45,15 @@ var ExercisePage = Class({
     __construct : function (options) {
         this.ajaxPath = options.ajaxPath;
         this.answers  = options.answers;
-        
+
         var handle = this._handle;
-        options.buttons.on('click', function (event) {
+        options.buttons
+        .removeAttr('disabled')
+        .css({ cursor : 'pointer' })
+        .on('click', function (event) {
             handle(this, event);
         });
-        
+
         this.csrf = options.csrf;
         this.hide = options.hide;
         this.show = options.show;
@@ -81,7 +84,7 @@ var ExercisePage = Class({
                             case 'EXERCISE:DOES_NOT_EXIST':
                                 sadText.push('Этой задачи больше не существует. Ничего не поделаешь.');
                                 break;
-                            
+
                             case 'CSRF':
                                 sadText.push('Сессия устарела. Обновите, пожалуйста, страницу и попробуйте ещё раз.');
                                 break;
@@ -113,7 +116,7 @@ var ExercisePage = Class({
      *  @param  <string>    exercise_next   Optional.
     **/
     _show : function (user_answer, answers, best_answer, exercise_next) {
-    
+
         // Заполнить ответы.
         var letters = [best_answer];
         for (var letter in answers) {
@@ -135,11 +138,11 @@ var ExercisePage = Class({
                 }
             }
         }
-        
+
         // Скрыть вопросы, показать ответы.
         this.hide.hide();
         this.show.show();
-        
+
         // Показать ссылку на следующую задачу.
         if (exercise_next) {
             this.next.attr('href', exercise_next).show();

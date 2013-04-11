@@ -24,23 +24,25 @@
             content : exercise.content,
             mode    : 'site',
         } only %}
-        <script>
-            $(function () {
-                new ExercisePage({
-                    ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
-                    answers     : $('div.answer'),
-                    buttons     : $('button[name]'),
-                    csrf        : '{{ csrf }}',
-                    hide        : $('div.variants'),
-                    show        : $('div.answers'),
-                    next        : $('p.links a.next'),
+        {% if exercise.content.is_answered %}
+            <script>
+                $(function () {
+                    new ExercisePage({
+                        ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
+                        answers     : $('div.answer'),
+                        buttons     : $('button[name]'),
+                        csrf        : '{{ csrf }}',
+                        hide        : $('div.variants'),
+                        show        : $('div.answers'),
+                        next        : $('p.links a.next'),
+                    });
                 });
-            });
-        </script>
+            </script>
+        {% endif %}
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
-    
+
     <p class="links">
         <a href="{{ path('site_page') }}">[на главную]</a>
         <a href="{{ path('site_page', { 'page' : page }) }}">[к списку задач]</a>
