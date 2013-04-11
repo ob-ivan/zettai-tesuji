@@ -56,6 +56,9 @@
 
     <div class="row answers">
         <hr/>
+        {% if mode == 'admin' and not content.is_answered %}
+            <div class="not_answered">Ответы не опубликованы</div>
+        {% endif %}
         {% include '_answer.twig' with {
             mode    : mode,
             letter  : content.best_answer,
