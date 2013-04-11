@@ -24,21 +24,21 @@
             content : exercise.content,
             mode    : 'site',
         } only %}
-        {% if exercise.content.is_answered %}
-            <script>
-                $(function () {
-                    new ExercisePage({
-                        ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
-                        answers     : $('div.answer'),
-                        buttons     : $('button[name]'),
-                        csrf        : '{{ csrf }}',
-                        hide        : $('div.variants'),
-                        show        : $('div.answers'),
-                        next        : $('p.links a.next'),
-                    });
+        <div class="sad"></div>
+        <script>
+            $(function () {
+                new ExercisePage({
+                    ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
+                    answers     : $('div.answer'),
+                    buttons     : $('button[name]'),
+                    csrf        : '{{ csrf }}',
+                    hide        : $('div.variants'),
+                    show        : $('div.answers'),
+                    next        : $('p.links a.next'),
+                    sad         : $('div.sad'),
                 });
-            </script>
-        {% endif %}
+            });
+        </script>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}

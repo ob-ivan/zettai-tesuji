@@ -89,16 +89,19 @@ class Site implements ControllerProviderInterface
     {
         // Проверить входные данные.
         $errors = [];
+        if (! $this->app['csrf']->validate($request->request->get('csrf'), $this->csrfKey($exercise_id))) {
+            $errors[] = 'CSRF';
+        }
         $exercise = $this->app['model']->exercise->get($exercise_id);
         if (! $exercise || $exercise->is_hidden) {
             $errors[] = 'EXERCISE:DOES_NOT_EXIST';
-        }
-        if (! $this->app['csrf']->validate($request->request->get('csrf'), $this->csrfKey($exercise_id))) {
-            $errors[] = 'CSRF';
+        } elseif (! $exercise->content['is_answered']) {
+            $errors[] = 'EXERCISE:NOT_ANSWERED';
         }
         if (! empty($errors)) {
             return $this->app->json(['errors' => $errors]);
         }
+
         // Скомпилировать ответы и получить номер следующей задачи.
         $answers = [];
         foreach ($exercise->content['answer'] as $letter => $answer) {

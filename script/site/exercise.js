@@ -40,6 +40,9 @@ var ExercisePage = Class({
      *      next        : <jQuery>,
      *          Элемент ссылки на следующую задачу, который надо
      *          наполнить и показать после показа ответов.
+     *
+     *      sad         : <jQuery>,
+     *          Элемент, в который выводить текст сообщения об ошибках.
      *  } options
     **/
     __construct : function (options) {
@@ -58,9 +61,11 @@ var ExercisePage = Class({
         this.hide = options.hide;
         this.show = options.show;
         this.next = options.next;
+        this.sad  = options.sad;
     },
     _handle : function (element, event) {
         var show = this._show;
+        var sad  = this.sad;
         $.post(
             this.ajaxPath,
             {
@@ -81,16 +86,24 @@ var ExercisePage = Class({
                     var sadText = [];
                     for (var i in data.errors) {
                         switch (data.errors[i]) {
+                            case 'CSRF':
+                                sadText.push('Сессия устарела. Обновите, пожалуйста, страницу и попробуйте ещё раз.');
+                                break;
+
                             case 'EXERCISE:DOES_NOT_EXIST':
                                 sadText.push('Этой задачи больше не существует. Ничего не поделаешь.');
                                 break;
 
-                            case 'CSRF':
-                                sadText.push('Сессия устарела. Обновите, пожалуйста, страницу и попробуйте ещё раз.');
+                            case 'EXERCISE:NOT_ANSWERED':
+                                sadText.push('Ответы к этой задаче ещё не опубликованы. Следите за обновлениями.');
                                 break;
                         }
                     }
-                    window.alert(sadText.join('\n'));
+                    var sadSpans = [];
+                    for (var i = 0; i < sadText.length; ++i) {
+                        sadSpans.push($('<div/>').addClass('message').text(sadText[i]))
+                    }
+                    sad.empty().append(sadSpans);
                     return;
                 }
                 // Отобразить ответы и навигацию.
