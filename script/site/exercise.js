@@ -154,6 +154,7 @@ var ExercisePage = Class({
 
         // Скрыть вопросы, показать ответы.
         this.hide.hide();
+        this.sad.hide();
         this.show.show();
 
         // Показать ссылку на следующую задачу.
