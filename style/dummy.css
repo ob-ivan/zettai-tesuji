@@ -7,6 +7,10 @@ body.dummy {
     font-family: verdana, arial, tahoma, sans-serif;
 }
 
+div.column {
+    width: 100%;
+}
+
 h1 {
     position: relative;
     margin-top: 20%;
