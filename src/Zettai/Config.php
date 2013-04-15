@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Загружает конфиг проекта.
- * 
+ *
  * Конфиг берётся из файла {$rootDirectory}/config/config.yml.
  * К переменным конфига можно обращаться через стрелочку (->).
  * Если переменная не определена в конфиге, бросается исключение
@@ -16,35 +16,35 @@ use Symfony\Component\Yaml\Yaml;
 class Config implements ArrayAccess
 {
     // var //
-    
+
     private $rootDirectory;
     private $isLoaded = false;
     private $configValues = null;
-    
+
     // public : ArrayAccess //
 
     public function offsetExists($offset)
     {
         return isset($this->configValues[$offset]);
     }
-    
+
     public function offsetGet($offset)
     {
         return $this->$offset;
     }
-    
+
     public function offsetSet ($offset, $value)
     {
         throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
     }
-    
+
     public function offsetUnset ($offset)
     {
         throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
     }
-    
+
     // public : Config //
-    
+
     public function __construct ($rootDirectory)
     {
         $this->rootDirectory = $rootDirectory;
@@ -55,24 +55,24 @@ class Config implements ArrayAccess
         if (! $this->isLoaded) {
             $this->load();
         }
-        if (isset($this->configValues[$name])) {
-            $value = $this->configValues[$name];
-            if (is_array($value) || is_object($value)) {
-                $subconfig = new Config(null);
-                $subconfig->configValues = $value;
-                $subconfig->isLoaded = true;
-                return $subconfig;
-            }
-            return $value;
+        if (! isset($this->configValues[$name])) {
+            return null;
         }
-        throw new Exception('Config variable "' . $name . '" is unknown', Exception::CONFIG_VARIABLE_UNKNOWN);
+        $value = $this->configValues[$name];
+        if (is_array($value) || is_object($value)) {
+            $subconfig = new Config(null);
+            $subconfig->configValues = $value;
+            $subconfig->isLoaded = true;
+            return $subconfig;
+        }
+        return $value;
     }
-    
+
     public function __set ($name, $value)
     {
         throw new Exception ('Config is read only', Exception::CONFIG_READ_ONLY);
     }
-    
+
     public function toArray()
     {
         $return = [];
@@ -81,9 +81,9 @@ class Config implements ArrayAccess
         }
         return $return;
     }
-    
+
     // private //
-    
+
     private function load()
     {
         if ($this->isLoaded) {
