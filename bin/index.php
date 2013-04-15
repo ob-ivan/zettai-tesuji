@@ -26,7 +26,8 @@ $app->error(function (Exception $e) {
 
 // Подключаем контроллеры.
 
-$app->mount('/import', new Zettai\Controller\Import());
+$app->mount('/database', new Zettai\Controller\Console\Database());
+$app->mount('/import',   new Zettai\Controller\Console\Import());
 
 // Запускаем приложение с параметрами командной строки.
 

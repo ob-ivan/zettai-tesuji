@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Controller;
+namespace Zettai\Controller\Web;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
