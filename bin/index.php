@@ -1,8 +1,8 @@
 <?php
 
 // Настраиваем окружение.
-define ('DOCUMENT_ROOT', dirname(__DIR__));
-define ('AUTOLOAD_PATH', DOCUMENT_ROOT . '/vendor/autoload.php');
+define('DOCUMENT_ROOT', dirname(__DIR__));
+define('AUTOLOAD_PATH', DOCUMENT_ROOT . '/vendor/autoload.php');
 mb_internal_encoding('UTF-8');
 
 set_error_handler(function ($errno, $errstr, $errfile, $errline ) {
