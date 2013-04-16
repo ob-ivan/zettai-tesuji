@@ -213,6 +213,7 @@ class Exercise
             }
             $modified->data[$key] = self::prepare($value, self::$FIELD_PROPERTIES[$key]);
         }
+        return $modified;
     }
 
     // private //

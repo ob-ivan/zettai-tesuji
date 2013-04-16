@@ -55,7 +55,7 @@ class Database implements ControllerProviderInterface
 
                 // Пока рекорд задачи не переведён на тип, приходится обходиться полумерами:
                 $modified = $exercise->modify([
-                    'content' => $this->modifyContent($content, [
+                    'content' => $this->modifyContent($exercise->content, [
                         'is_answered' => true,
                     ])
                 ]);
