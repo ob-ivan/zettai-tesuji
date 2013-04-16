@@ -7,7 +7,7 @@ namespace Zettai\Controller\Console;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 
-class Import implements ControllerProviderInterface
+class Database implements ControllerProviderInterface
 {
     // var //
 
@@ -40,9 +40,9 @@ class Import implements ControllerProviderInterface
         for ($pageNum = 0; $pageNum < $totalPages; ++$pageNum) {
             print 'Page #' . $pageNum;
             foreach ($entity->getList($pageNum * $perPage, $perPage, true) as $exercise) {
-                print '.';
                 $exercise->content['is_answered'] = true;
                 $entity->set($exercise);
+                print '.';
             }
             print ' done!' . "\n";
         }

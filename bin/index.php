@@ -31,7 +31,7 @@ $app->mount('/import',   new Zettai\Controller\Console\Import());
 
 // Запускаем приложение с параметрами командной строки.
 
-$request = Request::create('/' . $argv[1] . '/', 'GET', array_slice($argv, 2));
+$request = Request::create('/' . $argv[1], 'GET', array_slice($argv, 2));
 try {
     $response = $app->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
 } catch (Exception $e) {
