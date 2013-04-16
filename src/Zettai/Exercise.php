@@ -195,6 +195,26 @@ class Exercise
         return $data;
     }
 
+    /**
+     * Создаёт копию себя, отличающуюся на указанные значения полей.
+     *
+     *  @param  [key => value]  $modifications
+     *  @return self
+    **/
+    public function modify(array $modifications)
+    {
+        $modified = new self([]);
+        foreach ($this->data as $key => $value) {
+            $modified->data[$key] = $value;
+        }
+        foreach ($modifications as $key => $value) {
+            if (! isset(self::$FIELD_PROPERTIES[$key])) {
+                throw new Exception('Field "' . $key . '" is unknown', Exception::EXERCISE_MODIFY_FIELD_UNKNOWN);
+            }
+            $modified->data[$key] = self::prepare($value, self::$FIELD_PROPERTIES[$key]);
+        }
+    }
+
     // private //
 
     private function prepare ($value, $properties)
