@@ -40,12 +40,49 @@ class Database implements ControllerProviderInterface
         for ($pageNum = 0; $pageNum < $totalPages; ++$pageNum) {
             print 'Page #' . $pageNum;
             foreach ($entity->getList($pageNum * $perPage, $perPage, true) as $exercise) {
-                $exercise->content['is_answered'] = true;
+
+                // Так работать не должно, поскольку рекорды неизменяемы:
+                // $exercise->content['is_answered'] = true;
+
+                // Правильный интерфейс с точки зрения значений типов:
+                /*
+                $modified = $exercise->modify([
+                    'content' => $content->modify([
+                        'is_answered' => true,
+                    ])
+                ]);
+                */
+
+                // Пока рекорд задачи не переведён на тип, приходится обходиться полумерами:
+                $modified = $exercise->modify([
+                    'content' => $this->modifyContent($content, [
+                        'is_answered' => true,
+                    ])
+                ]);
+
                 $entity->set($exercise);
                 print '.';
             }
             print ' done!' . "\n";
         }
         return 'Done.';
+    }
+
+    // private : helpers //
+
+    /**
+     *  @param  [key => value]  $content
+     *  @param  [key => value]  $modifications
+     *  @return [key => value]
+    **/
+    private function modifyContent(array $content, array $modifications) {
+        $modified = [];
+        foreach ($content as $key => $value) {
+            $modified[$key] = $value;
+        }
+        foreach ($modifications as $key => $value) {
+            $modified[$key] = $value;
+        }
+        return $modified;
     }
 }
