@@ -6,14 +6,14 @@ use Zettai\Exercise as Record;
 class Exercise extends Entity
 {
     // public : EntityInterface //
-    
+
     public function getTableName()
     {
         return 'exercise';
     }
-    
+
     // public : Exercise //
-    
+
     /**
      *  @param  integer $exercise_id
      *  @return Record
@@ -71,6 +71,7 @@ class Exercise extends Entity
         ->select('exercise_id')
         ->select('title')
         ->select('is_hidden')
+        ->select('content')
         ->orderBy('exercise_id', 'ASC')
         ->offset($offset)
         ->limit($limit);
@@ -145,7 +146,7 @@ class Exercise extends Entity
         })
         ->fetchColumn(['exercise_id' => $exercise_id]);
     }
-    
+
     public function delete($exercise_id)
     {
         // prepare

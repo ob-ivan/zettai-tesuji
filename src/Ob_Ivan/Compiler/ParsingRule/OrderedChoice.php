@@ -11,14 +11,14 @@ class OrderedChoice extends ParsingRule
      *  @var [<string ruleName | ParsingRule rule>]
     **/
     private $variants;
-    
+
     public function __construct(Grammar $grammar, array $variants)
     {
         parent::__construct($grammar);
         $this->variants = $variants;
     }
-    
-    public function parseExisting(TokenStream $stream, $nodeType = null)
+
+    public function parse(TokenStream $stream, $nodeType = null)
     {
         foreach ($this->variants as $rule) {
             $subNode = $this->grammar->parse($stream, $rule);

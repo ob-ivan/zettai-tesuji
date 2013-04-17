@@ -4,14 +4,17 @@
 #
 
 ### Укажите true, если хотите выполнять приложение в режиме дебага.
-debug : false 
+debug : false
+
+### Укажите true, чтобы перевести сайт в режим заглушки.
+dummy : false
 
 ### Перечисленные здесь пользователи будут иметь доступ к админке.
-security:
+security :
     <username> :
         password : <digest>
         role     : ['ROLE_ADMIN']
-    
+
 ### База данных.
 db :
     host     : <host>

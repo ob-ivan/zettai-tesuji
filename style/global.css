@@ -46,7 +46,7 @@ div.exercise div.question {
     padding : 0 0 10px;
 }
 
-div.exercise div.row.variants button {
+div.exercise div.row.variants button[name] {
     background : white;
     border : 0;
     float : left;
