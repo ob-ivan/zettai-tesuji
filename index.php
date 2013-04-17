@@ -117,8 +117,8 @@ $app->before(function (Request $request) use ($app) {
 
 // Задаём рутинг и контроллеры.
 
-$app->mount('/', new Zettai\Controller\Site());
-$app->mount('/admin', new Zettai\Controller\Admin());
+$app->mount('/',        new Zettai\Controller\Web\Site());
+$app->mount('/admin',   new Zettai\Controller\Web\Admin());
 
 // Вход в админку.
 $app->get('/login', function (Request $request) use ($app) {

@@ -9,6 +9,7 @@
             dora
             hand
             draw
+            is_answered
             answer
                 a
                     discard
@@ -40,19 +41,24 @@
         <div class="draw">Набрал: {{ content.draw|tile|raw }}</div>
         <br/>
     </div>
-    
+
     {% if mode == 'site' %}
         <div class="row variants">
             <div class="question">Что сбросить?</div>
             {% for letter in app.types.abc.each %}
-                <button name="{{ letter }}">{{ letter|upper }}. {{ attribute(content.answer, letter).discard|tile|raw }}</button>
+                <button disabled name="{{ letter }}">
+                    {{ letter|upper }}. {{ attribute(content.answer, letter).discard|tile|raw }}
+                </button>
             {% endfor %}
             <br/>
         </div>
     {% endif %}
-    
+
     <div class="row answers">
         <hr/>
+        {% if mode == 'admin' and not content.is_answered %}
+            <div class="not_answered">Ответы не опубликованы</div>
+        {% endif %}
         {% include '_answer.twig' with {
             mode    : mode,
             letter  : content.best_answer,

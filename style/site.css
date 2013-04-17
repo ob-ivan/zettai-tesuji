@@ -1,4 +1,11 @@
 
+div.sad div.message {
+    border : 1px solid red;
+    border-top-width : 10px;
+    padding : 1px;
+    text-align : center;
+}
+
 div.answers {
     display : none;
 }
