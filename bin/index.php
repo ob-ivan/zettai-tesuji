@@ -1,8 +1,8 @@
 <?php
 
 // Настраиваем окружение.
-define ('DOCUMENT_ROOT', dirname(__DIR__));
-define ('AUTOLOAD_PATH', DOCUMENT_ROOT . '/vendor/autoload.php');
+define('DOCUMENT_ROOT', dirname(__DIR__));
+define('AUTOLOAD_PATH', DOCUMENT_ROOT . '/vendor/autoload.php');
 mb_internal_encoding('UTF-8');
 
 set_error_handler(function ($errno, $errstr, $errfile, $errline ) {
@@ -26,11 +26,12 @@ $app->error(function (Exception $e) {
 
 // Подключаем контроллеры.
 
-$app->mount('/import', new Zettai\Controller\Import());
+$app->mount('/database', new Zettai\Controller\Console\Database());
+$app->mount('/import',   new Zettai\Controller\Console\Import());
 
 // Запускаем приложение с параметрами командной строки.
 
-$request = Request::create('/' . $argv[1] . '/', 'GET', array_slice($argv, 2));
+$request = Request::create('/' . $argv[1], 'GET', array_slice($argv, 2));
 try {
     $response = $app->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
 } catch (Exception $e) {

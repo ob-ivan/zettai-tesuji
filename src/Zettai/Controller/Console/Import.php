@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Controller;
+namespace Zettai\Controller\Console;
 
 use DomDocument, DomText, DomXPath;
 use Exception as AnyException;
@@ -11,26 +11,26 @@ use Zettai\Exercise;
 class Import implements ControllerProviderInterface
 {
     // const //
-    
+
     const IMPORT_XPATH_POSTS   = '/html/body/form[@id="delete_form"]/div[@class="thread"]/table[substring(@id,1,5)="post_"]';
     const IMPORT_XPATH_MESSAGE = 'tbody/tr/td[@class="reply"]/div[@class="postbody"]/div[@class="message"]';
-    
+
     const IMPORT_KEY_ID       = __LINE__;
     const IMPORT_KEY_EXERCISE = __LINE__;
     const IMPORT_KEY_ANSWER   = __LINE__;
-    
+
     // var //
-    
+
     private $model;
     private $types;
-    
+
     // public : ControllerProviderInterface //
-    
+
     public function connect(Application $app)
     {
         $this->model = $app['model'];
         $this->types = $app['types'];
-        
+
         $controllers = $app['controllers_factory'];
         $app->error(function (Exception $exception) {
             return $this->error($exception);
@@ -40,9 +40,9 @@ class Import implements ControllerProviderInterface
         });
         return $controllers;
     }
-    
+
     // private : error handlers //
-    
+
     private function error(Exception $exception)
     {
         // TODO: Разобраться, почему сюда не заходит.
@@ -56,10 +56,10 @@ class Import implements ControllerProviderInterface
         }
         throw $exception;
     }
-    
+
     // private : controllers //
-    
-    private function import (Request $request)
+
+    private function import(Request $request)
     {
         $exercises = $this->getExercises(
             $this->getExerciseNodes(
@@ -68,16 +68,16 @@ class Import implements ControllerProviderInterface
                 )
             )
         );
-        
+
         foreach ($exercises as $exercise) {
             $this->model->setExercise($exercise);
         }
-        
+
         return 'done';
     }
-    
+
     // private : helpers //
-    
+
     private function getContents(Request $request)
     {
         // Прочитать либо имя файла, либо адрес треда из параметров.
@@ -85,17 +85,17 @@ class Import implements ControllerProviderInterface
         if (empty ($filepath)) {
             throw new Exception('Filename is empty', Exception::IMPORT_FILENAME_EMPTY);
         }
-        
+
         // Достать содержимое.
         try {
             $contents = file_get_contents($filepath);
         } catch (AnyException $exception) {
             throw new Exception('Could not get contents of "' . $filepath . '"', Exception::IMPORT_FILE_UNREACHABLE, $exception);
         }
-        
+
         return $contents;
     }
-    
+
     /**
      * Загружает содержимое в документ и возвращает объект выборки по xpath.
     **/
@@ -124,7 +124,7 @@ class Import implements ControllerProviderInterface
             }
             $postId = intval($matches[1]);
             unset ($matches);
-            
+
             // Выбрать узел с сообщением.
             $messageNodes = $xpath->query(self::IMPORT_XPATH_MESSAGE, $post);
             if ($messageNodes->length !== 1) {
@@ -132,7 +132,7 @@ class Import implements ControllerProviderInterface
             }
             $messageNode = $messageNodes->item(0);
             unset ($messageNodes);
-            
+
             // Определить задачу или ответ.
             if (preg_match('/^\s*Задача №(\d{3})/u', $messageNode->textContent, $matches)) {
                 $exerciseNodes[$postId] = [
@@ -224,7 +224,7 @@ class Import implements ControllerProviderInterface
                     ],
                     'best_answer' => null,
                 ];
-                
+
                 // Разобрать ответы.
                 if (! isset($node[self::IMPORT_KEY_ANSWER])) {
                     print 'Не найден пост с ответом к задаче ' . $node[self::IMPORT_KEY_ID] . "\n\n";
@@ -240,7 +240,7 @@ class Import implements ControllerProviderInterface
                     $answers = [];
                     $mode = 'none'; // 'best' | 'others'
                     foreach ($node[self::IMPORT_KEY_ANSWER]->childNodes as $childNode) {
-                    
+
                         if ($childNode instanceof DomText) {
                             if (preg_match('/Правильный ответ:/u', $childNode->textContent)) {
                                 $mode = 'best';
@@ -281,7 +281,7 @@ class Import implements ControllerProviderInterface
                             $content['answer'][$letter.'']['comment'] = implode (' ', $answers[$letter.'']);
                         }
                         $content['best_answer'] = $bestAnswer;
-                        
+
                         // TODO: Сделать так, когда типы будут позволять.
                         // $exercises[$postId] = $this->types->exercise->from($data + ['content' => $content]);
                         $exercises[$postId] = new Exercise($data + ['content' => $content]);
@@ -295,7 +295,7 @@ class Import implements ControllerProviderInterface
         }
         return $exercises;
     }
-    
+
     private function russianToEnglish($russian)
     {
         switch ($russian) {
@@ -305,24 +305,24 @@ class Import implements ControllerProviderInterface
         }
         return null;
     }
-    
+
     // private : type converters //
-    
+
     private function convertKyoku($presentation)
     {
         return $this->types->kyoku->from(mb_strtolower($presentation))->toEnglish();
     }
-    
+
     private function convertTile($presentation)
     {
         return $this->types->tile->from($presentation)->toTile();
     }
-    
+
     private function convertTileSequence($presentation)
     {
         return $this->types->tileSequence->fromRussian($presentation)->toTile();
     }
-    
+
     private function convertWind($presentation)
     {
         return $this->types->wind->from(mb_strtolower($presentation))->toEnglish();

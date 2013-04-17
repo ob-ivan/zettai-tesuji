@@ -13,11 +13,11 @@ class TypeServiceProvider implements ServiceProviderInterface
             return new Service(['Tile', 'English', 'Eng', 'Russian', 'Rus']);
         });
     }
-    
+
     public function boot(Application $app)
     {
         $service = $app['types'];
-        
+
         $service->register('roundWind', function ($service) {
             return $service->viewable([
                 ['1z', 'east',  'e', 'восток', 'в'],
@@ -66,7 +66,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $internal = [];
                 while (! empty($presentation)) {
                     $prevLength = strlen($presentation);
-                    
+
                     $presentation = trim($presentation);
                     $candidate = $this->element->fromView($view, $presentation);
                     if ($candidate) {
@@ -85,7 +85,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                     } else {
                         break;
                     }
-                    
+
                     if ($prevLength <= strlen($presentation)) {
                         break;
                     }
@@ -93,9 +93,9 @@ class TypeServiceProvider implements ServiceProviderInterface
                 return $this->value($internal);
             })
             ->setHook('toView', function ($view, $internal) {
-            
+
                 $isLong = in_array($view, ['English', 'Russian']);
-            
+
                 $prevRankPresentation = null;
                 $prevSuitPresentation = null;
                 $presentations = [];
@@ -104,7 +104,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                     if (preg_match('/^(\d)(\D+)$/', $newPresentation, $matches)) {
                         $newRankPresentation = $matches[1];
                         $newSuitPresentation = $matches[2];
-                        
+
                         if (! is_null($prevRankPresentation) && ! is_null($prevSuitPresentation)) {
                             $presentations[] = $prevRankPresentation;
                             if ($prevSuitPresentation !== $newSuitPresentation) {
@@ -150,14 +150,15 @@ class TypeServiceProvider implements ServiceProviderInterface
         });
         $service->register('exerciseContent', function ($service) {
             return $service->record([
-                'kyoku'     => $service['kyoku'],
-                'position'  => $service['wind'],
-                'turn'      => range(1, 18),
-                'dora'      => $service['tile'],
-                'score'     => $service->text(),
-                'hand'      => $service['tileSequence'],
-                'draw'      => $service['tile'],
-                'answer'    => $service->map(
+                'kyoku'         => $service['kyoku'],
+                'position'      => $service['wind'],
+                'turn'          => range(1, 18),
+                'dora'          => $service['tile'],
+                'score'         => $service->text(),
+                'hand'          => $service['tileSequence'],
+                'draw'          => $service['tile'],
+                'is_answered'   => $service->boolean(),
+                'answer'        => $service->map(
                     $service['abc'],
                     $service['answer']
                 ),

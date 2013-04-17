@@ -104,6 +104,16 @@
                 } only %}
             </label>
         </p>
+        <p>
+            <label>
+                Публиковать ответы:
+                <input type="checkbox" name="is_answered" value="1"
+                    {% if exercise.content.is_answered %}
+                        checked
+                    {% endif %}
+                />
+            </label>
+        </p>
         {% for letter in app.types.abc.each %}
             <p>
                 <label>

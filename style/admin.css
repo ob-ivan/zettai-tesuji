@@ -15,6 +15,14 @@ div.next {
     float : right;
 }
 
+/* Просмотр задачи */
+
+div.not_answered {
+    background : #ccc;
+    font-weight : bold;
+    text-align : center;
+}
+
 /* Редактирование задачи */
 
 input[name=exercise_id] {
