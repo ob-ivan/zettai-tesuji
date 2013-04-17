@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Controller;
+namespace Zettai\Controller\Web;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -132,6 +132,7 @@ class Admin implements ControllerProviderInterface
                     'score'         => $request->request->get('score'),
                     'hand'          => $request->request->get('hand'),
                     'draw'          => $request->request->get('draw'),
+                    'is_answered'   => $request->request->get('is_answered'),
                     'answer'        => $request->request->get('answer'),
                     'best_answer'   => $request->request->get('best_answer'),
                 ],

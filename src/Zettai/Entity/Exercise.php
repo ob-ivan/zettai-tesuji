@@ -86,6 +86,7 @@ class Exercise extends Entity
         ->select('exercise_id')
         ->select('title')
         ->select('is_hidden')
+        ->select('content')
         ->orderBy('exercise_id', 'ASC')
         ->offset($offset)
         ->limit($limit);
