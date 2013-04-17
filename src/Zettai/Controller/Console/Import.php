@@ -59,7 +59,7 @@ class Import implements ControllerProviderInterface
 
     // private : controllers //
 
-    private function import (Request $request)
+    private function import(Request $request)
     {
         $exercises = $this->getExercises(
             $this->getExerciseNodes(

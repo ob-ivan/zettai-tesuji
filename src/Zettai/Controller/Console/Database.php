@@ -6,6 +6,7 @@ namespace Zettai\Controller\Console;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Zettai\Exercise;
 
 class Database implements ControllerProviderInterface
 {
@@ -60,7 +61,7 @@ class Database implements ControllerProviderInterface
                     ])
                 ]);
 
-                $entity->set($exercise);
+                $entity->set($modified);
                 print '.';
             }
             print ' done!' . "\n";
@@ -84,5 +85,15 @@ class Database implements ControllerProviderInterface
             $modified[$key] = $value;
         }
         return $modified;
+    }
+
+    private function printExercise(Exercise $exercise)
+    {
+        $lines = [];
+        $lines[] = 'exercise_id = ' . $exercise->exercise_id;
+        $lines[] = 'title       = ' . $exercise->title;
+        $lines[] = 'is_hidden   = ' . $exercise->is_hidden;
+        $lines[] = 'content     = ' . print_r($exercise->content, true);
+        return implode("\n", $lines);
     }
 }
