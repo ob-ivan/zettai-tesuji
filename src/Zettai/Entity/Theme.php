@@ -2,6 +2,7 @@
 namespace Zettai\Entity;
 
 use Ob_Ivan\Model\Entity;
+use Ob_Ivan\Model\Service;
 use Zettai\Type\TypeInterface;
 use Zettai\Type\Value;
 
@@ -135,6 +136,22 @@ class Theme extends Entity
         })
         ->where(function ($expr) use ($includeHidden) {
             $exprPrev = $expr->lessThan('theme_id', ':theme_id');
+            if (! $includeHidden) {
+                return $exprPrev->addAnd($expr->equals('is_hidden', 0));
+            }
+            return $exprPrev;
+        })
+        ->fetchColumn(['theme_id' => $theme_id]);
+    }
+
+    public function getPage($theme_id, $per_page, $includeHidden = false)
+    {
+        return $this->queryBuilder()
+        ->select(function ($expr) use ($per_page) {
+            return $expr->ceil($expr->divide($expr->count(), $per_page));
+        })
+        ->where(function ($expr) use ($includeHidden) {
+            $exprPrev = $expr->lessThanOrEqual('theme_id', ':theme_id');
             if (! $includeHidden) {
                 return $exprPrev->addAnd($expr->equals('is_hidden', 0));
             }
