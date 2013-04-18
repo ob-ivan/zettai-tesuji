@@ -4,13 +4,19 @@ use Zettai\Config;
 
 class ModelTestCase extends \PHPUnit_Framework_TestCase
 {
+    private $app;
+
     public function setUp()
     {
-        $app = new Application(new Config(DOCUMENT_ROOT));
+        $this->app = new Application(new Config(DOCUMENT_ROOT));
     }
-    
+
     public function test()
     {
-        // TODO
+        $exercise = $this->app['model']->exercise;
+        $this->assertTrue($exercise instanceof Zettai\Entity\Exercise, 'Exercise entity has wrong type');
+
+        $theme = $this->app['model']->theme;
+        $this->assertTrue($theme instanceof Zettai\Entity\Theme, 'Theme entity has wrong type');
     }
 }
