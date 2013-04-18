@@ -6,10 +6,14 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
 {
     private $app;
     private $entity;
+    private $type;
 
     public function setUp()
     {
-        $this->app      = new Application(new Config(DOCUMENT_ROOT));
+        $this->app = new Application(new Config(DOCUMENT_ROOT));
+        $this->app->boot();
+
+        $this->type     = $this->app['types']->theme;
         $this->entity   = $this->app['model']->theme;
     }
 
@@ -58,7 +62,8 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
         $max_exercise_id = mt_rand($min_exercise_id, $lastExerciseId);
         $advanced_percentage = $this->generateFloat(0, 1);
         $intermediate_percentage = $this->generateFloat(0, $advanced_percentage);
-        return $this->entity->from([
+
+        return $this->type->from([
             'theme_id'  => $this->entity->getNewId() + mt_rand(0, 100),
             'title'     => $this->generateText(20),
             'is_hidden' => mt_rand(0, 1),
