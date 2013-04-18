@@ -17,6 +17,13 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
         $this->entity   = $this->app['model']->theme;
     }
 
+    public function testGenerate()
+    {
+        $theme = $this->generateTheme();
+        $this->assertTrue($theme instanceof Zettai\Type\Value, 'Generated theme must be an instance of Value');
+        $this->assertTrue($this->type->has($theme), 'Generated theme does not belong to its type');
+    }
+
     public function testSetGetDelete()
     {
         $theme = $this->generateTheme();
@@ -60,18 +67,18 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
         $lastExerciseId = $this->app['model']->exercise->getNewId() - 1;
         $min_exercise_id = mt_rand(1, $lastExerciseId);
         $max_exercise_id = mt_rand($min_exercise_id, $lastExerciseId);
-        $advanced_percentage = $this->generateFloat(0, 1);
-        $intermediate_percentage = $this->generateFloat(0, $advanced_percentage);
+        $advanced_percent = mt_rand(0, 100);
+        $intermediate_percent = mt_rand(0, $advanced_percent);
 
-        return $this->type->from([
+        return $this->type->fromArray([
             'theme_id'  => $this->entity->getNewId() + mt_rand(0, 100),
             'title'     => $this->generateText(20),
             'is_hidden' => mt_rand(0, 1),
             'intro'     => $this->generateText(200),
             'min_exercise_id' => $min_exercise_id,
             'max_exercise_id' => $max_exercise_id,
-            'advanced_percentage' => $advanced_percentage,
-            'intermediate_percentage' => $intermediate_percentage,
+            'advanced_percent' => $advanced_percent,
+            'intermediate_percent' => $intermediate_percent,
         ]);
     }
 }

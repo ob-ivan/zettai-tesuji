@@ -190,7 +190,7 @@ class Theme extends Entity
         ->select('intro')
         ->select('min_exercise_id')
         ->select('max_exercise_id')
-        ->select('advanced_percentage')
-        ->select('intermediate_percentage');
+        ->select('advanced_percent')
+        ->select('intermediate_percent');
     }
 }

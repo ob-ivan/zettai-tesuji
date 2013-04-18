@@ -13,14 +13,14 @@ namespace Zettai\Type;
 class Product extends Type implements DereferenceableInterface
 {
     // var //
-    
+
     /**
      *  @var [<index> => <TypeInterface>]
     **/
     private $multipliers = [];
-    
+
     // public : DereferenceableInterface //
-    
+
     public function dereference($internal, $offset)
     {
         if (! isset($this->multipliers[$offset])) {
@@ -28,7 +28,7 @@ class Product extends Type implements DereferenceableInterface
         }
         return $internal[$offset];
     }
-    
+
     public function dereferenceExists($internal, $offset)
     {
         if (! isset($this->multipliers[$offset])) {
@@ -36,18 +36,18 @@ class Product extends Type implements DereferenceableInterface
         }
         return isset($internal[$offset]);
     }
-    
+
     // public : Product //
-    
+
     public function __construct (ServiceInterface $service, array $multipliers)
     {
         parent::__construct($service);
-        
+
         foreach ($multipliers as $index => $multiplier) {
             $this->multipliers[$index] = $service->type($multiplier);
         }
     }
-    
+
     public function each()
     {
         /**
@@ -71,7 +71,7 @@ class Product extends Type implements DereferenceableInterface
         }
         return $return;
     }
-    
+
     public function equals ($a, $b)
     {
         foreach ($a as $index => $value) {
@@ -92,7 +92,7 @@ class Product extends Type implements DereferenceableInterface
         }
         return true;
     }
-    
+
     /**
      * Дополнительно рассматривает $input как массив.
     **/
@@ -107,12 +107,12 @@ class Product extends Type implements DereferenceableInterface
         }
         return null;
     }
-    
+
     public function fromArray($array)
     {
         $internal = [];
         foreach ($this->multipliers as $index => $multiplier) {
-            if (! isset ($array[$index])) {
+            if (! isset($array[$index])) {
                 return null;
             }
             $value = $multiplier->from($array[$index]);
@@ -123,7 +123,7 @@ class Product extends Type implements DereferenceableInterface
         }
         return $this->value($internal);
     }
-    
+
     public function fromPrimitive($primitive)
     {
         if (! is_string($primitive)) {
@@ -143,13 +143,13 @@ class Product extends Type implements DereferenceableInterface
         }
         return $this->value($internal);
     }
-    
+
     public function fromView($view, $presentation)
     {
         if (! is_string($presentation)) {
             return null;
         }
-        
+
         $internal = [];
         foreach ($this->multipliers as $index => $multiplier) {
             $value = $multiplier->fromView($view, $presentation);
@@ -161,7 +161,7 @@ class Product extends Type implements DereferenceableInterface
         }
         return $this->value($internal);
     }
-    
+
     public function toPrimitive($internal)
     {
         $primitives = [];
@@ -170,7 +170,7 @@ class Product extends Type implements DereferenceableInterface
         }
         return json_encode($primitives);
     }
-    
+
     public function toView($view, $internal)
     {
         $presentation = [];
@@ -179,9 +179,9 @@ class Product extends Type implements DereferenceableInterface
         }
         return implode('', $presentation);
     }
-    
+
     // private //
-    
+
     /**
      *  @return [<index> => primitives[index][0 .. counts[index]]]
     **/
@@ -196,5 +196,15 @@ class Product extends Type implements DereferenceableInterface
         }
         ksort($key, SORT_NUMERIC);
         return json_encode($key);
+    }
+
+    private function printType(TypeInterface $type)
+    {
+        return get_class($type);
+    }
+
+    private function printValue(Value $value)
+    {
+        return get_class($value);
     }
 }
