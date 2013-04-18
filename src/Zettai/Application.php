@@ -4,40 +4,42 @@ namespace Zettai;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Application as BaseApplication;
 use Zettai\Provider\ModelServiceProvider;
+use Zettai\Provider\TypeServiceProvider;
 
 class Application extends BaseApplication
 {
     // include //
-    
+
     use BaseApplication\MonologTrait;
     use BaseApplication\TwigTrait;
     use BaseApplication\UrlGeneratorTrait;
-    
+
     // public //
-    
+
     public function __construct(Config $config)
     {
         parent::__construct();
-        
+
         // Зарегистрировать стандартные для zettai-приложения компоненты.
         $this->registerConfig($config);
+        $this->registerType();
         $this->registerDatabase();
         $this->registerModel();
     }
-    
+
     // private //
-    
+
     private function registerConfig (Config $config)
     {
         // Запомнить конфиг.
         $this['config'] = $config;
-        
+
         // Применить поведение по умолчанию.
         if ($this['config']->debug) {
             $this['debug'] = true;
         }
     }
-    
+
     private function registerDatabase ()
     {
         $this->register(new DoctrineServiceProvider(), [
@@ -51,9 +53,14 @@ class Application extends BaseApplication
             ],
         ]);
     }
-    
+
     private function registerModel()
     {
         $this->register(new ModelServiceProvider());
+    }
+
+    private function registerType()
+    {
+        $this->register(new TypeServiceProvider());
     }
 }

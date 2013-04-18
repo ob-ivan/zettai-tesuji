@@ -163,7 +163,9 @@ class Theme extends Entity
     public function set(Value $theme)
     {
         // validate
-        if (! $this->type->has($
+        if (! $this->type->has($theme)) {
+            throw new Exception('Argument does not belong to type theme', Exception::THEME_SET_THEME_WRONG_TYPE);
+        }
         if (! ($theme->theme_id > 0)) {
             throw new Exception('Theme id is empty', Exception::THEME_ID_EMPTY);
         }

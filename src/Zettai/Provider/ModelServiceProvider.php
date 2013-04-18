@@ -25,7 +25,7 @@ class ModelServiceProvider implements ServiceProviderInterface
             return new Exercise($service);
         });
         $app['model']->register('theme', function ($service) use ($app) {
-            return new Theme($service, $app['types']->theme);
+            return new Theme($service, $app['type']->theme);
         });
     }
 }
