@@ -18,7 +18,6 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 $app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
 
-$app->register(new Zettai\Provider\TypeServiceProvider());
 $app->error(function (Exception $e) {
     // TODO: Разобраться, почему даже сюда не заходит.
     return 'Error!';

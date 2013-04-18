@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Model;
+namespace Ob_Ivan\Model;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
@@ -12,76 +12,81 @@ use Monolog\Logger;
 class Service implements ServiceInterface
 {
     // var //
-    
+
     private $db;
     private $debug;
     private $logger;
-    
+
     private $entities = [];
     private $registry = [];
 
     // public : ServiceInterface //
-    
+
     public function __construct (Connection $db, $debug)
     {
         $this->db     = $db;
         $this->debug  = $debug;
     }
-    
+
     public function getTableName(EntityInterface $entity)
     {
         return ($this->debug ? '_test_' : '') . $entity->getTableName();
     }
-    
+
+    public function queryBuilder(EntityInterface $entity)
+    {
+        return new QueryBuilder($this, $entity);
+    }
+
     public function register($name, callable $entityProvider)
     {
         $this->registry[$name] = $entityProvider;
     }
-    
+
     public function setLogger(Logger $logger)
     {
         $this->logger = $logger;
     }
-    
+
     // public : ServiceInterface : fetch //
-    
+
     public function fetchAll($query, $parameters)
     {
         $this->logQuery(__METHOD__, $query);
         return $this->db->fetchAll($query, $parameters);
     }
-    
+
     public function fetchAssoc($query, $parameters)
     {
         $this->logQuery(__METHOD__, $query);
         return $this->db->fetchAssoc($query, $parameters);
     }
-    
+
     public function fetchColumn($query, $parameters)
     {
         $this->logQuery(__METHOD__, $query);
         return $this->db->fetchColumn($query, $parameters);
     }
-    
+
     // public : ServiceInterface : modify //
-    
+
     public function delete($tableName, $filter)
     {
         return $this->db->delete($tableName, $filter);
     }
-    
+
     public function insert($tableName, $data)
     {
         return $this->db->insert($tableName, $data);
     }
-    
+
     public function update($tableName, $data, $filter)
     {
         return $this->db->update($tableName, $data, $filter);
     }
-    
+
     // public : Service //
-    
+
     public function __get($name)
     {
         if (! isset($this->entities[$name])) {
@@ -93,14 +98,14 @@ class Service implements ServiceInterface
         }
         return $this->entities[$name];
     }
-    
+
     public function __isset($name)
     {
         return isset($this->entities[$name]) || isset($this->registry[$name]);
     }
-    
+
     // private //
-    
+
     private function logQuery($method, $query)
     {
         if ($this->logger) {

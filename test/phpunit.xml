@@ -2,6 +2,8 @@
 <phpunit
     bootstrap="bootstrap.php"
     colors="true"
+    stopOnError="true"
+    stopOnFailure="true"
     strict="true"
 >
     <testsuites>

@@ -173,5 +173,17 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'content'       => $service['exerciseContent'],
             ]);
         });
+        $service->register('theme', function ($service) {
+            return $service->record([
+                'theme_id'              => $service->integer(),
+                'title'                 => $service->text(),
+                'is_hidden'             => $service->boolean(),
+                'intro'                 => $service->text(),
+                'min_exercise_id'       => $service->integer(),
+                'max_exercise_id'       => $service->integer(),
+                'advanced_percent'      => $service->integer(),
+                'intermediate_percent'  => $service->integer(),
+            ]);
+        });
     }
 }
