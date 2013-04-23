@@ -1,6 +1,8 @@
 <?php
 namespace Ob_Ivan\EviType\Type\Product;
 
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\OptionsInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
 class Type extends ParentType
