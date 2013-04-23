@@ -18,9 +18,9 @@ class ValueService
         $this->type = $type;
     }
 
-    public function produce($internal)
+    public function produce(InternalInterface $internal)
     {
-        $primitive = json_encode($internal);
+        $primitive = $internal->getPrimitive();
         if (! isset($this->registry[$primitive])) {
             $this->registry[$primitive] = new Value($this->type, $internal);
         }

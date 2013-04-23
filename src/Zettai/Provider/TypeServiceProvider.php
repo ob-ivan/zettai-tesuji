@@ -22,14 +22,17 @@ class TypeServiceProvider implements ServiceProviderInterface
 
         $typeService->register('roundWind', function ($typeService) {
             $type = $typeService->enum(['east', 'south']);
-            $type->view->register([
-                'english' => $type->view->dictionary(['east',   'south']),
-                'e'       => $type->view->dictionary(['e',      's'    ]),
-                'russian' => $type->view->dictionary(['восток', 'юг'   ]),
-                'r'       => $type->view->dictionary(['в',      'ю'    ]),
-                'tenhou'  => $type->view->dictionary(['1z',     '2z'   ]),
-                // 'tile'    => $type->view->cast('tenhou', 'tile', 'tenhou'),
-            ]);
+            $type->view('english',  $type->dictionary(['east',      'south']));
+            $type->view('e',        $type->dictionary(['e',         's']));
+            $type->view('russian',  $type->dictionary(['восток',    'юг']));
+            $type->view('r',        $type->dictionary(['в',         'ю']));
+
+            $tenhouView = $type->dictionary(['1z', '2z']);
+            $type->view('tenhou', $tenhouView);
+            $type->export('tile', function (EnumInternal $internal) use ($typeService, $tenhouView) {
+                return $typeService['tile']->fromTenhou($tenhouView->export($internal));
+            });
+
             return $type;
         });
         $typeService->register('squareWind', function ($typeService) {
