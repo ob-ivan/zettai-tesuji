@@ -12,7 +12,7 @@ class Dictionary implements ViewInterface
 
     public function __construct($map)
     {
-        if (! is_array($map) || ($map instanceof ArrayAccess && $map instanceof Traversable)) {
+        if (! (is_array($map) || ($map instanceof ArrayAccess && $map instanceof Traversable))) {
             throw new Exception(
                 'Map must be an array or implement array-like behaviour',
                 Exception::DICTIONARY_CONSTRUCT_MAP_WRONG_TYPE

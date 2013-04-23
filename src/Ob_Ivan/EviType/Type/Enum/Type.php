@@ -34,6 +34,6 @@ class Type extends ParentType
 
     public function dictionary($map)
     {
-        return new View\Dictionary($this->options, $map);
+        return new View\Dictionary($map);
     }
 }
