@@ -1,7 +1,7 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-class Type implements TypeInterface
+abstract class Type implements TypeInterface
 {
     // var //
 
@@ -10,7 +10,7 @@ class Type implements TypeInterface
     private $views   = [];
 
     /**
-     *  @var TypeOptionsInterface
+     *  @var OptionsInterface
     **/
     private $options;
 
@@ -21,7 +21,7 @@ class Type implements TypeInterface
 
     // public : TypeInterface //
 
-    public function __construct(TypeOptionsInterface $options = null)
+    public function __construct(OptionsInterface $options = null)
     {
         $this->options = $options;
 

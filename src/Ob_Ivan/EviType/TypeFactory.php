@@ -4,12 +4,12 @@ namespace Ob_Ivan\EviType;
 class TypeFactory
 {
     /**
-     * @var [<string name> => <TypeBuilderInterface producer()>]
+     * @var [<string name> => <BuilderInterface producer()>]
     **/
     private $registry = [];
 
     /**
-     * @var [<string name> => <TypeBuilderInterface builder>]
+     * @var [<string name> => <BuilderInterface builder>]
     **/
     private $builders = [];
 
@@ -23,7 +23,7 @@ class TypeFactory
                 );
             }
             $builder = $this->registry[$name]();
-            if (! $builder instanceof TypeSortInterface) {
+            if (! $builder instanceof BuilderInterface) {
                 throw new Exception(
                     'Value for "' . $name . '" must implement TypeSortInterface',
                     Exception::TYPE_FACTORY_PRODUCE_SORT_WRONG_TYPE
@@ -37,10 +37,10 @@ class TypeFactory
     /**
      * Регистрирует один или несколько сортов типа.
      *
-     *  @param  string                  $name
-     *  @param  TypeBuilderInterface()  $producer
+     *  @param  string              $name
+     *  @param  BuilderInterface()  $producer
      * OR
-     *  @param  [string => TypeBuilderInterface()] $producerMap
+     *  @param  [string => BuilderInterface()] $producerMap
     **/
     public function register($name, callable $producer = null)
     {

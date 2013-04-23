@@ -3,7 +3,7 @@ namespace Ob_Ivan\EviType;
 
 interface TypeInterface
 {
-    public function __construct(TypeOptionsInterface $options = null);
+    public function __construct(OptionsInterface $options = null);
 
     public function callValueMethod(InternalInterface $internal, $name, array $arguments);
 
