@@ -9,18 +9,7 @@ class Builder implements BuilderInterface
     {
         $options = new Options($arguments);
         $type = new Type($options);
-
-        // TODO: Объединить во view.
-        $type->export('Default', function (Internal $internal, Options $options) {
-            return $options[$internal->getPrimitive()];
-        });
-        $type->import('Default', function ($presentation, Options $options) {
-            foreach ($options as $primitive => $name) {
-                if ($presentation === $name) {
-                    return new Internal($primitive);
-                }
-            }
-        });
+        $type->view('Default', $type->dictionary($options));
 
         return $type;
     }
