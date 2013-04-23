@@ -60,12 +60,10 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $typeService['roundWind'],
                 $typeService->enum(range(1, 4))
             );
-            $type->view->register([
-                'english'   => $type->view->separator('-',  ['english', 'default']),
-                'e'         => $type->view->concat   (      ['e',       'default']),
-                'russian'   => $type->view->separator('-',  ['russian', 'default']),
-                'r'         => $type->view->concat   (      ['r',       'default']),
-            ]);
+            $type->view('english',  $type->separator('-',   ['english', 'default']));
+            $type->view('e',        $type->concat   (       ['e',       'default']));
+            $type->view('russian',  $type->separator('-',   ['russian', 'default']));
+            $type->view('r',        $type->concat   (       ['r',       'default']));
             return $type;
         });
     }

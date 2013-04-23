@@ -12,11 +12,13 @@
 **/
 namespace Ob_Ivan\EviType\Type\Product;
 
-use ArrayAccess;
+use ArrayAccess,
+    ArrayIterator,
+    IteratorAggregate;
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\Value;
 
-class Internal implements InternalInterface
+class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
 {
     private $map;
 
@@ -31,6 +33,11 @@ class Internal implements InternalInterface
             }
         }
         $this->map = $componentNameToValueMap;
+    }
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->map);
     }
 
     public function offsetExists($offset)

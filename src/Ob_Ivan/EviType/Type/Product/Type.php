@@ -34,4 +34,16 @@ class Type extends ParentType
         }
         // TODO
     }
+
+    // public : view factory //
+
+    public function concat($map)
+    {
+        return new View\Separator('', $map);
+    }
+
+    public function separator($separator, $map)
+    {
+        return new View\Separator($separator, $map);
+    }
 }

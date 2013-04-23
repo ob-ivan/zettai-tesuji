@@ -35,6 +35,8 @@ class Type extends ParentType
         // TODO
     }
 
+    // public : view factory //
+
     public function dictionary($map)
     {
         return new View\Dictionary($map);
