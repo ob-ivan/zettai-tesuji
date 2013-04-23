@@ -1,27 +1,36 @@
 <?php
 /**
- * Опции перечислимого типа -- это просто массив,
- * отправляющий примитивное значени в имя.
+ * Опции произведения типов -- это массив,
+ * отправляющий имя компоненты в её тип.
  *
  *  [
- *      <index primitive> => <mixed name>,
+ *      <index componentName> => <TypeInterface type>,
  *      ...
  *  ]
 **/
-namespace Ob_Ivan\EviType\Type\Enum;
+namespace Ob_Ivan\EviType\Type\Product;
 
 use ArrayAccess,
     ArrayIterator,
     IteratorAggregate;
-use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\OptionsInterface,
+    Ob_Ivan\EviType\TypeInterface;
 
 class Options implements ArrayAccess, IteratorAggregate, OptionsInterface
 {
     private $map;
 
-    public function __construct(array $primitiveToNameMap)
+    public function __construct(array $componentNameToTypeMap)
     {
-        $this->map = $primitiveToNameMap;
+        foreach ($componentNameToTypeMap as $componentName => $type) {
+            if (! $type instanceof TypeInterface) {
+                throw new Exception(
+                    'Map value for key "' . $componentName . '" must implement TypeInterface',
+                    Exception::OPTIONS_CONSTRUCT_TYPE_WRONG_TYPE
+                );
+            }
+        }
+        $this->map = $componentNameToTypeMap;
     }
 
     public function getIterator()
