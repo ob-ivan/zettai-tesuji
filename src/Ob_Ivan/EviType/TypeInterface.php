@@ -5,9 +5,12 @@ interface TypeInterface
 {
     public function __construct(OptionsInterface $options = null);
 
-    public function callValueMethod(InternalInterface $internal, $name, array $arguments);
+    // Создание и обслуживание значений //
 
-    // Регистрация представлений.
+    public function callValueMethod(InternalInterface $internal, $name, array $arguments);
+    public function from($presentation);
+
+    // Регистрация представлений //
 
     public function export($name, callable $implementation);
     public function import($name, callable $implementation);

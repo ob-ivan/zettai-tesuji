@@ -5,7 +5,14 @@ abstract class Type implements TypeInterface
 {
     // var //
 
+    /**
+     *  @var [<string name> => <mixed implementation(Internal internal, Options options)>]
+    **/
     private $exports = [];
+
+    /**
+     *  @var [<string name> => <Internal implementation(mixed presentation, Options options)>]
+    **/
     private $imports = [];
     private $views   = [];
 
@@ -27,6 +34,26 @@ abstract class Type implements TypeInterface
 
         $this->valueService = new ValueService($this);
     }
+
+    // public : TypeInterface : Создание и обслуживание значений //
+
+    public function from($presentation)
+    {
+        foreach ($this->imports as $import) {
+            $internal = $import($presentation, $this->options);
+            if ($internal) {
+                return $this->valueService->produce($internal);
+            }
+        }
+        foreach ($this->views as $view) {
+            $internal = $view->import($presentation, $this->options);
+            if ($internal) {
+                return $this->valueService->produce($internal);
+            }
+        }
+    }
+
+    // public : TypeInterface : Регистрация представлений //
 
     public function export($name, callable $implementation)
     {
