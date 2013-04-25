@@ -12,7 +12,19 @@ class Type extends ParentType implements IterableInterface
 
     public function each()
     {
-        // TODO
+        $values = [];
+        foreach ($this->getOptions() as $variantName => $type) {
+            if (! $type instanceof IterableInterface) {
+                throw new Exception(
+                    'Variant "' . $variantName . '" cannot be iterated',
+                    Exception::TYPE_EACH_VARIANT_NOT_ITERABLE
+                );
+            }
+            foreach ($type->each() as $value) {
+                $values[] = $value;
+            }
+        }
+        return $values;
     }
 
     // public : ParentType //

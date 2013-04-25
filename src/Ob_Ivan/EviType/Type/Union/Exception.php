@@ -11,4 +11,5 @@ class Exception extends ParentException
 
     const TYPE_CONSTRUCT_OPTIONS_WRONG_TYPE             = 0x030201;
     const TYPE_CALL_VALUE_METHOD_INTERNAL_WRONG_TYPE    = 0x030202;
+    const TYPE_EACH_VARIANT_NOT_ITERABLE                = 0x030203;
 }
