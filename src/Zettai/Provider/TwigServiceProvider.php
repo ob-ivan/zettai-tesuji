@@ -29,7 +29,7 @@ class TwigServiceProvider implements ServiceProviderInterface
             // фильтры : типы //
 
             $twig->addFilter('wind', new Twig_Filter_Function(function ($wind) use ($app) {
-                return $app['types']->wind->from($wind)->toRussian();
+                return $app['types']->wind->fromAny($wind)->toRussian();
             }));
             $twig->addFilter('kyoku', new Twig_Filter_Function(function ($kyoku) use ($app) {
                 return $app['types']->kyoku->fromAny($kyoku)->toRussian();
