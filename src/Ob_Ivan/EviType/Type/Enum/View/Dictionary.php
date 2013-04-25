@@ -4,12 +4,16 @@ namespace Ob_Ivan\EviType\Type\Enum\View;
 use ArrayAccess, Traversable;
 use Ob_Ivan\EviType\Enum\Internal;
 use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\OptionsInterface;
 use Ob_Ivan\EviType\ViewInterface;
 
 class Dictionary implements ViewInterface
 {
     private $map;
 
+    /**
+     *  @param  [<primitive> => <name>] $map
+    **/
     public function __construct($map)
     {
         if (! (is_array($map) || ($map instanceof ArrayAccess && $map instanceof Traversable))) {
@@ -21,7 +25,7 @@ class Dictionary implements ViewInterface
         $this->map = $map;
     }
 
-    public function export(InternalInterface $internal)
+    public function export(InternalInterface $internal, OptionsInterface $options = null)
     {
         if (! $internal instanceof Internal) {
             throw new Exception(
@@ -32,7 +36,7 @@ class Dictionary implements ViewInterface
         return $this->map[$internal->getPrimitive()];
     }
 
-    public function import($presentation)
+    public function import($presentation, OptionsInterface $options = null)
     {
         foreach ($this->map as $primitive => $name) {
             if ($presentation === $name) {

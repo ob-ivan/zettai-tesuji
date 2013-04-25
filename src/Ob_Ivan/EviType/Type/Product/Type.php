@@ -7,11 +7,6 @@ use Ob_Ivan\EviType\Type as ParentType;
 
 class Type extends ParentType
 {
-    /**
-     * @var Options
-    **/
-    private $options;
-
     public function __construct(OptionsInterface $options = null)
     {
         if (! $options instanceof Options) {
