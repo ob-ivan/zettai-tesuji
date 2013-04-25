@@ -1,6 +1,8 @@
 <?php
 namespace Ob_Ivan\EviType;
 
+use Ob_Ivan\EviType\Type\StringifierInterface;
+
 class Value
 {
     /**

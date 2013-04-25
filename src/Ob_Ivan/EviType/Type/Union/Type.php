@@ -1,12 +1,22 @@
 <?php
 namespace Ob_Ivan\EviType\Type\Union;
 
-use Ob_Ivan\EviType\InternalInterface;
-use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\InternalInterface,
+    Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\Type\IterableInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
-class Type extends ParentType
+class Type extends ParentType implements IterableInterface
 {
+    // public : IterableInterface //
+
+    public function each()
+    {
+        // TODO
+    }
+
+    // public : ParentType //
+
     public function __construct(OptionsInterface $options = null)
     {
         if (! $options instanceof Options) {
@@ -29,7 +39,7 @@ class Type extends ParentType
         return parent::callValueMethod($internal, $name, $arguments);
     }
 
-    // public : view factory //
+    // public : Type : view factory //
 
     public function select(array $map)
     {

@@ -2,12 +2,24 @@
 namespace Ob_Ivan\EviType\Type\Enum;
 
 use Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\OptionsInterface,
-    Ob_Ivan\EviType\StringifierInterface;
+    Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\Type\IterableInterface,
+    Ob_Ivan\EviType\Type\StringifierInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
-class Type extends ParentType implements StringifierInterface
+class Type extends ParentType implements IterableInterface, StringifierInterface
 {
+    // public : IterableInterface //
+
+    public function each()
+    {
+        $values = [];
+        foreach ($this->getOptions() as $name) {
+            $values[] = $this->from('default', $name);
+        }
+        return $values;
+    }
+
     // public : StringifierInterface //
 
     public function stringify(InternalInterface $internal)
@@ -15,7 +27,7 @@ class Type extends ParentType implements StringifierInterface
         return $this->getOptions()[$internal->getPrimitive()];
     }
 
-    // public : Type //
+    // public : ParentType //
 
     public function __construct(OptionsInterface $options = null)
     {
@@ -39,21 +51,10 @@ class Type extends ParentType implements StringifierInterface
         return parent::callValueMethod($internal, $name, $arguments);
     }
 
-    // public : view factory //
+    // public : Type : view factory //
 
     public function dictionary($map)
     {
         return new View\Dictionary($map);
-    }
-
-    // public : type specific //
-
-    public function each()
-    {
-        $values = [];
-        foreach ($this->getOptions() as $name) {
-            $values[] = $this->from('default', $name);
-        }
-        return $values;
     }
 }

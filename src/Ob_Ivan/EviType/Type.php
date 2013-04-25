@@ -46,7 +46,7 @@ abstract class Type implements TypeInterface
             return $this->to($matches[1], $internal);
         }
         throw new Exception(
-            'Unknown method "' . $name . '"',
+            'Unknown method "' . $name . '" in class ' . get_called_class(),
             Exception::TYPE_CALL_VALUE_METHOD_NAME_UNKNOWN
         );
     }
@@ -108,7 +108,10 @@ abstract class Type implements TypeInterface
         if (preg_match('~^from(\w+)$~', $name, $matches)) {
             return $this->from($matches[1], $arguments[0]);
         }
-        throw new Exception('Unknown method "' . $name . '"', Exception::TYPE_CALL_NAME_UNKNOWN);
+        throw new Exception(
+            'Unknown method "' . $name . '" in class ' . get_called_class(),
+            Exception::TYPE_CALL_NAME_UNKNOWN
+        );
     }
 
     // protected //
