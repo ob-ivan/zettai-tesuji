@@ -10,8 +10,39 @@ class Type extends ParentType implements IterableInterface
 {
     // public : IterableInterface //
 
+    /**
+     * Перебирает все возможные сочетания из значений своих компонент.
+    **/
     public function each()
     {
+        /**
+         * Счётчик значений для каждой компоненты.
+         *
+         *  @var [<index componentName> => <integer index>]
+        **/
+        $indexes = [];
+
+        /**
+         * Набор значений для каждой компоненты.
+         *
+         *  @var [<index componentName> => [<integer index> => <Value value>]]
+        **/
+        $values = [];
+
+        /**
+         * Количество значений в каждой компоненте.
+         *
+         *  @var [<index componentName> => count(values[componentName])]
+        **/
+        $counts = [];
+
+        /**
+         * Общее количество значений.
+         *
+         *  @var integer Product(i, counts[i])
+        **/
+        $totalCount = 1;
+
         // TODO
     }
 
