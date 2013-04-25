@@ -24,6 +24,11 @@ class Value
         return $this->type->callValueMethod($this->internal, $name, $arguments);
     }
 
+    public function __toString()
+    {
+        return $this->type->callValueMethod($this->internal, '__toString', []);
+    }
+
     public function getPrimitive()
     {
         return $this->internal->getPrimitive();

@@ -45,6 +45,10 @@ abstract class Type implements TypeInterface
         if (preg_match('~^to(\w+)$~', $name, $matches)) {
             return $this->to($matches[1], $internal);
         }
+        throw new Exception(
+            'Unknown method "' . $name . '"',
+            Exception::TYPE_CALL_VALUE_METHOD_NAME_UNKNOWN
+        );
     }
 
     public function from($importName, $presentation)
@@ -95,6 +99,23 @@ abstract class Type implements TypeInterface
     public function view($name, ViewInterface $view)
     {
         $this->views[$this->normalizeName($name)] = $view;
+    }
+
+    // public : Type //
+
+    public function __call($name, $arguments)
+    {
+        if (preg_match('~^from(\w+)$~', $name, $matches)) {
+            return $this->from($matches[1], $arguments[0]);
+        }
+        throw new Exception('Unknown method "' . $name . '"', Exception::TYPE_CALL_NAME_UNKNOWN);
+    }
+
+    // protected //
+
+    protected function getOptions()
+    {
+        return $this->options;
     }
 
     // private //

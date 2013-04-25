@@ -7,11 +7,6 @@ use Ob_Ivan\EviType\Type as ParentType;
 
 class Type extends ParentType
 {
-    /**
-     * @var Options
-    **/
-    private $options;
-
     public function __construct(OptionsInterface $options = null)
     {
         if (! $options instanceof Options) {
@@ -20,7 +15,6 @@ class Type extends ParentType
                 Exception::TYPE_CONSTRUCT_OPTIONS_WRONG_TYPE
             );
         }
-
         parent::__construct($options);
     }
 
@@ -40,5 +34,16 @@ class Type extends ParentType
     public function dictionary($map)
     {
         return new View\Dictionary($map);
+    }
+
+    // public : type specific //
+
+    public function each()
+    {
+        $values = [];
+        foreach ($this->getOptions() as $name) {
+            $values[] = $this->from('default', $name);
+        }
+        return $values;
     }
 }

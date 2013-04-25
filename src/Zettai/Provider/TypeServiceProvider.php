@@ -80,6 +80,9 @@ class TypeServiceProvider implements ServiceProviderInterface
             $type->view('r',        $type->concat   (       ['r',       'default']));
             return $type;
         });
+        $typeService->register('abc', function ($typeService) {
+            return $typeService->enum(['a', 'b', 'c']);
+        });
     }
 
     // OLD
@@ -88,24 +91,6 @@ class TypeServiceProvider implements ServiceProviderInterface
     {
         $service = $app['types'];
 
-        $service->register('roundWind', function ($service) {
-            return $service->viewable([
-                ['1z', 'east',  'e', 'восток', 'в'],
-                ['2z', 'south', 's', 'юг',     'ю'],
-            ]);
-        });
-        $service->register('squareWind', function ($service) {
-            return $service->viewable([
-                ['3z', 'west',  'w', 'запад', 'з'],
-                ['4z', 'north', 'n', 'север', 'с'],
-            ]);
-        });
-        $service->register('wind', function ($service) {
-            return $service->union($service['roundWind'], $service['squareWind']);
-        });
-        $service->register('kyoku', function ($service) {
-            return $service->product($service['roundWind'], '-', range(1, 4));
-        });
         $service->register('suit', function ($service) {
             return $service->viewable([
                 ['m', 'man', 'm', 'ман', 'м'],

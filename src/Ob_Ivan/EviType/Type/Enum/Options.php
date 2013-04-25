@@ -17,17 +17,11 @@ use Ob_Ivan\EviType\OptionsInterface;
 
 class Options implements ArrayAccess, IteratorAggregate, OptionsInterface
 {
+    // var //
+
     private $map;
 
-    public function __construct(array $primitiveToNameMap)
-    {
-        $this->map = $primitiveToNameMap;
-    }
-
-    public function getIterator()
-    {
-        return new ArrayIterator($this->map);
-    }
+    // public : ArrayAccess //
 
     public function offsetExists($offset)
     {
@@ -47,5 +41,19 @@ class Options implements ArrayAccess, IteratorAggregate, OptionsInterface
     public function offsetUnset($offset)
     {
         throw new Exception('Modifying options is not allowed', Exception::OPTIONS_OFFSET_UNSET_PROHIBITED);
+    }
+
+    // public : IteratorAggregate //
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->map);
+    }
+
+    // public : Options //
+
+    public function __construct(array $primitiveToNameMap)
+    {
+        $this->map = $primitiveToNameMap;
     }
 }
