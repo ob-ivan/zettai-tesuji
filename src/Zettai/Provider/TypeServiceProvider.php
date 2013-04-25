@@ -29,6 +29,7 @@ class TypeServiceProvider implements ServiceProviderInterface
 
             $tenhouView = $type->dictionary(['1z', '2z']);
             $type->view('tenhou', $tenhouView);
+            // TODO: Устранить копипасту с таким же экспортом в типе squareWind.
             $type->export('tile', function (EnumInternal $internal) use ($typeService, $tenhouView) {
                 return $typeService['tile']->fromTenhou($tenhouView->export($internal));
             });
@@ -36,13 +37,21 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $type;
         });
         $typeService->register('squareWind', function ($typeService) {
-            return $typeService->enum(['west', 'north'])
-                ->register('english', 'dictionary', ['west',   'north'])
-                ->register('e',       'dictionary', ['w',      'n'    ])
-                ->register('russian', 'dictionary', ['запад',  'север'])
-                ->register('r',       'dictionary', ['з',      'с'    ])
-                ->register('tenhou',  'dictionary', ['3z',     '4z'   ])
-                ->register('tile', 'cast', 'tenhou', 'tile', 'tenhou');
+
+            $type = $typeService->enum(['west', 'north']);
+            $type->view('english', $type->dictionary(['west',   'north']));
+            $type->view('e',       $type->dictionary(['w',      'n'    ]));
+            $type->view('russian', $type->dictionary(['запад',  'север']));
+            $type->view('r',       $type->dictionary(['з',      'с'    ]));
+
+            $tenhouView = $type->dictionary(['3z', '4z']);
+            $type->view('tenhou', $tenhouView);
+            // TODO: Устранить копипасту с таким же экспортом в типе roundWind.
+            $type->export('tile', function (EnumInternal $internal) use ($typeService, $tenhouView) {
+                return $typeService['tile']->fromTenhou($tenhouView->export($internal));
+            });
+
+            return $type;
         });
         $typeService->register('wind', function ($typeService) {
             return $typeService->union($typeService['roundWind'], $typeService['squareWind'])
