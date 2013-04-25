@@ -26,7 +26,10 @@ class Value
 
     public function __toString()
     {
-        return $this->type->callValueMethod($this->internal, '__toString', []);
+        if ($this->type instanceof StringifierInterface) {
+            return $this->type->stringify($this->internal);
+        }
+        return '[ERROR: method __toString is not supported for this type]';
     }
 
     public function getPrimitive()

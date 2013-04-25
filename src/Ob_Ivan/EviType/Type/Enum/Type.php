@@ -1,12 +1,22 @@
 <?php
 namespace Ob_Ivan\EviType\Type\Enum;
 
-use Ob_Ivan\EviType\InternalInterface;
-use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\InternalInterface,
+    Ob_Ivan\EviType\OptionsInterface,
+    Ob_Ivan\EviType\StringifierInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
-class Type extends ParentType
+class Type extends ParentType implements StringifierInterface
 {
+    // public : StringifierInterface //
+
+    public function stringify(InternalInterface $internal)
+    {
+        return $this->getOptions()[$internal->getPrimitive()];
+    }
+
+    // public : Type //
+
     public function __construct(OptionsInterface $options = null)
     {
         if (! $options instanceof Options) {
