@@ -37,7 +37,6 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $type;
         });
         $typeService->register('squareWind', function ($typeService) {
-
             $type = $typeService->enum(['west', 'north']);
             $type->view('english', $type->dictionary(['west',   'north']));
             $type->view('e',       $type->dictionary(['w',      'n'    ]));

@@ -1,14 +1,14 @@
 <?php
 /**
- * Опции произведения типов -- это массив,
- * отправляющий имя компоненты в её тип.
+ * Опции объединения типов -- массив,
+ * отправляющий имя варианта в его тип.
  *
  *  [
- *      <index componentName> => <TypeInterface type>,
+ *      <string variantName> => <TypeInterface type>,
  *      ...
  *  ]
 **/
-namespace Ob_Ivan\EviType\Type\Product;
+namespace Ob_Ivan\EviType\Type\Union;
 
 use ArrayAccess,
     ArrayIterator,
@@ -18,8 +18,6 @@ use Ob_Ivan\EviType\OptionsInterface,
 
 class Options implements ArrayAccess, IteratorAggregate, OptionsInterface
 {
-    // var //
-
     private $map;
 
     // public : ArrayAccess //
@@ -53,16 +51,16 @@ class Options implements ArrayAccess, IteratorAggregate, OptionsInterface
 
     // public : Options //
 
-    public function __construct(array $componentNameToTypeMap)
+    public function __construct(array $variantNameToTypeMap)
     {
-        foreach ($componentNameToTypeMap as $componentName => $type) {
+        foreach ($variantNameToTypeMap as $variantName => $type) {
             if (! $type instanceof TypeInterface) {
                 throw new Exception(
-                    'Map value for key "' . $componentName . '" must implement TypeInterface',
+                    'Map value for key "' . $variantName . '" must implement TypeInterface',
                     Exception::OPTIONS_CONSTRUCT_TYPE_WRONG_TYPE
                 );
             }
         }
-        $this->map = $componentNameToTypeMap;
+        $this->map = $variantNameToTypeMap;
     }
 }
