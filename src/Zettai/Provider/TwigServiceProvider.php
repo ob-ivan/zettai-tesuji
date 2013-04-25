@@ -33,9 +33,9 @@ class TwigServiceProvider implements ServiceProviderInterface
             }));
             $twig->addFilter('kyoku', new Twig_Filter_Function(function ($kyoku) use ($app) {
                 print '<pre>' . __FILE__ . ':' . __LINE__ . ': ' .
-                    var_export($app['types']->kyoku->from($kyoku), true) .
+                    var_export($app['types']->kyoku->fromAny($kyoku), true) .
                 '</pre>'; // debug
-                return $app['types']->kyoku->from($kyoku)->toRussian();
+                return $app['types']->kyoku->fromAny($kyoku)->toRussian();
             }));
             $twig->addFilter('tile', new Twig_Filter_Function(function ($tiles) use ($app) {
                 return $app['twig']->render('_tile.twig', ['tiles' => $tiles]);

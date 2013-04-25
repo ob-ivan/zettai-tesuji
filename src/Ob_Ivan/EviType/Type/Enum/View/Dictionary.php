@@ -1,11 +1,12 @@
 <?php
 namespace Ob_Ivan\EviType\Type\Enum\View;
 
-use ArrayAccess, Traversable;
-use Ob_Ivan\EviType\Enum\Internal;
-use Ob_Ivan\EviType\InternalInterface;
-use Ob_Ivan\EviType\OptionsInterface;
-use Ob_Ivan\EviType\ViewInterface;
+use ArrayAccess,
+    Traversable;
+use Ob_Ivan\EviType\InternalInterface,
+    Ob_Ivan\EviType\OptionsInterface,
+    Ob_Ivan\EviType\ViewInterface;
+use Ob_Ivan\EviType\Type\Enum\Internal;
 
 class Dictionary implements ViewInterface
 {

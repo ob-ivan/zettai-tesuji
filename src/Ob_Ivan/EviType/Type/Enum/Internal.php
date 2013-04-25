@@ -16,7 +16,7 @@ class Internal implements InternalInterface
         $this->primitive = $primitive;
     }
 
-    public function getPrimitive($primitive)
+    public function getPrimitive()
     {
         return $this->primitive;
     }

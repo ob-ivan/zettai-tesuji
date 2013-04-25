@@ -37,7 +37,23 @@ abstract class Type implements TypeInterface
 
     // public : TypeInterface : Создание и обслуживание значений //
 
-    public function from($presentation)
+    public function from($importName, $presentation)
+    {
+        if (isset($this->imports[$importName])) {
+            $internal = $this->imports[$importName]($presentation, $this->options);
+            if ($internal) {
+                return $this->valueService->produce($internal);
+            }
+        }
+        if (isset($this->views[$importName])) {
+            $internal = $this->views[$importName]->import($presentation, $this->options);
+            if ($internal) {
+                return $this->valueService->produce($internal);
+            }
+        }
+    }
+
+    public function fromAny($presentation)
     {
         foreach ($this->imports as $import) {
             $internal = $import($presentation, $this->options);

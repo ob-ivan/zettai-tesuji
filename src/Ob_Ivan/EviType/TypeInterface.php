@@ -8,7 +8,8 @@ interface TypeInterface
     // Создание и обслуживание значений //
 
     public function callValueMethod(InternalInterface $internal, $name, array $arguments);
-    public function from($presentation);
+    public function from($importName, $presentation);
+    public function fromAny($presentation);
 
     // Регистрация представлений //
 
