@@ -32,9 +32,11 @@ class TwigServiceProvider implements ServiceProviderInterface
                 return $app['types']->wind->from($wind)->toRussian();
             }));
             $twig->addFilter('kyoku', new Twig_Filter_Function(function ($kyoku) use ($app) {
+
                 print '<pre>' . __FILE__ . ':' . __LINE__ . ': ' .
                     var_export($app['types']->kyoku->fromAny($kyoku), true) .
                 '</pre>'; // debug
+
                 return $app['types']->kyoku->fromAny($kyoku)->toRussian();
             }));
             $twig->addFilter('tile', new Twig_Filter_Function(function ($tiles) use ($app) {

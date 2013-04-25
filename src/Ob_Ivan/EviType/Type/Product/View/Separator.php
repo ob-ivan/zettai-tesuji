@@ -74,7 +74,7 @@ class Separator implements ViewInterface
                 Exception::SEPARATOR_IMPORT_OPTIONS_WRONG_TYPE
             );
         }
-        $presentations = $this->explode($this->separator, $presentation);
+        $presentations = $this->explode($presentation);
         $valueMap = [];
         $current = array_shift($presentations);
         foreach ($options as $componentName => $type) {
@@ -87,6 +87,9 @@ class Separator implements ViewInterface
                     $current .= $this->separator . array_shift($presentations);
                 } else {
                     $valueMap[$componentName] = $value;
+                    if (! empty($presentations)) {
+                        $current = array_shift($presentations);
+                    }
                     break;
                 }
             }
