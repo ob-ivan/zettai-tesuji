@@ -39,14 +39,15 @@ abstract class Type implements TypeInterface
 
     public function from($importName, $presentation)
     {
-        if (isset($this->imports[$importName])) {
-            $internal = $this->imports[$importName]($presentation, $this->options);
+        $name = $this->normalizeName($importName);
+        if (isset($this->imports[$name])) {
+            $internal = $this->imports[$name]($presentation, $this->options);
             if ($internal) {
                 return $this->valueService->produce($internal);
             }
         }
-        if (isset($this->views[$importName])) {
-            $internal = $this->views[$importName]->import($presentation, $this->options);
+        if (isset($this->views[$name])) {
+            $internal = $this->views[$name]->import($presentation, $this->options);
             if ($internal) {
                 return $this->valueService->produce($internal);
             }
@@ -73,16 +74,26 @@ abstract class Type implements TypeInterface
 
     public function export($name, callable $implementation)
     {
-        $this->exports[$name] = $implementation;
+        $this->exports[$this->normalizeName($name)] = $implementation;
     }
 
     public function import($name, callable $implementation)
     {
-        $this->imports[$name] = $implementation;
+        $this->imports[$this->normalizeName($name)] = $implementation;
     }
 
     public function view($name, ViewInterface $view)
     {
-        $this->views[$name] = $view;
+        $this->views[$this->normalizeName($name)] = $view;
+    }
+
+    // private //
+
+    /**
+     * Приводит название преобразователей к единому виду.
+    **/
+    private function normalizeName($name)
+    {
+        return strtolower($name);
     }
 }

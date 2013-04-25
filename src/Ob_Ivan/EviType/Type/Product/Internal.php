@@ -20,25 +20,11 @@ use Ob_Ivan\EviType\InternalInterface,
 
 class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
 {
+    // var //
+
     private $map;
 
-    public function __construct(array $componentNameToValueMap)
-    {
-        foreach ($componentNameToValueMap as $componentName => $value) {
-            if (! $value instanceof Value) {
-                throw new Exception(
-                    'Map value for key "' . $componentName . '" must be instance of Value',
-                    Exception::INTERNAL_CONSTRUCT_VALUE_WRONG_TYPE
-                );
-            }
-        }
-        $this->map = $componentNameToValueMap;
-    }
-
-    public function getIterator()
-    {
-        return new ArrayIterator($this->map);
-    }
+    // public : ArrayAccess //
 
     public function offsetExists($offset)
     {
@@ -58,5 +44,38 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
     public function offsetUnset($offset)
     {
         throw new Exception('Modifying components is not allowed', Exception::INTERNAL_OFFSET_UNSET_PROHIBITED);
+    }
+
+    // public : InternalInterface //
+
+    public function getPrimitive()
+    {
+        $primitives = [];
+        foreach ($this->map as $componentName => $value) {
+            $primitives[$componentName] = $value->getPrimitive();
+        }
+        return json_encode($primitives);
+    }
+
+    // public : IteratorAggregate //
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->map);
+    }
+
+    // public : Internal //
+
+    public function __construct(array $componentNameToValueMap)
+    {
+        foreach ($componentNameToValueMap as $componentName => $value) {
+            if (! $value instanceof Value) {
+                throw new Exception(
+                    'Map value for key "' . $componentName . '" must be instance of Value',
+                    Exception::INTERNAL_CONSTRUCT_VALUE_WRONG_TYPE
+                );
+            }
+        }
+        $this->map = $componentNameToValueMap;
     }
 }
