@@ -53,15 +53,21 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $type;
         });
         $typeService->register('wind', function ($typeService) {
-            return $typeService->union($typeService['roundWind'], $typeService['squareWind'])
-            ->view
-                ->register('english',   'select', ['english',   'english'])
-                ->register('e',         'select', ['e',         'e'      ])
-                ->register('russian',   'select', ['russian',   'russian'])
-                ->register('r',         'select', ['r',         'r'      ])
-                ->register('tenhou',    'select', ['tenhou',    'tenhou' ])
-                ->register('tile',      'select', ['tile',      'tile'   ])
-            ->type;
+            $type = $typeService->union([
+                'round'  => $typeService['roundWind'],
+                'square' => $typeService['squareWind'],
+            ]);
+            $type->view('english',  $type->select(['english',   'english']));
+            $type->view('e',        $type->select(['e',         'e'      ]));
+            $type->view('russian',  $type->select(['russian',   'russian']));
+            $type->view('r',        $type->select(['r',         'r'      ]));
+            $type->view('tenhou',   $type->select(['tenhou',    'tenhou' ]));
+
+            $type->export('tile', function (UnionInternal $internal) {
+                return $internal->getValue()->toTile();
+            });
+
+            return $type;
         });
         $typeService->register('kyoku', function ($typeService) {
             $type = $typeService->product(

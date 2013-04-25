@@ -15,7 +15,6 @@ class Type extends ParentType
                 Exception::TYPE_CONSTRUCT_OPTIONS_WRONG_TYPE
             );
         }
-
         parent::__construct($options);
     }
 

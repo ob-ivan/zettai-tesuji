@@ -1,15 +1,17 @@
 <?php
-namespace Ob_Ivan\EviType\Type\Product;
+namespace Ob_Ivan\EviType\Type\Product\Builder;
 
 use Ob_Ivan\EviType\BuilderInterface;
+use Ob_Ivan\EviType\Type\Product\Options,
+    Ob_Ivan\EviType\Type\Product\Type;
 
-class Builder implements BuilderInterface
+class Cartesian implements BuilderInterface
 {
     /**
      * Строит тип-произведение из переданного массива.
      *
      *  @param  array   $arguments = [
-     *      <componentName> => <TypeInterace type>,
+     *      <TypeInterace type>,
      *      ...
      *  ]
      *  @return Type
