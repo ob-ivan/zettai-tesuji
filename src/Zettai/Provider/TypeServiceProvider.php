@@ -57,11 +57,11 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'round'  => $typeService['roundWind'],
                 'square' => $typeService['squareWind'],
             ]);
-            $type->view('english',  $type->select(['english',   'english']));
-            $type->view('e',        $type->select(['e',         'e'      ]));
-            $type->view('russian',  $type->select(['russian',   'russian']));
-            $type->view('r',        $type->select(['r',         'r'      ]));
-            $type->view('tenhou',   $type->select(['tenhou',    'tenhou' ]));
+            $type->view('english',  $type->select(['round' => 'english',   'square' => 'english']));
+            $type->view('e',        $type->select(['round' => 'e',         'square' => 'e'      ]));
+            $type->view('russian',  $type->select(['round' => 'russian',   'square' => 'russian']));
+            $type->view('r',        $type->select(['round' => 'r',         'square' => 'r'      ]));
+            $type->view('tenhou',   $type->select(['round' => 'tenhou',    'square' => 'tenhou' ]));
 
             $type->export('tile', function (UnionInternal $internal) {
                 return $internal->getValue()->toTile();

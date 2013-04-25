@@ -7,6 +7,8 @@ namespace Ob_Ivan\EviType\Type\Union\View;
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\OptionsInterface,
     Ob_Ivan\EviType\ViewInterface;
+use Ob_Ivan\EviType\Type\Union\Internal,
+    Ob_Ivan\EviType\Type\Union\Options;
 
 class Select implements ViewInterface
 {
@@ -22,6 +24,13 @@ class Select implements ViewInterface
 
     public function export(InternalInterface $internal, OptionsInterface $options = null)
     {
+        if (! $internal instanceof Internal) {
+            throw new Exception(
+                'Internal must be an instance of Internal',
+                Exception::SELECT_EXPORT_INTERNAL_WRONG_TYPE
+            );
+        }
+
         $variantName = $internal->getName();
         if (! isset($this->map[$variantName])) {
             throw new Exception(
@@ -29,12 +38,17 @@ class Select implements ViewInterface
                 Exception::SELECT_EXPORT_VARIANT_NAME_UNKNOWN
             );
         }
-        $exportName = $this->map[$variantName];
-        return $internal->to($exportName);
+        return $internal->getValue()->to($this->map[$variantName]);
     }
 
     public function import($presentation, OptionsInterface $options = null)
     {
+        if (! $options instanceof Options) {
+            throw new Exception(
+                'Options must be an instance of Options, ' . get_class($options) . ' given',
+                Exception::SELECT_IMPORT_OPTIONS_WRONG_TYPE
+            );
+        }
         foreach ($options as $variantName => $type) {
             if (isset($this->map[$variantName])) {
                 $value = $type->from($this->map[$variantName], $presentation);

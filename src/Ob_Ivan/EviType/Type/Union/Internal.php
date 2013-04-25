@@ -9,6 +9,18 @@ class Internal implements InternalInterface
     private $variantName;
     private $value;
 
+    // public : InternalInterface //
+
+    public function getPrimitive()
+    {
+        return json_encode([
+            $this->variantName,
+            $this->value->getPrimitive(),
+        ]);
+    }
+
+    // public : Internal //
+
     public function __construct($variantName, Value $value)
     {
         $this->variantName = $variantName;
@@ -20,7 +32,7 @@ class Internal implements InternalInterface
         return $this->variantName;
     }
 
-    public function getName()
+    public function getValue()
     {
         return $this->value;
     }
