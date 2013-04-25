@@ -32,7 +32,7 @@ class Type extends ParentType
                 Exception::TYPE_CALL_VALUE_METHOD_INTERNAL_WRONG_TYPE
             );
         }
-        // TODO
+        return parent::callValueMethod($internal, $name, $arguments);
     }
 
     // public : view factory //

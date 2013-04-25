@@ -19,6 +19,11 @@ class Value
         $this->internal = $internal;
     }
 
+    public function __call($name, $arguments)
+    {
+        return $this->type->callValueMethod($this->internal, $name, $arguments);
+    }
+
     public function getPrimitive()
     {
         return $this->internal->getPrimitive();

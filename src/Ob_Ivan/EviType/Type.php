@@ -37,6 +37,16 @@ abstract class Type implements TypeInterface
 
     // public : TypeInterface : Создание и обслуживание значений //
 
+    public function callValueMethod(InternalInterface $internal, $name, array $arguments)
+    {
+        if ($name === 'to') {
+            return $this->to($arguments[0], $internal);
+        }
+        if (preg_match('~^to(\w+)$~', $name, $matches)) {
+            return $this->to($matches[1], $internal);
+        }
+    }
+
     public function from($importName, $presentation)
     {
         $name = $this->normalizeName($importName);
@@ -91,9 +101,23 @@ abstract class Type implements TypeInterface
 
     /**
      * Приводит название преобразователей к единому виду.
+     *
+     *  @param  string  $name
+     *  @return string
     **/
     private function normalizeName($name)
     {
         return strtolower($name);
+    }
+
+    private function to($exportName, InternalInterface $internal)
+    {
+        $name = $this->normalizeName($exportName);
+        if (isset($this->exports[$name])) {
+            return $this->exports[$name]($internal, $this->options);
+        }
+        if (isset($this->views[$name])) {
+            return $this->views[$name]->export($internal, $this->options);
+        }
     }
 }
