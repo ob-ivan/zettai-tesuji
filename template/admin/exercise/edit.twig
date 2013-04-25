@@ -54,7 +54,7 @@
                     {% for primitive, kyoku in app.types.kyoku.each %}
                         <option
                             value="{{ primitive }}"
-                            {% if kyoku.equals(exercise.content.kyoku) %}
+                            {% if kyoku == exercise.content.kyoku %}
                                 selected
                             {% endif %}
                         >
@@ -71,7 +71,7 @@
                     {% for primitive, wind in app.types.wind.each %}
                         <option
                             value="{{ primitive }}"
-                            {% if wind.equals(exercise.content.position) %}
+                            {% if wind == exercise.content.position %}
                                 selected
                             {% endif %}
                         >
