@@ -89,7 +89,7 @@ class TypeServiceProvider implements ServiceProviderInterface
         $typeService->register('exercise', function ($service) {
             return $service->record([
                 'exercise_id'   => $service['integer'],
-                'title'         => $service['text'],
+                'title'         => $service['string'],
                 'is_hidden'     => $service['boolean'],
                 'content'       => $service['exerciseContent'],
             ]);

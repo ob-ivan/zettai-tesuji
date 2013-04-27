@@ -1,5 +1,5 @@
 <?php
-namespace Ob_Ivan\EviType\Type\Integer;
+namespace Ob_Ivan\EviType\Type\String;
 
 use Ob_Ivan\EviType\InternalInterface;
 use Ob_Ivan\EviType\Type\StringifierInterface;
@@ -11,7 +11,7 @@ class Type extends ParentType implements StringifierInterface
 
     public function stringify(InternalInterface $internal)
     {
-        return strval($internal->getPrimitive());
+        return $internal->getPrimitive();
     }
 
     // public : ParentType //

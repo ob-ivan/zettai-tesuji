@@ -1,5 +1,5 @@
 <?php
-namespace Ob_Ivan\EviType\Type\Integer;
+namespace Ob_Ivan\EviType\Type\String;
 
 use Ob_Ivan\EviType\Type\Exception as ParentException;
 
