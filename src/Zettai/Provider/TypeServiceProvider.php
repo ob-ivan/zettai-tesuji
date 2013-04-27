@@ -196,6 +196,12 @@ class TypeServiceProvider implements ServiceProviderInterface
             $type->export('r',       function (SequenceInternal $internal) use ($export) { return $export('r',       $internal); });
             return $type;
         });
+        $service->register('answer', function ($service) {
+            return $service->record([
+                'discard' => $service['tile'],
+                'comment' => $service['string'],
+            ]);
+        });
         $service->register('exerciseContent', function ($service) {
             return $service->record([
                 'kyoku'         => $service['kyoku'],
@@ -229,12 +235,6 @@ class TypeServiceProvider implements ServiceProviderInterface
     {
         $service = $app['types'];
 
-        $service->register('answer', function ($service) {
-            return $service->record([
-                'discard' => $service['tile'],
-                'comment' => $service->text(),
-            ]);
-        });
         $service->register('theme', function ($service) {
             return $service->record([
                 'theme_id'              => $service->integer(),
