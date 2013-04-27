@@ -54,6 +54,10 @@
                     {% for kyoku in app.types.kyoku.each %}
                         <option
                             value="{{ kyoku.toE }}"
+                            {#
+                                Автоматический выбор пока не работает, потому что
+                                exercise.content.kyoku -- это просто строка.
+                            #}
                             {% if kyoku == exercise.content.kyoku %}
                                 selected
                             {% endif %}
@@ -68,9 +72,9 @@
             <label>
                 Позиция:
                 <select name="position">
-                    {% for primitive, wind in app.types.wind.each %}
+                    {% for wind in app.types.wind.each %}
                         <option
-                            value="{{ primitive }}"
+                            value="{{ wind.toE }}"
                             {% if wind == exercise.content.position %}
                                 selected
                             {% endif %}

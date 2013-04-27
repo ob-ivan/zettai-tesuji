@@ -194,9 +194,6 @@ class TypeServiceProvider implements ServiceProviderInterface
                 return implode('', $presentations);
             });
         });
-        $service->register('abc', function ($service) {
-            return $service->type(['a', 'b', 'c']);
-        });
         $service->register('answer', function ($service) {
             return $service->record([
                 'discard' => $service['tile'],

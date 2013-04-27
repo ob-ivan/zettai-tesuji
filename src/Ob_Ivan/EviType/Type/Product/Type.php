@@ -130,7 +130,6 @@ class Type extends ParentType implements IterableInterface
             // и при необходимости перекинуть переполнение дальше.
             $indexes = $this->incrementIndexes($indexes, $counts);
         }
-
         return $each;
     }
 
