@@ -1,16 +1,36 @@
 <?php
 namespace Zettai\Entity;
 
-use Ob_Ivan\Model\Entity;
-use Zettai\Exercise as Record;
+use Ob_Ivan\Model\Entity,
+    Ob_Ivan\Model\Service;
+use Ob_Ivan\EviType\TypeInterface,
+    Ob_Ivan\EviType\Value;
 
 class Exercise extends Entity
 {
+    // var //
+
+    /**
+     * Тип рекордов.
+     *
+     *  @var TypeInterface
+    **/
+    private $type;
+
     // public : EntityInterface //
 
     public function getTableName()
     {
         return 'exercise';
+    }
+
+    // public : Entity //
+
+    public function __construct(Service $service, TypeInterface $recordType)
+    {
+        parent::__construct($service);
+
+        $this->type = $recordType;
     }
 
     // public : Exercise //

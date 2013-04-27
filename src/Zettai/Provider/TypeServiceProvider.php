@@ -20,6 +20,9 @@ class TypeServiceProvider implements ServiceProviderInterface
     {
         $typeService = $app['types'];
 
+        // Регистрируем в порядке зависимости.
+        // Первыми идут типы, не зависящие от других типов.
+
         $typeService->register('roundWind', function ($typeService) {
             $type = $typeService->enum(['east', 'south']);
             $type->view('english',  $type->dictionary(['east',      'south']));
@@ -82,6 +85,14 @@ class TypeServiceProvider implements ServiceProviderInterface
         });
         $typeService->register('abc', function ($typeService) {
             return $typeService->enum(['a', 'b', 'c']);
+        });
+        $typeService->register('exercise', function ($service) {
+            return $service->record([
+                'exercise_id'   => $service['integer'],
+                'title'         => $service['text'],
+                'is_hidden'     => $service['boolean'],
+                'content'       => $service['exerciseContent'],
+            ]);
         });
     }
 
@@ -215,14 +226,6 @@ class TypeServiceProvider implements ServiceProviderInterface
                     $service['answer']
                 ),
                 'best_answer' => $service['abc'],
-            ]);
-        });
-        $service->register('exercise', function ($service) {
-            return $service->record([
-                'exercise_id'   => $service->integer(),
-                'title'         => $service->text(),
-                'is_hidden'     => $service->boolean(),
-                'content'       => $service['exerciseContent'],
             ]);
         });
         $service->register('theme', function ($service) {

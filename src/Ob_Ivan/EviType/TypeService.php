@@ -96,7 +96,7 @@ class TypeService implements TypeServiceInterface
 
         // Стандартные типы.
         // $this->register('boolean', function () { ? });
-        // $this->register('integer', function () { ? });
+        $this->register('integer', function () { return new Type\Integer\Type; });
         // $this->register('string',  function () { ? });
 
         // Стандартные сорта.

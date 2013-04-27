@@ -21,8 +21,8 @@ class ModelServiceProvider implements ServiceProviderInterface
         if ($app['config']->model->logger_enable) {
             $app['model']->setLogger($app['monolog']);
         }
-        $app['model']->register('exercise', function ($service) {
-            return new Exercise($service);
+        $app['model']->register('exercise', function ($service) use ($app) {
+            return new Exercise($service, $app['types']->exercise);
         });
         $app['model']->register('theme', function ($service) use ($app) {
             return new Theme($service, $app['types']->theme);
