@@ -95,7 +95,7 @@ class TypeService implements TypeServiceInterface
         $this->factory = new TypeFactory();
 
         // Стандартные типы.
-        // $this->register('boolean', function () { ? });
+        $this->register('boolean', function () { return new Type\Boolean\Type; });
         $this->register('integer', function () { return new Type\Integer\Type; });
         $this->register('string',  function () { return new Type\String\Type;  });
 
