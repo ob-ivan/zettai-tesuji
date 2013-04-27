@@ -1,9 +1,10 @@
 <?php
 namespace Zettai\Provider;
 
-use Silex\Application;
-use Silex\ServiceProviderInterface;
+use Silex\Application,
+    Silex\ServiceProviderInterface;
 use Ob_Ivan\EviType\TypeService;
+use Ob_Ivan\EviType\Type\Sequence\Internal as SequenceInternal;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
@@ -113,75 +114,10 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'dragin' => $service['dragon'],
             ]);
         });
-        $service->register('exerciseContent', function ($service) {
-            return $service->record([
-                'kyoku'         => $service['kyoku'],
-                'position'      => $service['wind'],
-                'turn'          => range(1, 18),
-                'dora'          => $service['tile'],
-                'score'         => $service['string'],
-                'hand'          => $service['tileSequence'],
-                'draw'          => $service['tile'],
-                'is_answered'   => $service['boolean'],
-                'answer'        => $service->map(
-                    $service['abc'],
-                    $service['answer']
-                ),
-                'best_answer' => $service['abc'],
-            ]);
-        });
-        $service->register('exercise', function ($service) {
-            return $service->record([
-                'exercise_id'   => $service['integer'],
-                'title'         => $service['string'],
-                'is_hidden'     => $service['boolean'],
-                'content'       => $service['exerciseContent'],
-            ]);
-        });
-    }
-
-    // OLD
-
-    public function _boot(Application $app)
-    {
-        $service = $app['types'];
-
         $service->register('tileSequence', function ($service) {
-            return $service->sequence($service['tile'])
-            ->setHook('fromView', function ($view, $presentation) {
-                $internal = [];
-                while (! empty($presentation)) {
-                    $prevLength = strlen($presentation);
-
-                    $presentation = trim($presentation);
-                    $candidate = $this->element->fromView($view, $presentation);
-                    if ($candidate) {
-                        $internal[] = $candidate;
-                        $presentation = substr($presentation, strlen($candidate->toView($view)));
-                    } elseif (preg_match('~^(\d+)([^\d\s]+)~', $presentation, $matches)) {
-                        $ranks = $matches[1];
-                        $suit  = $matches[2];
-                        for ($i = 0, $l = strlen($ranks); $i < $l; ++$i) {
-                            $candidate = $this->element->fromView($view, $ranks[$i] . $suit);
-                            if ($candidate) {
-                                $internal[] = $candidate;
-                            }
-                        }
-                        $presentation = substr($presentation, strlen($matches[0]));
-                    } else {
-                        break;
-                    }
-
-                    if ($prevLength <= strlen($presentation)) {
-                        break;
-                    }
-                }
-                return $this->value($internal);
-            })
-            ->setHook('toView', function ($view, $internal) {
-
-                $isLong = in_array($view, ['English', 'Russian']);
-
+            $type = $service->sequence($service['tile']);
+            $export = function ($view, $internal) {
+                $isLong = in_array($view, ['english', 'russian']);
                 $prevRankPresentation = null;
                 $prevSuitPresentation = null;
                 $presentations = [];
@@ -223,8 +159,76 @@ class TypeServiceProvider implements ServiceProviderInterface
                     $presentations[] = $prevSuitPresentation;
                 }
                 return implode('', $presentations);
-            });
+            };
+            $import = function ($view, $presentation) {
+                $internal = [];
+                while (! empty($presentation)) {
+                    $prevLength = strlen($presentation);
+
+                    $presentation = trim($presentation);
+                    $candidate = $this->element->fromView($view, $presentation);
+                    if ($candidate) {
+                        $internal[] = $candidate;
+                        $presentation = substr($presentation, strlen($candidate->toView($view)));
+                    } elseif (preg_match('~^(\d+)([^\d\s]+)~', $presentation, $matches)) {
+                        $ranks = $matches[1];
+                        $suit  = $matches[2];
+                        for ($i = 0, $l = strlen($ranks); $i < $l; ++$i) {
+                            $candidate = $this->element->fromView($view, $ranks[$i] . $suit);
+                            if ($candidate) {
+                                $internal[] = $candidate;
+                            }
+                        }
+                        $presentation = substr($presentation, strlen($matches[0]));
+                    } else {
+                        break;
+                    }
+
+                    if ($prevLength <= strlen($presentation)) {
+                        break;
+                    }
+                }
+                return $this->value($internal);
+            };
+            $type->export('english', function (SequenceInternal $internal) use ($export) { return $export('english', $internal); });
+            $type->export('e',       function (SequenceInternal $internal) use ($export) { return $export('e',       $internal); });
+            $type->export('russian', function (SequenceInternal $internal) use ($export) { return $export('russian', $internal); });
+            $type->export('r',       function (SequenceInternal $internal) use ($export) { return $export('r',       $internal); });
+            return $type;
         });
+        $service->register('exerciseContent', function ($service) {
+            return $service->record([
+                'kyoku'         => $service['kyoku'],
+                'position'      => $service['wind'],
+                'turn'          => range(1, 18),
+                'dora'          => $service['tile'],
+                'score'         => $service['string'],
+                'hand'          => $service['tileSequence'],
+                'draw'          => $service['tile'],
+                'is_answered'   => $service['boolean'],
+                'answer'        => $service->map(
+                    $service['abc'],
+                    $service['answer']
+                ),
+                'best_answer' => $service['abc'],
+            ]);
+        });
+        $service->register('exercise', function ($service) {
+            return $service->record([
+                'exercise_id'   => $service['integer'],
+                'title'         => $service['string'],
+                'is_hidden'     => $service['boolean'],
+                'content'       => $service['exerciseContent'],
+            ]);
+        });
+    }
+
+    // OLD
+
+    public function _boot(Application $app)
+    {
+        $service = $app['types'];
+
         $service->register('answer', function ($service) {
             return $service->record([
                 'discard' => $service['tile'],
