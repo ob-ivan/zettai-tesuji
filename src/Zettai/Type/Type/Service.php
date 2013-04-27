@@ -2,7 +2,7 @@
 /**
  * Контейнер и породитель перечислимых типов.
 **/
-namespace Zettai\Type;
+namespace Zettai\Type\Type;
 
 class Service implements ServiceInterface
 {
@@ -38,7 +38,7 @@ class Service implements ServiceInterface
     
     public function offsetSet($offset, $value)
     {
-        if (isset($this->types[$offset])) {
+        if (isset($this[$offset])) {
             throw new Exception('Type "' . $offset . '" already exists', Exception::SERVICE_SET_OFFSET_ALREADY_EXISTS);
         }
         if (! $value instanceof TypeInterface) {
@@ -52,27 +52,17 @@ class Service implements ServiceInterface
         throw new Exception('Unsetting types is unsupported', Exception::SERVICE_UNSET_UNSUPPORTED);
     }
     
-    // public : Service //
+    // public : ServiceInterface //
     
-    public function __construct(array $views)
+    public function from($candidate)
     {
-        $this['view'] = $this->type($views);
-        
-        // predefined types //
-        $this->register('boolean', function () {
-            return $this->enum(['true', 'false']);
-        });
-        $this->register('integer', function () {
-            return new Integer($this);
-        });
-        $this->register('text', function () {
-            return new Text($this);
-        });
-    }
-    
-    public function __get($name)
-    {
-        return $this[$name];
+        if ($candidate instanceof TypeInterface) {
+            return $candidate;
+        }
+        if (is_array($candidate)) {
+            return $this->enum($candidate);
+        }
+        return null;
     }
     
     /**
@@ -83,10 +73,18 @@ class Service implements ServiceInterface
     **/
     public function register($name, $factory)
     {
-        if (isset($this->registry[$name])) {
-            throw new Exception('Type "' . $name . '" is already registered', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
+        if (isset($this[$name])) {
+            throw new Exception('Type "' . $name . '" already exists', Exception::SERVICE_REGISTER_NAME_ALREADY_EXISTS);
         }
         $this->registry[$name] = $factory;
+        return $this;
+    }
+    
+    // public : Service //
+    
+    public function __get($name)
+    {
+        return $this[$name]; 
     }
     
     // public : predefined types //
@@ -153,22 +151,6 @@ class Service implements ServiceInterface
         return new Sequence($this, $type);
     }
     
-    public function singleton($value)
-    {
-        return new Singleton($this, $value);
-    }
-    
-    public function type($candidate)
-    {
-        if ($candidate instanceof TypeInterface) {
-            return $candidate;
-        }
-        if (is_array($candidate)) {
-            return $this->enum($candidate);
-        }
-        return $this->singleton($candidate);
-    }
-    
     /**
      * Создаёт новый тип объединения.
      *
@@ -180,17 +162,5 @@ class Service implements ServiceInterface
     public function union()
     {
         return new Union($this, func_get_args());
-    }
-    
-    /**
-     * Создаёт новый перечислимый тип с настраиваемым представлением.
-     *
-     *  @param  [<primitive> => [<viewIndex> => <presentation>]]    $values
-     *
-     *  @return Viewable
-    **/
-    public function viewable(array $values)
-    {
-        return new Viewable($this, $values);
     }
 }

@@ -67,7 +67,7 @@
         } only %}
         <p>Другие ответы:</p>
         {% for letter in app.types.abc.each %}
-            {% if not letter.equals(content.best_answer) %}
+            {% if letter != content.best_answer %}
                 {% include '_answer.twig' with {
                     mode    : mode,
                     letter  : letter,

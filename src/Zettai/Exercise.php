@@ -152,6 +152,8 @@ class Exercise
 
     public function __construct(array $row)
     {
+        throw new Exception('Class "' . __CLASS__ . '" is deprecated', Exception::EXERCISE_DEPRECATED);
+
         foreach (self::$FIELD_PROPERTIES as $fieldName => $properties) {
             $value = null;
             if (isset($row[$fieldName])) {
