@@ -18,13 +18,13 @@ class TypeServiceProvider implements ServiceProviderInterface
 
     public function boot(Application $app)
     {
-        $typeService = $app['types'];
+        $service = $app['types'];
 
         // Регистрируем в порядке зависимости.
         // Первыми идут типы, не зависящие от других типов.
 
-        $typeService->register('roundWind', function ($typeService) {
-            $type = $typeService->enum(['east', 'south']);
+        $service->register('roundWind', function ($service) {
+            $type = $service->enum(['east', 'south']);
             $type->view('english',  $type->dictionary(['east',      'south']));
             $type->view('e',        $type->dictionary(['e',         's']));
             $type->view('russian',  $type->dictionary(['восток',    'юг']));
@@ -33,14 +33,14 @@ class TypeServiceProvider implements ServiceProviderInterface
             $tenhouView = $type->dictionary(['1z', '2z']);
             $type->view('tenhou', $tenhouView);
             // TODO: Устранить копипасту с таким же экспортом в типе squareWind.
-            $type->export('tile', function (EnumInternal $internal) use ($typeService, $tenhouView) {
-                return $typeService['tile']->fromTenhou($tenhouView->export($internal));
+            $type->export('tile', function (EnumInternal $internal) use ($service, $tenhouView) {
+                return $service['tile']->fromTenhou($tenhouView->export($internal));
             });
 
             return $type;
         });
-        $typeService->register('squareWind', function ($typeService) {
-            $type = $typeService->enum(['west', 'north']);
+        $service->register('squareWind', function ($service) {
+            $type = $service->enum(['west', 'north']);
             $type->view('english', $type->dictionary(['west',   'north']));
             $type->view('e',       $type->dictionary(['w',      'n'    ]));
             $type->view('russian', $type->dictionary(['запад',  'север']));
@@ -49,16 +49,16 @@ class TypeServiceProvider implements ServiceProviderInterface
             $tenhouView = $type->dictionary(['3z', '4z']);
             $type->view('tenhou', $tenhouView);
             // TODO: Устранить копипасту с таким же экспортом в типе roundWind.
-            $type->export('tile', function (EnumInternal $internal) use ($typeService, $tenhouView) {
-                return $typeService['tile']->fromTenhou($tenhouView->export($internal));
+            $type->export('tile', function (EnumInternal $internal) use ($service, $tenhouView) {
+                return $service['tile']->fromTenhou($tenhouView->export($internal));
             });
 
             return $type;
         });
-        $typeService->register('wind', function ($typeService) {
-            $type = $typeService->union([
-                'round'  => $typeService['roundWind'],
-                'square' => $typeService['squareWind'],
+        $service->register('wind', function ($service) {
+            $type = $service->union([
+                'round'  => $service['roundWind'],
+                'square' => $service['squareWind'],
             ]);
             $type->view('english',  $type->select(['round' => 'english',   'square' => 'english']));
             $type->view('e',        $type->select(['round' => 'e',         'square' => 'e'      ]));
@@ -72,10 +72,10 @@ class TypeServiceProvider implements ServiceProviderInterface
 
             return $type;
         });
-        $typeService->register('kyoku', function ($typeService) {
-            $type = $typeService->product(
-                $typeService['roundWind'],
-                $typeService->enum(range(1, 4))
+        $service->register('kyoku', function ($service) {
+            $type = $service->product(
+                $service['roundWind'],
+                $service->enum(range(1, 4))
             );
             $type->view('english',  $type->separator('-',   ['english', 'default']));
             $type->view('e',        $type->concat   (       ['e',       'default']));
@@ -83,10 +83,54 @@ class TypeServiceProvider implements ServiceProviderInterface
             $type->view('r',        $type->concat   (       ['r',       'default']));
             return $type;
         });
-        $typeService->register('abc', function ($typeService) {
-            return $typeService->enum(['a', 'b', 'c']);
+        $service->register('abc', function ($service) {
+            return $service->enum(['a', 'b', 'c']);
         });
-        $typeService->register('exercise', function ($service) {
+        $service->register('suit', function ($service) {
+            $type = $service->enum(['man', 'pin', 'so']);
+            $type->view('english',  $type->dictionary(['man', 'pin', 'sou']));
+            $type->view('e',        $type->dictionary(['m',   'p',   's'  ]));
+            $type->view('russian',  $type->dictionary(['ман', 'пин', 'со' ]));
+            $type->view('r',        $type->dictionary(['м',   'п',   'с'  ]));
+            return $type;
+        });
+        $service->register('dragon', function ($service) {
+            $type = $service->enum(['white', 'green', 'red']);
+            $type->view('english',  $type->dictionary(['White', 'Green',   'Red'    ]));
+            $type->view('e',        $type->dictionary(['W',     'G',       'R'      ]));
+            $type->view('russian',  $type->dictionary(['Белый', 'Зелёный', 'Красный']));
+            $type->view('r',        $type->dictionary(['Б',     'З',       'К'      ]));
+            $type->view('tenhou',   $type->dictionary(['5z',    '6z',      '7z'     ]));
+            return $type;
+        });
+        $service->register('tile', function ($service) {
+            return $service->union([
+                'number' => $service->product(
+                    $service->enum([1, 2, 3, 4, 0, 5, 6, 7, 8, 9]),
+                    $service['suit']
+                ),
+                'wind'   => $service['wind'],
+                'dragin' => $service['dragon'],
+            ]);
+        });
+        $service->register('exerciseContent', function ($service) {
+            return $service->record([
+                'kyoku'         => $service['kyoku'],
+                'position'      => $service['wind'],
+                'turn'          => range(1, 18),
+                'dora'          => $service['tile'],
+                'score'         => $service['string'],
+                'hand'          => $service['tileSequence'],
+                'draw'          => $service['tile'],
+                'is_answered'   => $service['boolean'],
+                'answer'        => $service->map(
+                    $service['abc'],
+                    $service['answer']
+                ),
+                'best_answer' => $service['abc'],
+            ]);
+        });
+        $service->register('exercise', function ($service) {
             return $service->record([
                 'exercise_id'   => $service['integer'],
                 'title'         => $service['string'],
@@ -102,30 +146,6 @@ class TypeServiceProvider implements ServiceProviderInterface
     {
         $service = $app['types'];
 
-        $service->register('suit', function ($service) {
-            return $service->viewable([
-                ['m', 'man', 'm', 'ман', 'м'],
-                ['p', 'pin', 'p', 'пин', 'п'],
-                ['s', 'sou', 's', 'со',  'с'],
-            ]);
-        });
-        $service->register('dragon', function ($service) {
-            return $service->viewable([
-                ['5z', 'White', 'W', 'Белый',   'Б'],
-                ['6z', 'Green', 'G', 'Зелёный', 'З'],
-                ['7z', 'Red',   'R', 'Красный', 'К'],
-            ]);
-        });
-        $service->register('tile', function ($service) {
-            return $service->union(
-                $service->product(
-                    [1, 2, 3, 4, 0, 5, 6, 7, 8, 9],
-                    $service['suit']
-                ),
-                $service['wind'],
-                $service['dragon']
-            );
-        });
         $service->register('tileSequence', function ($service) {
             return $service->sequence($service['tile'])
             ->setHook('fromView', function ($view, $presentation) {
@@ -209,23 +229,6 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $service->record([
                 'discard' => $service['tile'],
                 'comment' => $service->text(),
-            ]);
-        });
-        $service->register('exerciseContent', function ($service) {
-            return $service->record([
-                'kyoku'         => $service['kyoku'],
-                'position'      => $service['wind'],
-                'turn'          => range(1, 18),
-                'dora'          => $service['tile'],
-                'score'         => $service->text(),
-                'hand'          => $service['tileSequence'],
-                'draw'          => $service['tile'],
-                'is_answered'   => $service->boolean(),
-                'answer'        => $service->map(
-                    $service['abc'],
-                    $service['answer']
-                ),
-                'best_answer' => $service['abc'],
             ]);
         });
         $service->register('theme', function ($service) {
