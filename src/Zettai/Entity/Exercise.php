@@ -1,6 +1,7 @@
 <?php
-namespace Zettai\Model;
+namespace Zettai\Entity;
 
+use Ob_Ivan\Model\Entity;
 use Zettai\Exercise as Record;
 
 class Exercise extends Entity
@@ -13,6 +14,20 @@ class Exercise extends Entity
     }
 
     // public : Exercise //
+
+    public function delete($exercise_id)
+    {
+        // prepare
+        $exercise_id = intval($exercise_id);
+
+        // validate
+        if (! ($exercise_id > 0)) {
+            throw new Exception('Exercise id is empty', Exception::EXERCISE_ID_EMPTY);
+        }
+
+        // execute
+        $this->queryBuilder()->delete(['exercise_id' => $exercise_id]);
+    }
 
     /**
      *  @param  integer $exercise_id
@@ -60,7 +75,7 @@ class Exercise extends Entity
         return $qb->fetchColumn();
     }
 
-    public function getList ($offset = 0, $limit = 20, $includeHidden = false)
+    public function getList($offset = 0, $limit = 20, $includeHidden = false)
     {
         // prepare
         $offset = intval ($offset);
@@ -145,20 +160,6 @@ class Exercise extends Entity
             return $exprPrev;
         })
         ->fetchColumn(['exercise_id' => $exercise_id]);
-    }
-
-    public function delete($exercise_id)
-    {
-        // prepare
-        $exercise_id  = intval ($exercise_id);
-
-        // validate
-        if (! ($exercise_id > 0)) {
-            throw new Exception('Exercise id is empty', Exception::EXERCISE_ID_EMPTY);
-        }
-
-        // execute
-        $this->queryBuilder()->delete(['exercise_id' => $exercise_id]);
     }
 
     public function set(Record $exercise)

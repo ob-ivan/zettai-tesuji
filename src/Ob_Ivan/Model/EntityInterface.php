@@ -1,5 +1,5 @@
 <?php
-namespace Zettai\Model;
+namespace Ob_Ivan\Model;
 
 interface EntityInterface
 {

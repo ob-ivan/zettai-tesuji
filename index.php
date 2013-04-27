@@ -100,7 +100,6 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Zettai\Provider\TwigServiceProvider(), [
     'twig.path' => TEMPLATE_DIR,
 ]);
-$app->register(new Zettai\Provider\TypeServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());
