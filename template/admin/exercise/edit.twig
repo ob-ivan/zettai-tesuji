@@ -51,9 +51,9 @@
             <label>
                 Сдача:
                 <select name="kyoku">
-                    {% for primitive, kyoku in app.types.kyoku.each %}
+                    {% for kyoku in app.types.kyoku.each %}
                         <option
-                            value="{{ primitive }}"
+                            value="{{ kyoku.toE }}"
                             {% if kyoku == exercise.content.kyoku %}
                                 selected
                             {% endif %}

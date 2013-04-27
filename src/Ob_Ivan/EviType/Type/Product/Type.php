@@ -8,6 +8,10 @@ use Ob_Ivan\EviType\Type as ParentType;
 
 class Type extends ParentType implements IterableInterface
 {
+    // var //
+
+    private $each = null;
+
     // public : IterableInterface //
 
     /**
@@ -15,35 +19,10 @@ class Type extends ParentType implements IterableInterface
     **/
     public function each()
     {
-        /**
-         * Счётчик значений для каждой компоненты.
-         *
-         *  @var [<index componentName> => <integer index>]
-        **/
-        $indexes = [];
-
-        /**
-         * Набор значений для каждой компоненты.
-         *
-         *  @var [<index componentName> => [<integer index> => <Value value>]]
-        **/
-        $values = [];
-
-        /**
-         * Количество значений в каждой компоненте.
-         *
-         *  @var [<index componentName> => count(values[componentName])]
-        **/
-        $counts = [];
-
-        /**
-         * Общее количество значений.
-         *
-         *  @var integer Product(i, counts[i])
-        **/
-        $totalCount = 1;
-
-        // TODO
+        if (is_null($this->each)) {
+            $this->each = $this->generateEach();
+        }
+        return $this->each;
     }
 
     // public : ParentType //
@@ -80,5 +59,90 @@ class Type extends ParentType implements IterableInterface
     public function separator($separator, $map)
     {
         return new View\Separator($separator, $map);
+    }
+
+    // private //
+
+    private function generateEach()
+    {
+        /**
+         * Перечисление компонент для формирования на них порядка
+         * инкремента и переброса переполнения.
+         *
+         *  @var [<index componentIndex> => <index componentName>]
+        **/
+        $components = [];
+
+        /**
+         * Счётчик значений для каждой компоненты.
+         *
+         *  @var [<index componentIndex> => <integer indexValue>]
+        **/
+        $indexes = [];
+
+        /**
+         * Набор значений для каждой компоненты.
+         *
+         *  @var [<index componentIndex> => [<integer indexValue> => <Value value>]]
+        **/
+        $values = [];
+
+        /**
+         * Количество значений в каждой компоненте.
+         *
+         *  @var [<index componentIndex> => count(values[componentIndex])]
+        **/
+        $counts = [];
+
+        /**
+         * Общее количество значений.
+         *
+         *  @var integer Product(i, counts[i])
+        **/
+        $totalCount = 1;
+
+        foreach ($this->getOptions() as $componentName => $type) {
+            if (! $type instanceof IterableInterface) {
+                throw new Exception(
+                    'Component "' . $componentName . '" cannot be iterated',
+                    Exception::TYPE_EACH_COMPONENT_NOT_ITERABLE
+                );
+            }
+            $componentIndex = count($components);
+            $components [$componentIndex] = $componentName;
+            $indexes    [$componentIndex] = 0;
+            $values     [$componentIndex] = $type->each();
+            $counts     [$componentIndex] = count($values[$componentIndex]);
+            $totalCount                   *= $counts[$componentIndex];
+        }
+
+        $each = [];
+        for ($i = 0; $i < $totalCount; ++$i) {
+            // Породить отображение на основе индексов.
+            foreach ($indexes as $componentIndex => $index) {
+                $map[$components[$componentIndex]] = $values[$componentIndex][$index];
+            }
+
+            // Породить значение из отображения.
+            $each[] = $this->produceValue(new Internal($map));
+
+            // Увеличить индексы на единицу в младшем разряде
+            // и при необходимости перекинуть переполнение дальше.
+            $indexes = $this->incrementIndexes($indexes, $counts);
+        }
+
+        return $each;
+    }
+
+    private function incrementIndexes(array $indexes, array $counts)
+    {
+        for ($i = count($indexes) - 1; $i >= 0; --$i) {
+            ++$indexes[$i];
+            if ($indexes[$i] < $counts[$i]) {
+                return $indexes;
+            }
+            $indexes[$i] = 0;
+        }
+        return $indexes;
     }
 }

@@ -121,6 +121,11 @@ abstract class Type implements TypeInterface
         return $this->options;
     }
 
+    protected function produceValue(InternalInterface $internal)
+    {
+        return $this->valueService->produce($internal);
+    }
+
     // private //
 
     /**

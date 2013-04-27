@@ -14,8 +14,8 @@ class Type extends ParentType implements IterableInterface, StringifierInterface
     public function each()
     {
         $values = [];
-        foreach ($this->getOptions() as $name) {
-            $values[] = $this->from('default', $name);
+        foreach ($this->getOptions() as $primitive => $name) {
+            $values[] = $this->produceValue(new Internal($primitive));
         }
         return $values;
     }
