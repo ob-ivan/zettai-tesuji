@@ -104,6 +104,7 @@ class TypeService implements TypeServiceInterface
             'enum'      => function () { return new Type\Enum\Builder;              },
             'product'   => function () { return new Type\Product\Builder\Cartesian; },
             'record'    => function () { return new Type\Product\Builder\Record;    },
+            'sequence'  => function () { return new Type\Sequence\Builder;          },
             'union'     => function () { return new Type\Union\Builder;             },
         ]);
     }
