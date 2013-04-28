@@ -4,8 +4,9 @@ use Ob_Ivan\EviType\TypeService,
     Ob_Ivan\EviType\Value;
 use Ob_Ivan\EviType\Type\Boolean\Type as BooleanType;
 use Ob_Ivan\EviType\Type\Integer\Type as IntegerType;
+use Ob_Ivan\EviType\Type\Product\Internal as ProductInternal;
 
-class Main extends PHPUnit_Framework_TestCase
+class TypeService extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
@@ -89,5 +90,33 @@ class Main extends PHPUnit_Framework_TestCase
         $this->assertTrue($two instanceof Value, 'Целочисленный тип не построил значение из двойки');
 
         $this->assertTrue($unitFromInteger != $two, 'Значения целого типа для единицы и двойки совпадают');
+    }
+
+    public function testProductStringInteger()
+    {
+        // set up //
+
+        $type = $service->product($service['string'], $service['integer']);
+        $this->assertTrue($type instanceof ProductType, 'Декартово произведение типов не принадлежит своему типу');
+
+        $type->export('concat', function (ProductInternal $internal) {
+            return $internal[0] . $internal[1];
+        });
+        $type->import('concat', function ($presentation) {
+            if (preg_match('~^(.*?)(\d+)$~', $presentation, $matches)) {
+                return new Internal([
+                    trim($matches[0]),
+                    intval($matches[1])
+                ]);
+            }
+        });
+
+        // test //
+
+        $alice1value = $type->fromAny('alice 1');
+        $this->assertTrue($alice1value instanceof Value, 'StringInteger не построил значение из строки "alice 1"');
+
+        $alice1export = $alice1value->toConcat();
+        $this->assertEquals('alice1', $alice1export, 'Неправильно экспортировалось значение из строки "alice 1"');
     }
 }

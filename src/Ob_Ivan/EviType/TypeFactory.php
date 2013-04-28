@@ -25,8 +25,8 @@ class TypeFactory
             $builder = $this->registry[$name]();
             if (! $builder instanceof BuilderInterface) {
                 throw new Exception(
-                    'Value for "' . $name . '" must implement TypeSortInterface',
-                    Exception::TYPE_FACTORY_PRODUCE_SORT_WRONG_TYPE
+                    'Value for "' . $name . '" must implement BuilderInterface',
+                    Exception::TYPE_FACTORY_PRODUCE_BUILDER_WRONG_TYPE
                 );
             }
             $this->builders[$name] = $builder;
