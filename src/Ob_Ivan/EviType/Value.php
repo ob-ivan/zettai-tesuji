@@ -38,4 +38,9 @@ class Value
     {
         return $this->internal->getPrimitive();
     }
+
+    public function to($exportName)
+    {
+        return $this->type->to($exportName, $this->internal);
+    }
 }

@@ -46,8 +46,7 @@ class Separator implements ViewInterface
 
         $presentations = [];
         foreach ($internal as $componentName => $value) {
-            // TODO: Переделать на $value->export($viewName);
-            $presentations[] = $value->{'to' . $this->map[$componentName]}();
+            $presentations[] = $value->to($this->map[$componentName]);
         }
         return implode($this->separator, $presentations);
     }

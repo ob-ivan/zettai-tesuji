@@ -10,6 +10,7 @@ interface TypeInterface
     public function callValueMethod(InternalInterface $internal, $name, array $arguments);
     public function from($importName, $presentation);
     public function fromAny($presentation);
+    public function to($exportName, InternalInterface $internal);
 
     // Регистрация представлений //
 

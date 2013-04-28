@@ -84,6 +84,17 @@ abstract class Type implements TypeInterface
         }
     }
 
+    public function to($exportName, InternalInterface $internal)
+    {
+        $name = $this->normalizeName($exportName);
+        if (isset($this->exports[$name])) {
+            return $this->exports[$name]($internal, $this->options);
+        }
+        if (isset($this->views[$name])) {
+            return $this->views[$name]->export($internal, $this->options);
+        }
+    }
+
     // public : TypeInterface : Регистрация представлений //
 
     public function export($name, callable $implementation)
@@ -137,16 +148,5 @@ abstract class Type implements TypeInterface
     private function normalizeName($name)
     {
         return strtolower($name);
-    }
-
-    private function to($exportName, InternalInterface $internal)
-    {
-        $name = $this->normalizeName($exportName);
-        if (isset($this->exports[$name])) {
-            return $this->exports[$name]($internal, $this->options);
-        }
-        if (isset($this->views[$name])) {
-            return $this->views[$name]->export($internal, $this->options);
-        }
     }
 }

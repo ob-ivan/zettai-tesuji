@@ -51,6 +51,11 @@ class Type extends ParentType implements IterableInterface
 
     // public : Type : view factory //
 
+    public function associative($map)
+    {
+        return new View\Associative($map);
+    }
+
     public function concat($map)
     {
         return new View\Separator('', $map);

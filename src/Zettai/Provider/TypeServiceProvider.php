@@ -236,7 +236,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'advanced_percent'      => $service['integer'],
                 'intermediate_percent'  => $service['integer'],
             ]);
-            $type->view('database', $type->map([
+            $type->view('database', $type->associative([
                 'theme_id'              => 'integer',
                 'title'                 => 'string',
                 'is_hidden'             => 'boolean',
