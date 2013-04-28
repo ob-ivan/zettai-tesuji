@@ -226,7 +226,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             ]);
         });
         $service->register('theme', function ($service) {
-            return $service->record([
+            $type = $service->record([
                 'theme_id'              => $service['integer'],
                 'title'                 => $service['string'],
                 'is_hidden'             => $service['boolean'],
@@ -236,6 +236,17 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'advanced_percent'      => $service['integer'],
                 'intermediate_percent'  => $service['integer'],
             ]);
+            $type->view('database', $type->map([
+                'theme_id'              => 'integer',
+                'title'                 => 'string',
+                'is_hidden'             => 'boolean',
+                'intro'                 => 'string',
+                'min_exercise_id'       => 'integer',
+                'max_exercise_id'       => 'integer',
+                'advanced_percent'      => 'integer',
+                'intermediate_percent'  => 'integer',
+            ]));
+            return $type;
         });
     }
 }
