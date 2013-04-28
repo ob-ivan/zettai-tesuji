@@ -4,36 +4,37 @@ use Zettai\Config;
 
 class ThemeTestCase extends \PHPUnit_Framework_TestCase
 {
-    private $app;
-    private $entity;
-    private $type;
+    private $exerciseEntity;
+    private $themeEntity;
+    private $themeType;
 
     public function setUp()
     {
-        $this->app = new Application(new Config(DOCUMENT_ROOT));
-        $this->app->boot();
+        $app = new Application(new Config(DOCUMENT_ROOT));
+        $app->boot();
 
-        $this->type     = $this->app['types']->theme;
-        $this->entity   = $this->app['model']->theme;
+        $this->exerciseEntity   = $app['model']->exercise;
+        $this->themeEntity      = $app['model']->theme;
+        $this->themeType        = $app['types']->theme;
     }
 
     public function testGenerate()
     {
         $theme = $this->generateTheme();
         $this->assertTrue($theme instanceof Zettai\Type\Value, 'Generated theme must be an instance of Value');
-        $this->assertTrue($this->type->has($theme), 'Generated theme does not belong to its type');
+        $this->assertTrue($this->themeType->has($theme), 'Generated theme does not belong to its type');
     }
 
     public function testSetGetDelete()
     {
         $theme = $this->generateTheme();
 
-        $this->entity->set($theme);
-        $theme2 = $this->entity->get($theme->id);
+        $this->themeEntity->set($theme);
+        $theme2 = $this->themeEntity->get($theme->id);
         $this->assertEquals($theme, $theme2, 'Theme::get returns wrong value');
 
-        $this->entity->delete($theme->id);
-        $theme3 = $this->entity->get($theme->id);
+        $this->themeEntity->delete($theme->id);
+        $theme3 = $this->themeEntity->get($theme->id);
         $this->assertEmpty($theme3, 'Test theme is not deleted');
     }
 
@@ -64,14 +65,14 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
 
     private function generateTheme()
     {
-        $lastExerciseId = $this->app['model']->exercise->getNewId() - 1;
+        $lastExerciseId = $this->exerciseEntity->getNewId() - 1;
         $min_exercise_id = mt_rand(1, $lastExerciseId);
         $max_exercise_id = mt_rand($min_exercise_id, $lastExerciseId);
         $advanced_percent = mt_rand(0, 100);
         $intermediate_percent = mt_rand(0, $advanced_percent);
 
-        return $this->type->fromArray([
-            'theme_id'  => $this->entity->getNewId() + mt_rand(0, 100),
+        return $this->themeType->fromArray([
+            'theme_id'  => $this->themeEntity->getNewId() + mt_rand(0, 100),
             'title'     => $this->generateText(20),
             'is_hidden' => mt_rand(0, 1),
             'intro'     => $this->generateText(200),

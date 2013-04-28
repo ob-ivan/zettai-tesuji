@@ -8,8 +8,6 @@ use Ob_Ivan\EviType\Type\Sequence\Internal as SequenceInternal;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {
-    // NEW
-
     public function register(Application $app)
     {
         $app['types'] = $app->share(function () {
@@ -227,24 +225,16 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'content'       => $service['exerciseContent'],
             ]);
         });
-    }
-
-    // OLD
-
-    public function _boot(Application $app)
-    {
-        $service = $app['types'];
-
         $service->register('theme', function ($service) {
             return $service->record([
-                'theme_id'              => $service->integer(),
-                'title'                 => $service->text(),
-                'is_hidden'             => $service->boolean(),
-                'intro'                 => $service->text(),
-                'min_exercise_id'       => $service->integer(),
-                'max_exercise_id'       => $service->integer(),
-                'advanced_percent'      => $service->integer(),
-                'intermediate_percent'  => $service->integer(),
+                'theme_id'              => $service['integer'],
+                'title'                 => $service['string'],
+                'is_hidden'             => $service['boolean'],
+                'intro'                 => $service['string'],
+                'min_exercise_id'       => $service['integer'],
+                'max_exercise_id'       => $service['integer'],
+                'advanced_percent'      => $service['integer'],
+                'intermediate_percent'  => $service['integer'],
             ]);
         });
     }
