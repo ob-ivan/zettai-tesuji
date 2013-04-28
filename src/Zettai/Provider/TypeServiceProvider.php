@@ -237,14 +237,14 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'intermediate_percent'  => $service['integer'],
             ]);
             $type->view('database', $type->associative([
-                'theme_id'              => 'integer',
+                'theme_id'              => 'string',
                 'title'                 => 'string',
-                'is_hidden'             => 'boolean',
+                'is_hidden'             => ['*', 'string'],
                 'intro'                 => 'string',
-                'min_exercise_id'       => 'integer',
-                'max_exercise_id'       => 'integer',
-                'advanced_percent'      => 'integer',
-                'intermediate_percent'  => 'integer',
+                'min_exercise_id'       => 'string',
+                'max_exercise_id'       => 'string',
+                'advanced_percent'      => 'string',
+                'intermediate_percent'  => 'string',
             ]));
             return $type;
         });

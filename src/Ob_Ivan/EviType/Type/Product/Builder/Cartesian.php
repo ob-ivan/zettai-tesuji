@@ -16,7 +16,7 @@ class Cartesian implements BuilderInterface
      *  ]
      *  @return Type
     **/
-    public function produce(array $arguments)
+    public function produce(array $arguments = null)
     {
         $options = new Options($arguments);
         $type = new Type($options);

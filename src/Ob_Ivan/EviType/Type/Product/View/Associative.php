@@ -2,7 +2,13 @@
 /**
  * Представление произведения типов как массива.
  *
- * Для каждой компоненты указывается, какое представление на ней используется.
+ * Для каждой компоненты указывается, какие представления на ней используются.
+ * Представление задаётся либо строкой (если достаточно одного представления),
+ * либо массивом, элементы которого перебираются при каждой операции по очереди
+ * вплоть до достижения успеха.
+ * Представление может быть либо названием представления на типе, либо символом
+ * звёздочка (*), что при импорте означает "попробовать все представления",
+ * а при экспорте игнорируется.
 **/
 namespace Ob_Ivan\EviType\Type\Product\View;
 
@@ -10,16 +16,28 @@ use ArrayAccess,
     Traversable;
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\OptionsInterface,
+    Ob_Ivan\EviType\Value,
     Ob_Ivan\EviType\ViewInterface;
 use Ob_Ivan\EviType\Type\Product\Internal,
     Ob_Ivan\EviType\Type\Product\Options;
 
 class Associative implements ViewInterface
 {
-    private $map;
+    // var //
 
     /**
-     *  @param  [<componentName> => <viewName>] $map
+     *  @var [<index componentName> => [string viewName]]
+    **/
+    private $map = [];
+
+    // public : ViewInterface //
+
+    /**
+     *  @param  [
+     *      <index componentName> =>
+     *          <string viewName | [string viewName] viewNames>,
+     *      ...
+     *  ]  $map
     **/
     public function __construct(array $map)
     {
@@ -29,7 +47,12 @@ class Associative implements ViewInterface
                 Exception::ASSOCIATIVE_CONSTRUCT_MAP_WRONG_TYPE
             );
         }
-        $this->map = $map;
+        foreach ($map as $componentName => $viewNames) {
+            if (! is_array($viewNames)) {
+                $viewNames = [$viewNames];
+            }
+            $this->map[$componentName] = $viewNames;
+        }
     }
 
     public function export(InternalInterface $internal, OptionsInterface $options = null)
@@ -40,9 +63,23 @@ class Associative implements ViewInterface
                 Exception::ASSOCIATIVE_EXPORT_INTERNAL_WRONG_TYPE
             );
         }
+        // Построить представление для каждой компоненты.
         $presentations = [];
         foreach ($internal as $componentName => $value) {
-            $presentations[$componentName] = $value->to($this->map[$componentName]);
+            // Перебираем все представления компоненты вплоть до достижения успеха.
+            $presentation = null;
+            foreach ($this->map[$componentName] as $viewName) {
+                // Представление звёздочка (*) при экспорте игнорируется.
+                if ($viewName === '*') {
+                    continue;
+                }
+                $candidate = $value->to($viewName);
+                if (! is_null($candidate)) {
+                    $presentation = $candidate;
+                    break;
+                }
+            }
+            $presentations[$componentName] = $presentation;
         }
         return $presentations;
     }
@@ -61,12 +98,28 @@ class Associative implements ViewInterface
                 Exception::ASSOCIATIVE_IMPORT_OPTIONS_WRONG_TYPE
             );
         }
+        // Строим значения для каждой компоненты.
         $values = [];
         foreach ($options as $componentName => $type) {
+            // Компонента отсутствует, представление не может быть разобрано.
             if (! isset($presentation[$componentName])) {
                 return null;
             }
-            $value = $type->from($this->map[$componentName], $presentation[$componentName]);
+            // Перебираем все представления вплоть до достижения успеха.
+            $value = null;
+            foreach ($this->map[$componentName] as $viewName) {
+                // Звёздочка означает перебрать все представления.
+                if ($viewName === '*') {
+                    $value = $type->fromAny($presentation[$componentName]);
+                    // После звёздочки нет смысла прогонять какие-то другие попытки.
+                    break;
+                }
+                $canidate = $type->from($viewName, $presentation[$componentName]);
+                if ($candidate instanceof Value) {
+                    $value = $candidate;
+                    break;
+                }
+            }
             if (! $value) {
                 return null;
             }

@@ -16,7 +16,7 @@ class Builder implements BuilderInterface
      *  ]
      *  @return Type
     **/
-    public function produce(array $arguments)
+    public function produce(array $arguments = null)
     {
         $map = [];
         foreach ($arguments[0] as $primitive => $name) {

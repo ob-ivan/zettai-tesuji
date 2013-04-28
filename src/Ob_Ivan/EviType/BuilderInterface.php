@@ -10,5 +10,5 @@ interface BuilderInterface
      *  @param  array           $arguments
      *  @return TypeInterface
     **/
-    public function produce(array $arguments);
+    public function produce(array $arguments = null);
 }

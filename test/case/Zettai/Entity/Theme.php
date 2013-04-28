@@ -72,7 +72,7 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
         $advanced_percent = mt_rand(0, 100);
         $intermediate_percent = mt_rand(0, $advanced_percent);
 
-        return $this->themeType->fromArray([
+        return $this->themeType->fromDatabase([
             'theme_id'              => $this->themeEntity->getNewId() + mt_rand(0, 100),
             'title'                 => $this->generateText(20),
             'is_hidden'             => mt_rand(0, 1),
