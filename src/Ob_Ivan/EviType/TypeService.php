@@ -102,6 +102,7 @@ class TypeService implements TypeServiceInterface
         // Стандартные сорта.
         $this->factory->register([
             'enum'      => function () { return new Type\Enum\Builder;              },
+            'map'       => function () { return new Type\Map\Builder;               },
             'product'   => function () { return new Type\Product\Builder\Cartesian; },
             'record'    => function () { return new Type\Product\Builder\Record;    },
             'sequence'  => function () { return new Type\Sequence\Builder;          },

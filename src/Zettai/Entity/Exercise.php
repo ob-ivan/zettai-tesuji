@@ -51,7 +51,7 @@ class Exercise extends Entity
 
     /**
      *  @param  integer $exercise_id
-     *  @return Record
+     *  @return Value
     **/
     public function get($exercise_id)
     {
@@ -76,7 +76,7 @@ class Exercise extends Entity
 
         // convert to record
         if ($row) {
-            return new Record($row);
+            return $this->type->fromDatabase($row);
         }
         return null;
     }
@@ -120,7 +120,7 @@ class Exercise extends Entity
         // convert to records
         $records = [];
         foreach ($rows as $row) {
-            $records[] = new Record ($row);
+            $records[] = $this->type->fromDatabase($row);
         }
         return $records;
     }
@@ -182,7 +182,7 @@ class Exercise extends Entity
         ->fetchColumn(['exercise_id' => $exercise_id]);
     }
 
-    public function set(Record $exercise)
+    public function set(Value $exercise)
     {
         // validate
         if (! ($exercise->exercise_id > 0)) {
@@ -193,8 +193,8 @@ class Exercise extends Entity
         }
 
         if ($this->get($exercise->exercise_id)) {
-            return $this->queryBuilder()->update($exercise->getData(), ['exercise_id' => $exercise->exercise_id]);
+            return $this->queryBuilder()->update($exercise->toDatabase(), ['exercise_id' => $exercise->exercise_id]);
         }
-        return $this->queryBuilder()->insert($exercise->getData());
+        return $this->queryBuilder()->insert($exercise->toDatabase());
     }
 }

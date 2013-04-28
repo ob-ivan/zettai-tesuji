@@ -206,7 +206,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $service->record([
                 'kyoku'         => $service['kyoku'],
                 'position'      => $service['wind'],
-                'turn'          => range(1, 18),
+                'turn'          => $service->enum(range(1, 18)),
                 'dora'          => $service['tile'],
                 'score'         => $service['string'],
                 'hand'          => $service['tileSequence'],
