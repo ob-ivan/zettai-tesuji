@@ -16,7 +16,7 @@ class Integer implements ViewInterface
         if (! $internal instanceof Internal) {
             throw new Exception(
                 'Internal must be an instance of Internal',
-                Exception::STRING_EXPORT_INTERNAL_WRONG_TYPE
+                Exception::INTEGER_EXPORT_INTERNAL_WRONG_TYPE
             );
         }
         return intval($internal->getPrimitive());

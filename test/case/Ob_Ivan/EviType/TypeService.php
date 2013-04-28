@@ -1,6 +1,8 @@
 <?php
 
-use Ob_Ivan\EviType\TypeService;
+use Ob_Ivan\EviType\TypeService,
+    Ob_Ivan\EviType\Value;
+use Ob_Ivan\EviType\Type\Boolean\Type as BooleanType;
 use Ob_Ivan\EviType\Type\Integer\Type as IntegerType;
 
 class Main extends PHPUnit_Framework_TestCase
@@ -29,6 +31,44 @@ class Main extends PHPUnit_Framework_TestCase
 
     // test standard types //
 
+    public function testBoolean()
+    {
+        $type = $this->service['boolean'];
+        $this->assertTrue($type instanceof BooleanType, 'Булевый тип не принадлежит своему типу');
+
+        // true //
+
+        $trueFromBoolean = $type->fromBoolean(true);
+        $this->assertTrue($trueFromBoolean instanceof Value, 'Булевый тип не построил значение из истины');
+
+        $trueFromInteger = $type->fromInteger(1);
+        $this->assertTrue($trueFromInteger instanceof Value, 'Булевый тип не построил значение из единицы');
+
+        $trueFromString = $type->fromString('true');
+        $this->assertTrue($trueFromString instanceof Value, 'Булевый тип не построил значение из строки "true"');
+
+        $this->assertTrue($trueFromBoolean === $trueFromInteger, 'Значения булевого типа, построенные из истины и единицы, различаются');
+        $this->assertTrue($trueFromInteger === $trueFromString,  'Значения булевого типа, построенные из единицы и строки "true", различаются');
+
+        // false //
+
+        $falseFromBoolean = $type->fromBoolean(false);
+        $this->assertTrue($falseFromBoolean instanceof Value, 'Булевый тип не построил значение из лжи');
+
+        $falseFromInteger = $type->fromInteger(0);
+        $this->assertTrue($falseFromInteger instanceof Value, 'Булевый тип не построил значение из нуля');
+
+        $falseFromString = $type->fromString('false');
+        $this->assertTrue($falseFromString instanceof Value, 'Булевый тип не построил значение из строки "false"');
+
+        $this->assertTrue($falseFromBoolean === $falseFromInteger, 'Значения булевого типа, построенные из лжи и нуля, различаются');
+        $this->assertTrue($falseFromInteger === $falseFromString,  'Значения булевого типа, построенные из нуля и строки "false", различаются');
+
+        // true != false //
+
+        $this->assertTrue($trueFromBoolean != $falseFromBoolean, 'Значения булевого типа для истины и лжи совпадают');
+    }
+
     public function testInteger()
     {
         $type = $this->service['integer'];
@@ -40,6 +80,14 @@ class Main extends PHPUnit_Framework_TestCase
         $unitFromString = $type->fromString('1');
         $this->assertTrue($unitFromString instanceof Value, 'Целочисленный тип не построил значение из строки "1"');
 
-        $this->assertTrue($unitFromInteger === $unitFromString, 'Значения для единицы, построенные из разных представлений, различаются');
+        $this->assertTrue(
+            $unitFromInteger === $unitFromString,
+            'Значения целого типа для единицы, построенные из разных представлений, различаются'
+        );
+
+        $two = $type->fromInteger(2);
+        $this->assertTrue($two instanceof Value, 'Целочисленный тип не построил значение из двойки');
+
+        $this->assertTrue($unitFromInteger != $two, 'Значения целого типа для единицы и двойки совпадают');
     }
 }
