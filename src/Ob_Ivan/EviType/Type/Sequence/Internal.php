@@ -23,6 +23,7 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
     // var //
 
     private $map;
+    private $primitive = null;
 
     // public : ArrayAccess //
 
@@ -50,11 +51,14 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
 
     public function getPrimitive()
     {
-        $primitives = [];
-        foreach ($this->map as $index => $value) {
-            $primitives[$index] = $value->getPrimitive();
+        if (is_null($this->primitive)) {
+            $primitives = [];
+            foreach ($this->map as $index => $value) {
+                $primitives[$index] = $value->getPrimitive();
+            }
+            $this->primitive = json_encode($primitives);
         }
-        return json_encode($primitives);
+        return $this->primitive;
     }
 
     // public : IteratorAggregate //

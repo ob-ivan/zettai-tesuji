@@ -6,6 +6,7 @@ use Ob_Ivan\EviType\InternalInterface,
 
 class Internal implements InternalInterface
 {
+    private $primitive = null;
     private $variantName;
     private $value;
 
@@ -13,10 +14,13 @@ class Internal implements InternalInterface
 
     public function getPrimitive()
     {
-        return json_encode([
-            $this->variantName,
-            $this->value->getPrimitive(),
-        ]);
+        if (is_null($this->primitive)) {
+            $this->primitive = json_encode([
+                $this->variantName,
+                $this->value->getPrimitive(),
+            ]);
+        }
+        return $this->primitive;
     }
 
     // public : Internal //
