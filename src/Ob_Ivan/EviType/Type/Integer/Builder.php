@@ -15,7 +15,8 @@ class Builder implements BuilderInterface
     public function produce(array $arguments = null)
     {
         $type = new Type($options);
-        $type->view('string', new View\String);
+        $type->view('integer', new View\Integer);
+        $type->view('string',  new View\String);
         return $type;
     }
 }
