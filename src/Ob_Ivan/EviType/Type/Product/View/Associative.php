@@ -114,7 +114,7 @@ class Associative implements ViewInterface
                     // После звёздочки нет смысла прогонять какие-то другие попытки.
                     break;
                 }
-                $canidate = $type->from($viewName, $presentation[$componentName]);
+                $candidate = $type->from($viewName, $presentation[$componentName]);
                 if ($candidate instanceof Value) {
                     $value = $candidate;
                     break;
