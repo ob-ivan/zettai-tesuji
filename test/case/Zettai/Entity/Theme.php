@@ -23,8 +23,9 @@ class ThemeTestCase extends AbstractCase
     public function testGenerate()
     {
         $theme = $this->generateTheme();
-        $this->assertTrue($theme instanceof Value, 'Generated theme must be an instance of Value');
-        $this->assertTrue($this->themeType->has($theme), 'Generated theme does not belong to its type');
+        $this->assertTrue($theme instanceof Value,          'Generated theme must be an instance of Value');
+        $this->assertTrue($this->themeType->has($theme),    'Generated theme does not belong to its type');
+        $this->assertGreaterThan(0, $theme['theme_id'],     'Generated theme has empty id');
     }
 
     public function testSetGetDelete()

@@ -1,10 +1,14 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-use Ob_Ivan\EviType\Type\StringifierInterface;
+use ArrayAccess;
+use Ob_Ivan\EviType\Type\DereferencerInterface,
+    Ob_Ivan\EviType\Type\StringifierInterface;
 
-class Value
+class Value implements ArrayAccess
 {
+    // var //
+
     /**
      * @var Type
     **/
@@ -14,6 +18,48 @@ class Value
      * @var mixed
     **/
     private $internal;
+
+    // public : ArrayAccess //
+
+    public function offsetExists($offset)
+    {
+        if (! $this->type instanceof DereferencerInterface) {
+            throw new Exception(
+                'Dereferencing is not supported for this type',
+                Exception::VALUE_OFFSET_EXISTS_NOT_SUPPORTED
+            );
+        }
+        return $this->type->dereferenceExists($this->internal, $offset);
+    }
+
+    public function offsetGet($offset)
+    {
+        if (! $this->type instanceof DereferencerInterface) {
+            throw new Exception(
+                'Dereferencing is not supported for this type',
+                Exception::VALUE_OFFSET_GET_NOT_SUPPORTED
+            );
+        }
+        return $this->type->dereferenceGet($this->internal, $offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new Exception(
+            'Setting offsets is not allowed',
+            Exception::VALUE_OFFSET_SET_NOT_ALLOWED
+        );
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new Exception(
+            'Unsetting offsets is not allowed',
+            Exception::VALUE_OFFSET_UNSET_NOT_ALLOWED
+        );
+    }
+
+    // public : Value //
 
     public function __construct (TypeInterface $type, InternalInterface $internal)
     {
