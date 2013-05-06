@@ -4,9 +4,10 @@ use Ob_Ivan\EviType\TypeService,
     Ob_Ivan\EviType\Value;
 use Ob_Ivan\EviType\Type\Boolean\Type as BooleanType;
 use Ob_Ivan\EviType\Type\Integer\Type as IntegerType;
-use Ob_Ivan\EviType\Type\Product\Internal as ProductInternal;
+use Ob_Ivan\EviType\Type\Product\Internal as ProductInternal,
+    Ob_Ivan\EviType\Type\Product\Type     as ProductType;
 
-class TypeService extends PHPUnit_Framework_TestCase
+class TypeServiceTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
@@ -96,17 +97,18 @@ class TypeService extends PHPUnit_Framework_TestCase
     {
         // set up //
 
-        $type = $service->product($service['string'], $service['integer']);
+        $type = $this->service->product($this->service['string'], $this->service['integer']);
         $this->assertTrue($type instanceof ProductType, 'Декартово произведение типов не принадлежит своему типу');
 
         $type->export('concat', function (ProductInternal $internal) {
             return $internal[0] . $internal[1];
         });
-        $type->import('concat', function ($presentation) {
-            if (preg_match('~^(.*?)(\d+)$~', $presentation, $matches)) {
-                return new Internal([
-                    trim($matches[0]),
-                    intval($matches[1])
+        $type->import('concat', function ($presentation, $options) {
+            if (preg_match('~\d+$~', $presentation, $matches, PREG_OFFSET_CAPTURE)) {
+                $substring = substr($presentation, 0, $matches[0][1]);
+                return new ProductInternal([
+                    $options[0]->fromString(trim($substring)),
+                    $options[1]->fromString($matches[0][0]),
                 ]);
             }
         });
