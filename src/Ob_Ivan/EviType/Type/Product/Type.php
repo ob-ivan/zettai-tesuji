@@ -3,14 +3,50 @@ namespace Ob_Ivan\EviType\Type\Product;
 
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\OptionsInterface;
-use Ob_Ivan\EviType\Type\IterableInterface;
+use Ob_Ivan\EviType\Type\DereferencerInterface,
+    Ob_Ivan\EviType\Type\IterableInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
-class Type extends ParentType implements IterableInterface
+class Type extends ParentType implements DereferencerInterface, IterableInterface
 {
     // var //
 
     private $each = null;
+
+    // public : DereferencerInterface //
+
+    public function dereferenceExists(InternalInterface $internal, $offset)
+    {
+        if (! $internal instanceof Internal) {
+            throw new Exception(
+                'Internal must be instance of Internal',
+                Exception::TYPE_DEREFERENCE_EXISTS_INTERNAL_WRONG_TYPE
+            );
+        }
+        // Проверить, что offset известен опциям.
+        if (! isset($this->getOptions()[$offset])) {
+            return false;
+        }
+        return $internal->offsetExists($offset);
+    }
+
+    public function dereferenceGet(InternalInterface $internal, $offset)
+    {
+        if (! $internal instanceof Internal) {
+            throw new Exception(
+                'Internal must be instance of Internal',
+                Exception::TYPE_DEREFERENCE_GET_INTERNAL_WRONG_TYPE
+            );
+        }
+        // Проверить, что offset известен опциям.
+        if (! isset($this->getOptions()[$offset])) {
+            throw new Exception(
+                'Unknown component "' . $offset . '"',
+                Exception::TYPE_DEREFERENCE_GET_OFFSET_UNKNOWN
+            );
+        }
+        return $internal->offsetGet($offset);
+    }
 
     // public : IterableInterface //
 
