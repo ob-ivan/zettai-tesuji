@@ -6,8 +6,9 @@ use Ob_Ivan\EviType\Type\Boolean\Type as BooleanType;
 use Ob_Ivan\EviType\Type\Integer\Type as IntegerType;
 use Ob_Ivan\EviType\Type\Product\Internal as ProductInternal,
     Ob_Ivan\EviType\Type\Product\Type     as ProductType;
+use Ob_Ivan\TestCase\AbstractCase;
 
-class TypeServiceTest extends PHPUnit_Framework_TestCase
+class TypeServiceTest extends AbstractCase
 {
     public function setUp()
     {
@@ -120,5 +121,53 @@ class TypeServiceTest extends PHPUnit_Framework_TestCase
 
         $alice1export = $alice1value->toConcat();
         $this->assertEquals('alice1', $alice1export, 'Неправильно экспортировалось значение из строки "alice 1"');
+    }
+
+    public function testRecordTheme()
+    {
+        // set up //
+
+        $type = $this->service->record([
+            'theme_id'              => $this->service['integer'],
+            'title'                 => $this->service['string'],
+            'is_hidden'             => $this->service['boolean'],
+            'intro'                 => $this->service['string'],
+            'min_exercise_id'       => $this->service['integer'],
+            'max_exercise_id'       => $this->service['integer'],
+            'advanced_percent'      => $this->service['integer'],
+            'intermediate_percent'  => $this->service['integer'],
+        ]);
+        $this->assertTrue($type instanceof ProductType, 'Тип рекорда не принадлежит сорту произведений');
+
+        $type->view('database', $type->associative([
+            'theme_id'              => 'string',
+            'title'                 => 'string',
+            'is_hidden'             => ['*', 'string'],
+            'intro'                 => 'string',
+            'min_exercise_id'       => 'string',
+            'max_exercise_id'       => 'string',
+            'advanced_percent'      => 'string',
+            'intermediate_percent'  => 'string',
+        ]));
+
+        // test //
+
+        $lastExerciseId         = mt_rand(1, 100);
+        $min_exercise_id        = mt_rand(1, $lastExerciseId);
+        $max_exercise_id        = mt_rand($min_exercise_id, $lastExerciseId);
+        $advanced_percent       = mt_rand(0, 100);
+        $intermediate_percent   = mt_rand(0, $advanced_percent);
+
+        $value = $type->fromDatabase([
+            'theme_id'              => mt_rand(1, 100),
+            'title'                 => $this->generateText(20),
+            'is_hidden'             => mt_rand(0, 1),
+            'intro'                 => $this->generateText(200),
+            'min_exercise_id'       => $min_exercise_id,
+            'max_exercise_id'       => $max_exercise_id,
+            'advanced_percent'      => $advanced_percent,
+            'intermediate_percent'  => $intermediate_percent,
+        ]);
+        $this->assertTrue($value instanceof Value, 'Generated value must be an instance of Value');
     }
 }

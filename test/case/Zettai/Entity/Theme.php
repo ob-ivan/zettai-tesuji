@@ -1,9 +1,10 @@
 <?php
 use Ob_Ivan\EviType\Value;
+use Ob_Ivan\TestCase\AbstractCase;
 use Zettai\Application,
     Zettai\Config;
 
-class ThemeTestCase extends \PHPUnit_Framework_TestCase
+class ThemeTestCase extends AbstractCase
 {
     private $exerciseEntity;
     private $themeEntity;
@@ -40,29 +41,6 @@ class ThemeTestCase extends \PHPUnit_Framework_TestCase
     }
 
     // private //
-
-    private function generateChar()
-    {
-        return chr(mt_rand(32, 126));
-    }
-
-    private function generateFloat($min, $max)
-    {
-        return $min + mt_rand() / mt_getrandmax() * ($max - $min);
-    }
-
-    private function generateText($maxLength)
-    {
-        $text = '';
-        while (empty($text)) {
-            $chars = [];
-            for ($i = 0; $i < $maxLength; ++$i) {
-                $chars[] = $this->generateChar();
-            }
-            $text = trim(implode('', $chars));
-        }
-        return $text;
-    }
 
     private function generateTheme()
     {
