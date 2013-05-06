@@ -20,6 +20,15 @@ class ThemeTestCase extends AbstractCase
         $this->themeType        = $app['types']->theme;
     }
 
+    public function testGetNewId()
+    {
+        $newId = $this->themeEntity->getNewId();
+        $this->assertGreaterThan(0, $newId, 'New id for theme is not positive');
+
+        $null = $this->themeEntity->get($newId);
+        $this->assertEmpty($null, 'New id corresponds to an existing theme');
+    }
+
     public function testGenerate()
     {
         $theme = $this->generateTheme();
@@ -45,14 +54,15 @@ class ThemeTestCase extends AbstractCase
 
     private function generateTheme()
     {
-        $lastExerciseId = $this->exerciseEntity->getNewId() - 1;
-        $min_exercise_id = mt_rand(1, $lastExerciseId);
-        $max_exercise_id = mt_rand($min_exercise_id, $lastExerciseId);
-        $advanced_percent = mt_rand(0, 100);
-        $intermediate_percent = mt_rand(0, $advanced_percent);
+        $lastExerciseId         = $this->exerciseEntity->getNewId() - 1;
+        $min_exercise_id        = mt_rand(1, $lastExerciseId);
+        $max_exercise_id        = mt_rand($min_exercise_id, $lastExerciseId);
+        $advanced_percent       = mt_rand(0, 100);
+        $intermediate_percent   = mt_rand(0, $advanced_percent);
+        $newThemeId             = $this->themeEntity->getNewId();
 
         return $this->themeType->fromDatabase([
-            'theme_id'              => $this->themeEntity->getNewId() + mt_rand(0, 100),
+            'theme_id'              => $newThemeId + mt_rand(0, 100),
             'title'                 => $this->generateText(20),
             'is_hidden'             => mt_rand(0, 1),
             'intro'                 => $this->generateText(200),
