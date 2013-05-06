@@ -34,6 +34,11 @@ class Value
         return '[ERROR: method __toString is not supported for this type]';
     }
 
+    public function belongsTo(TypeInterface $type)
+    {
+        return $this->type === $type;
+    }
+
     public function getPrimitive()
     {
         return $this->internal->getPrimitive();

@@ -84,6 +84,11 @@ abstract class Type implements TypeInterface
         }
     }
 
+    public function has(Value $value)
+    {
+        return $value->belongsTo($this);
+    }
+
     public function to($exportName, InternalInterface $internal)
     {
         $name = $this->normalizeName($exportName);
