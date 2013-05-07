@@ -1,8 +1,9 @@
 <?php
+use Monolog\Logger;
 use Ob_Ivan\EviType\Value;
 use Ob_Ivan\TestCase\AbstractCase;
-use Zettai\Application,
-    Zettai\Config;
+use Silex\Provider\MonologServiceProvider;
+use Zettai\Application;
 
 class ThemeTestCase extends AbstractCase
 {
@@ -12,7 +13,7 @@ class ThemeTestCase extends AbstractCase
 
     public function setUp()
     {
-        $app = new Application(new Config(DOCUMENT_ROOT));
+        $app = new Application(DOCUMENT_ROOT);
         $app->boot();
 
         $this->exerciseEntity   = $app['model']->exercise;
