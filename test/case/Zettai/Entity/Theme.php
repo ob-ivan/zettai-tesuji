@@ -42,11 +42,11 @@ class ThemeTestCase extends AbstractCase
         $theme = $this->generateTheme();
 
         $this->themeEntity->set($theme);
-        $theme2 = $this->themeEntity->get($theme->id);
+        $theme2 = $this->themeEntity->get($theme->theme_id);
         $this->assertEquals($theme, $theme2, 'Theme::get returns wrong value');
 
-        $this->themeEntity->delete($theme->id);
-        $theme3 = $this->themeEntity->get($theme->id);
+        $this->themeEntity->delete($theme->theme_id);
+        $theme3 = $this->themeEntity->get($theme->theme_id);
         $this->assertEmpty($theme3, 'Test theme is not deleted');
     }
 

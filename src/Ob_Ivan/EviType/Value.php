@@ -72,6 +72,11 @@ class Value implements ArrayAccess
         return $this->type->callValueMethod($this->internal, $name, $arguments);
     }
 
+    public function __get($name)
+    {
+        return $this->offsetGet($name);
+    }
+
     public function __toString()
     {
         if ($this->type instanceof StringifierInterface) {
