@@ -8,6 +8,11 @@ use Ob_Ivan\EviType\TypeInterface,
 
 class Theme extends Entity
 {
+    // const //
+
+    // TODO: Придумать, как это сделать лучше.
+    const VIEW_NAME = 'database';
+
     // var //
 
     /**
@@ -74,7 +79,7 @@ class Theme extends Entity
         if (! $row) {
             return null;
         }
-        return $this->type->from($row);
+        return $this->type->from(self::VIEW_NAME, $row);
     }
 
     public function getList($offset = 0, $limit = 20, $includeHidden = false)
@@ -98,7 +103,7 @@ class Theme extends Entity
         // convert to records
         $records = [];
         foreach ($rows as $row) {
-            $records[] = $this->type->from($row);
+            $records[] = $this->type->from(self::VIEW_NAME, $row);
         }
         return $records;
     }
@@ -174,9 +179,9 @@ class Theme extends Entity
         }
 
         if ($this->get($theme->theme_id)) {
-            return $this->queryBuilder()->update($theme->toDatabase(), ['theme_id' => $theme->theme_id]);
+            return $this->queryBuilder()->update($theme->to(self::VIEW_NAME), ['theme_id' => $theme->theme_id]);
         }
-        return $this->queryBuilder()->insert($theme->toDatabase());
+        return $this->queryBuilder()->insert($theme->to(self::VIEW_NAME));
     }
 
     // protected //
