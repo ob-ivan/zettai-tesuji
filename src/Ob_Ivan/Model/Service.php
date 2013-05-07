@@ -50,21 +50,21 @@ class Service implements ServiceInterface
 
     // public : ServiceInterface : fetch //
 
-    public function fetchAll($query, $parameters)
+    public function fetchAll($query, array $parameters)
     {
-        $this->logQuery(__METHOD__, $query);
+        $this->logQuery(__METHOD__, $query, $parameters);
         return $this->db->fetchAll($query, $parameters);
     }
 
-    public function fetchAssoc($query, $parameters)
+    public function fetchAssoc($query, array $parameters)
     {
-        $this->logQuery(__METHOD__, $query);
+        $this->logQuery(__METHOD__, $query, $parameters);
         return $this->db->fetchAssoc($query, $parameters);
     }
 
-    public function fetchColumn($query, $parameters)
+    public function fetchColumn($query, array $parameters)
     {
-        $this->logQuery(__METHOD__, $query);
+        $this->logQuery(__METHOD__, $query, $parameters);
         return $this->db->fetchColumn($query, $parameters);
     }
 
@@ -106,10 +106,10 @@ class Service implements ServiceInterface
 
     // private //
 
-    private function logQuery($method, $query)
+    private function logQuery($method, $query, array $parameters)
     {
         if ($this->logger) {
-            $this->logger->addInfo($method . ': query = ' . $query);
+            $this->logger->addInfo($method . ': query = ' . $query . '; parameters = ' . var_export($parameters, true));
         }
     }
 }

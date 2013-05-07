@@ -30,24 +30,16 @@ class ThemeTestCase extends AbstractCase
         $this->assertEmpty($null, 'New id corresponds to an existing theme');
     }
 
-    public function testGenerate()
-    {
-        $theme = $this->generateTheme();
-        $this->assertTrue($theme instanceof Value,          'Generated theme must be an instance of Value');
-        $this->assertTrue($this->themeType->has($theme),    'Generated theme does not belong to its type');
-        $this->assertGreaterThan(0, $theme['theme_id'],     'Generated theme has empty id');
-    }
-
     public function testSetGetDelete()
     {
         $theme = $this->generateTheme();
 
         $this->themeEntity->set($theme);
-        $theme2 = $this->themeEntity->get($theme->theme_id);
+        $theme2 = $this->themeEntity->get($theme->theme_id->toInteger());
         $this->assertEquals($theme, $theme2, 'Theme::get returns wrong value');
 
-        $this->themeEntity->delete($theme->theme_id);
-        $theme3 = $this->themeEntity->get($theme->theme_id);
+        $this->themeEntity->delete($theme->theme_id->toInteger());
+        $theme3 = $this->themeEntity->get($theme->theme_id->toInteger());
         $this->assertEmpty($theme3, 'Test theme is not deleted');
     }
 
@@ -60,17 +52,29 @@ class ThemeTestCase extends AbstractCase
         $max_exercise_id        = mt_rand($min_exercise_id, $lastExerciseId);
         $advanced_percent       = mt_rand(0, 100);
         $intermediate_percent   = mt_rand(0, $advanced_percent);
-        $newThemeId             = $this->themeEntity->getNewId();
+        $newThemeId             = $this->themeEntity->getNewId() + mt_rand(0, 100);
+        $newTitle               = $this->generateText(20);
+        $newIsHidden            = ! mt_rand(0, 1);
+        $newIntro               = $this->generateText(200);
 
-        return $this->themeType->fromDatabase([
-            'theme_id'              => $newThemeId + mt_rand(0, 100),
-            'title'                 => $this->generateText(20),
-            'is_hidden'             => mt_rand(0, 1),
-            'intro'                 => $this->generateText(200),
+        $theme = $this->themeType->fromDatabase([
+            'theme_id'              => $newThemeId,
+            'title'                 => $newTitle,
+            'is_hidden'             => $newIsHidden,
+            'intro'                 => $newIntro,
             'min_exercise_id'       => $min_exercise_id,
             'max_exercise_id'       => $max_exercise_id,
             'advanced_percent'      => $advanced_percent,
             'intermediate_percent'  => $intermediate_percent,
         ]);
+
+        $this->assertTrue($theme instanceof Value,          'Generated theme must be an instance of Value');
+        $this->assertTrue($this->themeType->has($theme),    'Generated theme does not belong to its type');
+        $this->assertEquals($newThemeId,  $theme->theme_id->toInteger(), 'Generated theme has invalid theme_id');
+        $this->assertEquals($newTitle,    $theme->title->toString(),     'Generated theme has invalid title');
+        $this->assertEquals($newIsHidden, $theme->is_hidden->toBoolean(), 'Generated theme has invalid is_hidden');
+        $this->assertEquals($newIntro,    $theme->intro->toString(),      'Generated theme has invalid intro');
+
+        return $theme;
     }
 }

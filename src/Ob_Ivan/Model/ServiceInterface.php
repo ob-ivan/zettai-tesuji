@@ -18,11 +18,11 @@ interface ServiceInterface
 
     // fetch //
 
-    public function fetchAll($query, $parameters);
+    public function fetchAll($query, array $parameters);
 
-    public function fetchAssoc($query, $parameters);
+    public function fetchAssoc($query, array $parameters);
 
-    public function fetchColumn($query, $parameters);
+    public function fetchColumn($query, array $parameters);
 
     // modify //
 
