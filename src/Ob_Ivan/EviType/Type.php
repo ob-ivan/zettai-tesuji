@@ -1,6 +1,8 @@
 <?php
 namespace Ob_Ivan\EviType;
 
+use Ob_Ivan\EviType\Type\IterableInterface;
+
 abstract class Type implements TypeInterface
 {
     // var //
@@ -156,6 +158,18 @@ abstract class Type implements TypeInterface
             'Unknown method "' . $name . '" in class ' . get_called_class(),
             Exception::TYPE_CALL_NAME_UNKNOWN
         );
+    }
+
+    public function random()
+    {
+        if (! $this instanceof IterableInterface) {
+            throw new Exception(
+                'Random is not supported for this type',
+                Exception::TYPE_RANDOM_INTERFACE_NOT_IMPLEMENTED
+            );
+        }
+        $each = $this->each();
+        return $each[array_rand($each)];
     }
 
     // protected //

@@ -12,4 +12,11 @@ interface IterableInterface
      *  @return [Value]
     **/
     public function each();
+
+    /**
+     * Возвращает одно случайное из всех возможных значений.
+     *
+     *  @return Value
+    **/
+    public function random();
 }

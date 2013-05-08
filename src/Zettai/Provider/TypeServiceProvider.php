@@ -200,6 +200,9 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'comment' => $service['string'],
             ]);
         });
+        $service->register('answerCollection', function ($service) {
+            return $service->map($service['abc'], $service['answer']);
+        });
         $service->register('exerciseContent', function ($service) {
             return $service->record([
                 'kyoku'         => $service['kyoku'],
@@ -210,20 +213,29 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'hand'          => $service['tileSequence'],
                 'draw'          => $service['tile'],
                 'is_answered'   => $service['boolean'],
-                'answer'        => $service->map(
-                    $service['abc'],
-                    $service['answer']
-                ),
-                'best_answer' => $service['abc'],
+                'answer'        => $service['answerCollection'],
+                'best_answer'   => $service['abc'],
             ]);
         });
         $service->register('exercise', function ($service) {
-            return $service->record([
+            $type = $service->record([
                 'exercise_id'   => $service['integer'],
                 'title'         => $service['string'],
                 'is_hidden'     => $service['boolean'],
                 'content'       => $service['exerciseContent'],
             ]);
+            $type->view('database', $type->associative([
+                'exercise_id'   => 'string',
+                'title'         => 'string',
+                'is_hidden'     => ['*', 'string'],
+                'content'       => 'json',
+            ]));
+            // TODO: A shorter syntax.
+            $type->getter('exercise_id',    function ($internal) { return $internal->exercise_id    ->toInteger(); });
+            $type->getter('title',          function ($internal) { return $internal->title          ->toString (); });
+            $type->getter('is_hidden',      function ($internal) { return $internal->is_hidden      ->toBoolean(); });
+            $type->getter('content',        function ($internal) { return $internal->content                     ; });
+            return $type;
         });
         $service->register('theme', function ($service) {
             $type = $service->record([
