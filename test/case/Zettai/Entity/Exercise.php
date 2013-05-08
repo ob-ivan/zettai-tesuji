@@ -51,7 +51,7 @@ class ExerciseTest extends AbstractCase
         $newHand        = $this->types['tileSequence']->fromArray($this->generateTiles(13));
         $newDraw        = $this->types['tile']->random();
         $newIsAnswered  = ! mt_rand(0, 1);
-        $newAnswer      = $this->types['answerCollection']->fromArray($this->generateAnswers());
+        $newAnswer      = $this->types['answerCollection']->fromPairs($this->generateAnswers());
         $newBestAnswer  = $this->types['abc']->random();
 
         $exercise = $this->exerciseType->fromArray([
@@ -75,5 +75,14 @@ class ExerciseTest extends AbstractCase
         $this->assertTrue($exercise instanceof Value, 'Generated exercise must be an instance of Value');
 
         return $exercise;
+    }
+
+    private function generateTiles($count)
+    {
+        $tiles = [];
+        for ($i = 0; $i < $count; ++$i) {
+            $tiles[] = $this->types['tile']->random();
+        }
+        return $tiles;
     }
 }
