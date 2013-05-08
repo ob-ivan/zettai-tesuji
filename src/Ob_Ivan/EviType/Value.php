@@ -2,8 +2,7 @@
 namespace Ob_Ivan\EviType;
 
 use ArrayAccess;
-use Ob_Ivan\EviType\Type\DereferencerInterface,
-    Ob_Ivan\EviType\Type\StringifierInterface;
+use Ob_Ivan\EviType\Type\StringifierInterface;
 
 class Value implements ArrayAccess
 {
@@ -23,24 +22,12 @@ class Value implements ArrayAccess
 
     public function offsetExists($offset)
     {
-        if (! $this->type instanceof DereferencerInterface) {
-            throw new Exception(
-                'Dereferencing is not supported for this type',
-                Exception::VALUE_OFFSET_EXISTS_NOT_SUPPORTED
-            );
-        }
-        return $this->type->dereferenceExists($this->internal, $offset);
+        return isset($this->$offset);
     }
 
     public function offsetGet($offset)
     {
-        if (! $this->type instanceof DereferencerInterface) {
-            throw new Exception(
-                'Dereferencing is not supported for this type',
-                Exception::VALUE_OFFSET_GET_NOT_SUPPORTED
-            );
-        }
-        return $this->type->dereferenceGet($this->internal, $offset);
+        return $this->$offset;
     }
 
     public function offsetSet($offset, $value)
@@ -74,7 +61,12 @@ class Value implements ArrayAccess
 
     public function __get($name)
     {
-        return $this->offsetGet($name);
+        return $this->type->get($name, $this->internal);
+    }
+
+    public function __isset($name)
+    {
+        return $this->type->exists($name);
     }
 
     public function __toString()

@@ -246,6 +246,15 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'advanced_percent'      => 'string',
                 'intermediate_percent'  => 'string',
             ]));
+            // TODO: A shorter syntax.
+            $type->getter('theme_id',               function ($internal) { return $internal->theme_id               ->toInteger(); });
+            $type->getter('title',                  function ($internal) { return $internal->title                  ->toString (); });
+            $type->getter('is_hidden',              function ($internal) { return $internal->is_hidden              ->toBoolean(); });
+            $type->getter('intro',                  function ($internal) { return $internal->intro                  ->toString (); });
+            $type->getter('min_exercise_id',        function ($internal) { return $internal->min_exercise_id        ->toInteger(); });
+            $type->getter('max_exercise_id',        function ($internal) { return $internal->max_exercise_id        ->toInteger(); });
+            $type->getter('advanced_percent',       function ($internal) { return $internal->advanced_percent       ->toInteger(); });
+            $type->getter('intermediate_percent',   function ($internal) { return $internal->intermediate_percent   ->toInteger(); });
             return $type;
         });
     }

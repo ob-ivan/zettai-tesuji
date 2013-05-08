@@ -11,9 +11,18 @@ abstract class Type implements TypeInterface
     private $exports = [];
 
     /**
+     *  @var [<string name> => <mixed implementation(Internal internal, Options options)>]
+    **/
+    private $getters = [];
+
+    /**
      *  @var [<string name> => <Internal implementation(mixed presentation, Options options)>]
     **/
     private $imports = [];
+
+    /**
+     *  @var [<string name> => <ViewInterface view>]
+    **/
     private $views   = [];
 
     /**
@@ -51,6 +60,12 @@ abstract class Type implements TypeInterface
         );
     }
 
+    public function exists($getterName)
+    {
+        $name = $this->normalizeName($getterName);
+        return isset($this->getters[$name]);
+    }
+
     public function from($importName, $presentation)
     {
         $name = $this->normalizeName($importName);
@@ -84,6 +99,14 @@ abstract class Type implements TypeInterface
         }
     }
 
+    public function get($getterName, InternalInterface $internal)
+    {
+        $name = $this->normalizeName($getterName);
+        if (isset($this->getters[$name])) {
+            return $this->getters[$name]($internal, $this->options);
+        }
+    }
+
     public function has(Value $value)
     {
         return $value->belongsTo($this);
@@ -105,6 +128,11 @@ abstract class Type implements TypeInterface
     public function export($name, callable $implementation)
     {
         $this->exports[$this->normalizeName($name)] = $implementation;
+    }
+
+    public function getter($name, callable $implementation)
+    {
+        $this->getters[$this->normalizeName($name)] = $implementation;
     }
 
     public function import($name, callable $implementation)
