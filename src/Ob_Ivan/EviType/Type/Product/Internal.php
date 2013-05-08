@@ -82,4 +82,9 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
         }
         $this->map = $componentNameToValueMap;
     }
+
+    public function __get($name)
+    {
+        return $this[$name];
+    }
 }

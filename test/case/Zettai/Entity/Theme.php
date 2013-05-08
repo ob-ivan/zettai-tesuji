@@ -35,11 +35,11 @@ class ThemeTestCase extends AbstractCase
         $theme = $this->generateTheme();
 
         $this->themeEntity->set($theme);
-        $theme2 = $this->themeEntity->get($theme->theme_id->toInteger());
+        $theme2 = $this->themeEntity->get($theme->theme_id);
         $this->assertEquals($theme, $theme2, 'Theme::get returns wrong value');
 
-        $this->themeEntity->delete($theme->theme_id->toInteger());
-        $theme3 = $this->themeEntity->get($theme->theme_id->toInteger());
+        $this->themeEntity->delete($theme->theme_id);
+        $theme3 = $this->themeEntity->get($theme->theme_id);
         $this->assertEmpty($theme3, 'Test theme is not deleted');
     }
 
@@ -68,12 +68,12 @@ class ThemeTestCase extends AbstractCase
             'intermediate_percent'  => $intermediate_percent,
         ]);
 
-        $this->assertTrue($theme instanceof Value,          'Generated theme must be an instance of Value');
-        $this->assertTrue($this->themeType->has($theme),    'Generated theme does not belong to its type');
-        $this->assertEquals($newThemeId,  $theme->theme_id->toInteger(), 'Generated theme has invalid theme_id');
-        $this->assertEquals($newTitle,    $theme->title->toString(),     'Generated theme has invalid title');
-        $this->assertEquals($newIsHidden, $theme->is_hidden->toBoolean(), 'Generated theme has invalid is_hidden');
-        $this->assertEquals($newIntro,    $theme->intro->toString(),      'Generated theme has invalid intro');
+        $this->assertTrue($theme instanceof Value,           'Generated theme must be an instance of Value');
+        $this->assertTrue($this->themeType->has($theme),     'Generated theme does not belong to its type');
+        $this->assertEquals($newThemeId,  $theme->theme_id,  'Generated theme has invalid theme_id');
+        $this->assertEquals($newTitle,    $theme->title,     'Generated theme has invalid title');
+        $this->assertEquals($newIsHidden, $theme->is_hidden, 'Generated theme has invalid is_hidden');
+        $this->assertEquals($newIntro,    $theme->intro,     'Generated theme has invalid intro');
 
         return $theme;
     }
