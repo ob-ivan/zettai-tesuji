@@ -54,22 +54,26 @@ class ExerciseTest extends AbstractCase
         $newAnswer      = $this->generateAnswers();
         $newBestAnswer  = $this->types['abc']->random();
 
+        $this->assertTrue($this->types['wind']->has($newPosition), 'Position does not belong to type "wind"');
+
+        $newContent     = $this->types['exerciseContent']->fromArray([
+            'kyoku'         => $newKyoku,
+            'position'      => $newPosition,
+            'turn'          => $newTurn,
+            'dora'          => $newDora,
+            'score'         => $newScore,
+            'hand'          => $newHand,
+            'draw'          => $newDraw,
+            'is_answered'   => $newIsAnswered,
+            'answer'        => $newAnswer,
+            'best_answer'   => $newBestAnswer,
+        ]);
+
         $exercise = $this->exerciseType->fromArray([
             'exercise_id'   => $newExerciseId,
             'title'         => $newTitle,
             'is_hidden'     => $newIsHidden,
-            'content'       => $this->types['exerciseContent']->fromArray([
-                'kyoku'         => $newKyoku,
-                'position'      => $newPosition,
-                'turn'          => $newTurn,
-                'dora'          => $newDora,
-                'score'         => $newScore,
-                'hand'          => $newHand,
-                'draw'          => $newDraw,
-                'is_answered'   => $newIsAnswered,
-                'answer'        => $newAnswer,
-                'best_answer'   => $newBestAnswer,
-            ]),
+            'content'       => $newContent,
         ]);
 
         $this->assertTrue($exercise instanceof Value, 'Generated exercise must be an instance of Value');
