@@ -21,7 +21,7 @@ class Type extends ParentType implements IterableInterface
                 );
             }
             foreach ($type->each() as $value) {
-                $values[] = $value;
+                $values[] = $this->produceValue(new Internal($variantName, $value));
             }
         }
         return $values;
