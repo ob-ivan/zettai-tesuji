@@ -1,7 +1,7 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-use Ob_Ivan\EviType\Type\IterableInterface;
+use Ob_Ivan\EviType\Sort\IterableInterface;
 
 abstract class Type implements TypeInterface
 {

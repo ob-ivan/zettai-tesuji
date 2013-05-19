@@ -4,7 +4,7 @@ namespace Zettai\Provider;
 use Silex\Application,
     Silex\ServiceProviderInterface;
 use Ob_Ivan\EviType\TypeService;
-use Ob_Ivan\EviType\Type\Sequence\Internal as SequenceInternal;
+use Ob_Ivan\EviType\Sort\Sequence\Internal as SequenceInternal;
 
 class TypeServiceProvider implements ServiceProviderInterface
 {

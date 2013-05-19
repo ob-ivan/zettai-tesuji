@@ -2,7 +2,7 @@
 /**
  * Интерфейс для типов, значения которых можно перебрать методом each.
 **/
-namespace Ob_Ivan\EviType\Type;
+namespace Ob_Ivan\EviType\Sort;
 
 interface IterableInterface
 {

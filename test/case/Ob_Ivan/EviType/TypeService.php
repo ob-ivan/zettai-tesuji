@@ -2,10 +2,10 @@
 
 use Ob_Ivan\EviType\TypeService,
     Ob_Ivan\EviType\Value;
-use Ob_Ivan\EviType\Type\Boolean\Type as BooleanType;
-use Ob_Ivan\EviType\Type\Integer\Type as IntegerType;
-use Ob_Ivan\EviType\Type\Product\Internal as ProductInternal,
-    Ob_Ivan\EviType\Type\Product\Type     as ProductType;
+use Ob_Ivan\EviType\Sort\Boolean\Type as BooleanType;
+use Ob_Ivan\EviType\Sort\Integer\Type as IntegerType;
+use Ob_Ivan\EviType\Sort\Product\Internal as ProductInternal,
+    Ob_Ivan\EviType\Sort\Product\Type     as ProductType;
 use Ob_Ivan\TestCase\AbstractCase;
 
 class TypeServiceTest extends AbstractCase

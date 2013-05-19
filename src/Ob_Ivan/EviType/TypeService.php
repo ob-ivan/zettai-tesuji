@@ -1,6 +1,16 @@
 <?php
 namespace Ob_Ivan\EviType;
 
+use Ob_Ivan\EviType\Sort\Boolean\Builder            as BooleanBuilder;
+use Ob_Ivan\EviType\Sort\Enum\Builder               as EnumBuilder;
+use Ob_Ivan\EviType\Sort\Integer\Builder            as IntegerBuilder;
+use Ob_Ivan\EviType\Sort\Map\Builder                as MapBuilder;
+use Ob_Ivan\EviType\Sort\Product\Builder\Cartesian  as CartesianBuilder;
+use Ob_Ivan\EviType\Sort\Product\Builder\Record     as RecordBuilder;
+use Ob_Ivan\EviType\Sort\Sequence\Builder           as SequenceBuilder;
+use Ob_Ivan\EviType\Sort\String\Builder             as StringBuilder;
+use Ob_Ivan\EviType\Sort\Union\Builder              as UnionBuilder;
+
 class TypeService implements TypeServiceInterface
 {
     /**
@@ -95,18 +105,18 @@ class TypeService implements TypeServiceInterface
         $this->factory = new TypeFactory();
 
         // Стандартные типы.
-        $this->register('boolean', function () { return (new Type\Boolean\Builder)->produce(); });
-        $this->register('integer', function () { return (new Type\Integer\Builder)->produce(); });
-        $this->register('string',  function () { return (new Type\String\Builder )->produce(); });
+        $this->register('boolean', function () { return (new BooleanBuilder)->produce(); });
+        $this->register('integer', function () { return (new IntegerBuilder)->produce(); });
+        $this->register('string',  function () { return (new StringBuilder )->produce(); });
 
         // Стандартные сорта.
         $this->factory->register([
-            'enum'      => function () { return new Type\Enum\Builder;              },
-            'map'       => function () { return new Type\Map\Builder;               },
-            'product'   => function () { return new Type\Product\Builder\Cartesian; },
-            'record'    => function () { return new Type\Product\Builder\Record;    },
-            'sequence'  => function () { return new Type\Sequence\Builder;          },
-            'union'     => function () { return new Type\Union\Builder;             },
+            'enum'      => function () { return new EnumBuilder;        },
+            'map'       => function () { return new MapBuilder;         },
+            'product'   => function () { return new CartesianBuilder;   },
+            'record'    => function () { return new RecordBuilder;      },
+            'sequence'  => function () { return new SequenceBuilder;    },
+            'union'     => function () { return new UnionBuilder;       },
         ]);
     }
 

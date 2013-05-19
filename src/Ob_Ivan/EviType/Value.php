@@ -2,7 +2,7 @@
 namespace Ob_Ivan\EviType;
 
 use ArrayAccess;
-use Ob_Ivan\EviType\Type\StringifierInterface;
+use Ob_Ivan\EviType\Sort\StringifierInterface;
 
 class Value implements ArrayAccess
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Ob_Ivan\EviType\Type;
+namespace Ob_Ivan\EviType\Sort;
 
 use Ob_Ivan\EviType\Exception as ParentException;
 
