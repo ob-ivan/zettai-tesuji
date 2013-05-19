@@ -51,7 +51,7 @@ class ExerciseTest extends AbstractCase
         $newHand        = $this->types['tileSequence']->fromArray($this->generateTiles(13));
         $newDraw        = $this->types['tile']->random();
         $newIsAnswered  = ! mt_rand(0, 1);
-        $newAnswer      = $this->types['answerCollection']->fromPairs($this->generateAnswers());
+        $newAnswer      = $this->generateAnswers();
         $newBestAnswer  = $this->types['abc']->random();
 
         $exercise = $this->exerciseType->fromArray([
@@ -84,5 +84,14 @@ class ExerciseTest extends AbstractCase
             $tiles[] = $this->types['tile']->random();
         }
         return $tiles;
+    }
+
+    private function generateAnswers()
+    {
+        $pairs = [];
+        foreach ($this->types['abc'] as $letter) {
+            $pairs[] = [$letter, $this->generateAnswer()];
+        }
+        return $this->types['answerCollection']->fromPairs($pairs);
     }
 }
