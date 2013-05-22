@@ -30,4 +30,11 @@ class Type extends ParentType
         }
         return parent::callValueMethod($internal, $name, $arguments);
     }
+
+    // public : view factory //
+
+    public function indexedArray($viewName)
+    {
+        return new View\IndexedArray($viewName);
+    }
 }

@@ -17,7 +17,7 @@ class Builder implements BuilderInterface
     {
         $options = new Options($arguments[0]);
         $type = new Type($options);
-        $type->view('array', new View\IndexedArray());
+        $type->view('array', new View\IndexedArray('*'));
         return $type;
     }
 }
