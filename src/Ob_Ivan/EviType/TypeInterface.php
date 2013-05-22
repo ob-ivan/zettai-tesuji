@@ -12,7 +12,7 @@ interface TypeInterface
     public function from($importName, $presentation);
     public function fromAny($presentation);
     public function get($getterName, InternalInterface $internal);
-    public function has(Value $value);
+    public function has($value);
     public function to($exportName, InternalInterface $internal);
 
     // Регистрация представлений //

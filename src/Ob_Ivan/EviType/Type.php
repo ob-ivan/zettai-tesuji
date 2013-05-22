@@ -109,8 +109,11 @@ abstract class Type implements TypeInterface
         }
     }
 
-    public function has(Value $value)
+    public function has($value)
     {
+        if (! $value instanceof Value) {
+            return false;
+        }
         return $value->belongsTo($this);
     }
 
