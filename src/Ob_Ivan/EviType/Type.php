@@ -87,13 +87,16 @@ abstract class Type implements TypeInterface
 
     public function fromAny($presentation)
     {
+        if ($this->has($presentation)) {
+            return $presentation;
+        }
         foreach ($this->imports as $import) {
             $internal = $import($presentation, $this->options);
             if ($internal) {
                 return $this->valueService->produce($internal);
             }
         }
-        foreach ($this->views as $view) {
+        foreach ($this->views as $viewName => $view) {
             $internal = $view->import($presentation, $this->options);
             if ($internal) {
                 return $this->valueService->produce($internal);

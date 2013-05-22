@@ -20,11 +20,11 @@ class Builder implements BuilderInterface
     {
         $map = [];
         foreach ($arguments[0] as $primitive => $name) {
-            $map[$primitive] = strval($name);
+            $map[$primitive] = $name;
         }
         $options = new Options($map);
         $type = new Type($options);
-        $type->view('Default', $type->dictionary($options));
+        $type->view('default', $type->dictionary($options));
         return $type;
     }
 }

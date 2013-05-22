@@ -24,6 +24,7 @@ class Record implements BuilderInterface
         $options = new Options($arguments[0]);
         $type = new Type($options);
         $type->import('array', function ($presentation, Options $options) {
+            $values = [];
             foreach ($options as $componentName => $subType) {
                 if (! isset($presentation[$componentName])) {
                     throw new Exception(
@@ -31,14 +32,16 @@ class Record implements BuilderInterface
                         Exception::RECORD_IMPORT_ARRAY_COMPONENT_MISSING
                     );
                 }
-                if (! $subType->has($presentation[$componentName])) {
+                $value = $subType->fromAny($presentation[$componentName]);
+                if (! $value) {
                     throw new Exception(
                         'Component "' . $componentName . '" does not belong to the expected type',
                         Exception::RECORD_IMPORT_ARRAY_COMPONENT_WRONG_TYPE
                     );
                 }
+                $values[$componentName] = $value;
             }
-            return new Internal($presentation);
+            return new Internal($values);
         });
         return $type;
     }
