@@ -55,6 +55,7 @@ class ExerciseTest extends AbstractCase
         $newBestAnswer  = $this->types['abc']->random();
 
         $this->assertTrue($this->types['wind']->has($newPosition), 'Position does not belong to type "wind"');
+        $this->assertTrue($this->types['tileSequence']->has($newHand), 'Hand does not belong to type "tileSequence"');
 
         $newContent     = $this->types['exerciseContent']->fromArray([
             'kyoku'         => $newKyoku,
@@ -87,6 +88,11 @@ class ExerciseTest extends AbstractCase
         for ($i = 0; $i < $count; ++$i) {
             $tiles[] = $this->types['tile']->random();
         }
+
+        foreach ($tiles as $tile) {
+            $this->assertTrue($this->types['tile']->has($tile), 'Tile does not belong to type "tile"');
+        }
+
         return $tiles;
     }
 

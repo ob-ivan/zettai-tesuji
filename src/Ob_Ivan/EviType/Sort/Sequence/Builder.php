@@ -17,7 +17,7 @@ class Builder implements BuilderInterface
     {
         $options = new Options($arguments[0]);
         $type = new Type($options);
-        // TODO: Добавить какие-нибудь стандартные экспорты и импорты.
+        $type->view('array', new View\IndexedArray());
         return $type;
     }
 }

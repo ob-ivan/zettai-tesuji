@@ -83,6 +83,10 @@ abstract class Type implements TypeInterface
                 return $this->valueService->produce($internal);
             }
         }
+        throw new Exception(
+            'Unknown import or view name "' . $importName . '" in class ' . get_called_class(),
+            Exception::TYPE_FROM_IMPORT_NAME_UNKNOWN
+        );
     }
 
     public function fromAny($presentation)
