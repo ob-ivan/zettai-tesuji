@@ -6,7 +6,6 @@
 namespace Ob_Ivan\EviType\Sort\Map;
 
 use ArrayAccess,
-    ArrayIterator,
     IteratorAggregate;
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\Value;
@@ -25,6 +24,11 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
     **/
     private $rangeMap;
 
+    /**
+     * Кэш для примитивного значения.
+     *
+     *  @var string json([<domainValue->getPrimitive()> => <rangeValue->getPrimitive()>])
+    **/
     private $primitive = null;
 
     // public : ArrayAccess //

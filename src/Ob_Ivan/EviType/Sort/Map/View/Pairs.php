@@ -22,7 +22,11 @@ class Pairs implements ViewInterface
                 Exception::PAIRS_EXPORT_INTERNAL_WRONG_TYPE
             );
         }
-        // TODO
+        $pairs = [];
+        foreach ($internal as $key => $value) {
+            $pairs[] = [$key, $value];
+        }
+        return $pairs;
     }
 
     public function import($presentation, OptionsInterface $options = null)
@@ -39,6 +43,26 @@ class Pairs implements ViewInterface
                 Exception::PAIRS_IMPORT_OPTIONS_WRONG_TYPE
             );
         }
-        // TODO
+        $pairs = [];
+        $domain = $options->getDomain();
+        $range  = $options->getRange();
+        foreach ($presentation as $key => $value) {
+            $domainValue = $domain->fromAny($key);
+            if (! $domainValue) {
+                throw new Exception(
+                    'Key "' . $key . '" could not be converted to domain value',
+                    Exception::PAIRS_IMPORT_KEY_NOT_RECOGNIZED
+                );
+            }
+            $rangeValue = $range->fromAny($value);
+            if (! $rangeValue) {
+                throw new Exception(
+                    'Value could not be converted to range value',
+                    Exception::PAIRS_IMPORT_VALUE_NOT_RECOGNIZED
+                );
+            }
+            $pairs[] = [$domainValue, $rangeValue];
+        }
+        return new Internal($pairs);
     }
 }
