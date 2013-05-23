@@ -95,6 +95,8 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
     **/
     public function __construct(array $pairs)
     {
+        $this->domainMap = [];
+        $this->rangeMap  = [];
         foreach ($pairs as $position => $pair) {
             list($domainValue, $rangeValue) = $pair;
             if (! $domainValue instanceof Value) {

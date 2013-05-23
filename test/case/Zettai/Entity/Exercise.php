@@ -1,4 +1,5 @@
 <?php
+use Ob_Ivan\EviType\Value;
 use Ob_Ivan\TestCase\AbstractCase;
 use Zettai\Application;
 
@@ -70,6 +71,13 @@ class ExerciseTest extends AbstractCase
             'best_answer'   => $newBestAnswer,
         ]);
 
+        $this->assertTrue(
+            $newContent instanceof Value,
+            'Generated content must be an instance of Value, ' .
+            get_class($newContent) . ' given'
+        );
+        $this->assertTrue($this->types['exerciseContent']->has($newContent), 'Exercise content must belong to exerciseContent type');
+
         $exercise = $this->exerciseType->fromArray([
             'exercise_id'   => $newExerciseId,
             'title'         => $newTitle,
@@ -77,7 +85,12 @@ class ExerciseTest extends AbstractCase
             'content'       => $newContent,
         ]);
 
-        $this->assertTrue($exercise instanceof Value, 'Generated exercise must be an instance of Value');
+        $this->assertTrue($exercise instanceof Value, 'Exercise must be an instance of Value');
+        $this->assertTrue($this->exerciseType->has($exercise), 'Exercise must belong to exercise type');
+        $this->assertEquals($newExerciseId, $exercise->exercise_id, 'Exercise id is not recognized properly');
+        $this->assertEquals($newTitle,      $exercise->title,       'Exercise title is not recognized properly');
+        $this->assertEquals($newIsHidden,   $exercise->is_hidden,   'is_hidden is not recognized properly');
+        $this->assertEquals($newContent,    $exercise->content,     'Exercise content is not recognized properly');
 
         return $exercise;
     }
