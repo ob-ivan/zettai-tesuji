@@ -18,7 +18,7 @@ class Builder implements BuilderInterface
     {
         $options = new Options($arguments[0], $arguments[1]);
         $type = new Type($options);
-        // TODO: Добавить стандартные представления.
+        $type->view('pairs', new View\Pairs);
         return $type;
     }
 }
