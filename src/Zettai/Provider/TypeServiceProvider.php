@@ -205,13 +205,20 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $type;
         });
         $service->register('answer', function ($service) {
-            return $service->record([
+            $type = $service->record([
                 'discard' => $service['tile'],
                 'comment' => $service['string'],
             ]);
+            return $type
+            ->view('json', $type->json([
+                'discard' => 'e',
+                'comment' => 'string',
+            ]));
         });
         $service->register('answerCollection', function ($service) {
-            return $service->map($service['abc'], $service['answer']);
+            $type = $service->map($service['abc'], $service['answer']);
+            return $type
+            ->view('json', $type->json('default', 'json'));
         });
         $service->register('exerciseContent', function ($service) {
             $type = $service->record([

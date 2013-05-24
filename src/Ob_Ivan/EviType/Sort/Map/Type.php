@@ -38,4 +38,11 @@ class Type extends ParentType implements IterableInterface
         }
         return parent::callValueMethod($internal, $name, $arguments);
     }
+
+    // public : view factory //
+
+    public function json($domainView, $rangeView)
+    {
+        return new View\Json($domainView, $rangeView);
+    }
 }
