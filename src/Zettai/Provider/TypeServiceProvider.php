@@ -75,10 +75,10 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $service->enum(range(1, 4))
             );
             return $type
-            ->view('english',  $type->separator('-',   ['english', 'default']))
-            ->view('e',        $type->concat   (       ['e',       'default']))
-            ->view('russian',  $type->separator('-',   ['russian', 'default']))
-            ->view('r',        $type->concat   (       ['r',       'default']));
+            ->view('english',  $type->separator('-',   ['english', 'integer']))
+            ->view('e',        $type->concat   (       ['e',       'integer']))
+            ->view('russian',  $type->separator('-',   ['russian', 'integer']))
+            ->view('r',        $type->concat   (       ['r',       'integer']));
         });
         $service->register('abc', function ($service) {
             return $service->enum(['a', 'b', 'c']);
@@ -106,10 +106,11 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $service['suit']
             );
             $number
-            ->view('english',  $number->separator(' ',   ['default', 'english']))
-            ->view('e',        $number->concat   (       ['default', 'e',     ]))
-            ->view('russian',  $number->separator(' ',   ['default', 'russian']))
-            ->view('r',        $number->concat   (       ['default', 'r',     ]));
+            ->view('english',  $number->separator(' ',   ['integer', 'english']))
+            ->view('e',        $number->concat   (       ['integer', 'e',     ]))
+            ->view('russian',  $number->separator(' ',   ['integer', 'russian']))
+            ->view('r',        $number->concat   (       ['integer', 'r',     ]))
+            ->view('tenhou',   $number->separator(' ',   ['integer', 'e'      ]));
 
             $type = $service->union([
                 'number' => $number,
@@ -120,7 +121,8 @@ class TypeServiceProvider implements ServiceProviderInterface
             ->view('english',   $type->select(['number' => 'english',   'wind' => 'english',    'dragon' => 'english'   ]))
             ->view('e',         $type->select(['number' => 'e',         'wind' => 'e',          'dragon' => 'e'         ]))
             ->view('russian',   $type->select(['number' => 'russian',   'wind' => 'russian',    'dragon' => 'russian'   ]))
-            ->view('r',         $type->select(['number' => 'r',         'wind' => 'r',          'dragon' => 'r'         ]));
+            ->view('r',         $type->select(['number' => 'r',         'wind' => 'r',          'dragon' => 'r'         ]))
+            ->view('tenhou',    $type->select(['number' => 'tenhou',    'wind' => 'tenhou',     'dragon' => 'tenhou'    ]));
         });
         $service->register('tileSequence', function ($service) {
             $type = $service->sequence($service['tile']);
@@ -202,6 +204,10 @@ class TypeServiceProvider implements ServiceProviderInterface
             $type->export('e',       function (SequenceInternal $internal) use ($export) { return $export('e',       $internal); });
             $type->export('russian', function (SequenceInternal $internal) use ($export) { return $export('russian', $internal); });
             $type->export('r',       function (SequenceInternal $internal) use ($export) { return $export('r',       $internal); });
+            $type->export('tenhou',  function (SequenceInternal $internal) use ($export) { return $export('tenhou',  $internal); });
+
+            $type->import('tenhou',  function ($presentation) use ($import) { return $import('tenhou',  $presentation); });
+
             return $type;
         });
         $service->register('answer', function ($service) {
@@ -211,7 +217,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             ]);
             return $type
             ->view('json', $type->json([
-                'discard' => 'e',
+                'discard' => 'tenhou',
                 'comment' => 'string',
             ]));
         });
@@ -234,13 +240,13 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'best_answer'   => $service['abc'],
             ]);
             $type->view('json', $type->json([
-                'kyoku'         => 'e',
-                'position'      => 'e',
+                'kyoku'         => ['*', 'e'],
+                'position'      => ['*', 'e'],
                 'turn'          => 'default',
-                'dora'          => 'e',
+                'dora'          => 'tenhou',
                 'score'         => 'string',
-                'hand'          => 'e',
-                'draw'          => 'e',
+                'hand'          => 'tenhou',
+                'draw'          => 'tenhou',
                 'is_answered'   => 'integer',
                 'answer'        => 'json',
                 'best_answer'   => 'default',

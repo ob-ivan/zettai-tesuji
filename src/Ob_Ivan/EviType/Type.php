@@ -76,16 +76,15 @@ abstract class Type implements TypeInterface
             if ($internal) {
                 return $this->valueService->produce($internal);
             }
-        }
-        if (isset($this->views[$name])) {
+        } elseif (isset($this->views[$name])) {
             $internal = $this->views[$name]->import($presentation, $this->options);
             if ($internal) {
                 return $this->valueService->produce($internal);
             }
         }
         throw new Exception(
-            'Unknown import or view name "' . $importName . '" in class ' . get_called_class(),
-            Exception::TYPE_FROM_IMPORT_NAME_UNKNOWN
+            'Could not import "' . $presentation . '" as "' . $importName . '" in class ' . get_called_class(),
+            Exception::TYPE_FROM_IMPORT_FAIL
         );
     }
 
@@ -95,17 +94,25 @@ abstract class Type implements TypeInterface
             return $presentation;
         }
         foreach ($this->imports as $import) {
-            $internal = $import($presentation, $this->options);
-            if ($internal) {
-                return $this->valueService->produce($internal);
-            }
+            try {
+                $internal = $import($presentation, $this->options);
+                if ($internal) {
+                    return $this->valueService->produce($internal);
+                }
+            } catch (Exception $e) {}
         }
         foreach ($this->views as $viewName => $view) {
-            $internal = $view->import($presentation, $this->options);
-            if ($internal) {
-                return $this->valueService->produce($internal);
-            }
+            try {
+                $internal = $view->import($presentation, $this->options);
+                if ($internal) {
+                    return $this->valueService->produce($internal);
+                }
+            } catch (Exception $e) {}
         }
+        throw new Exception(
+            'Could not import "' . $presentation . '" as any in class ' . get_called_class(),
+            Exception::TYPE_FROM_ANY_FAIL
+        );
     }
 
     public function get($getterName, InternalInterface $internal)

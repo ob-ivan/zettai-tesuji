@@ -57,4 +57,9 @@ class Type extends ParentType implements IterableInterface, StringifierInterface
     {
         return new View\Dictionary($map);
     }
+
+    public function integer()
+    {
+        return new View\Integer();
+    }
 }

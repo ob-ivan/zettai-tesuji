@@ -25,6 +25,7 @@ class Builder implements BuilderInterface
         $options = new Options($map);
         $type = new Type($options);
         $type->view('default', $type->dictionary($options));
+        $type->view('integer', $type->integer());
         return $type;
     }
 }
