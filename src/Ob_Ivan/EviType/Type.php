@@ -133,6 +133,10 @@ abstract class Type implements TypeInterface
         if (isset($this->views[$name])) {
             return $this->views[$name]->export($internal, $this->options);
         }
+        throw new Exception(
+            'Unknown export name "' . $exportName . '" in class ' . get_called_class(),
+            Exception::TYPE_TO_EXPORT_NAME_UNKNOWN
+        );
     }
 
     // public : TypeInterface : Регистрация представлений //

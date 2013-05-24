@@ -12,6 +12,7 @@ class Exception extends GlobalException
     const TYPE_FROM_IMPORT_NAME_UNKNOWN                 = 0x010203;
     const TYPE_FROM_VALUE_WRONG_TYPE                    = 0x010204;
     const TYPE_GET_NAME_UNKNOWN                         = 0x010205;
+    const TYPE_TO_EXPORT_NAME_UNKNOWN                   = 0x010206;
 
     const TYPE_FACTORY_PRODUCE_NAME_UNKNOWN             = 0x010301;
     const TYPE_FACTORY_PRODUCE_SORT_WRONG_TYPE          = 0x010302;

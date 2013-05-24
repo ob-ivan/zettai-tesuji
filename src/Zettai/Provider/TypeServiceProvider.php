@@ -109,7 +109,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                     $service['suit']
                 ),
                 'wind'   => $service['wind'],
-                'dragin' => $service['dragon'],
+                'dragon' => $service['dragon'],
             ]);
         });
         $service->register('tileSequence', function ($service) {
@@ -204,7 +204,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $service->map($service['abc'], $service['answer']);
         });
         $service->register('exerciseContent', function ($service) {
-            return $service->record([
+            $type = $service->record([
                 'kyoku'         => $service['kyoku'],
                 'position'      => $service['wind'],
                 'turn'          => $service->enum(range(1, 18)),
@@ -216,6 +216,19 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'answer'        => $service['answerCollection'],
                 'best_answer'   => $service['abc'],
             ]);
+            $type->view('json', $type->json([
+                'kyoku'         => 'e',
+                'position'      => 'e',
+                'turn'          => 'default',
+                'dora'          => 'e',
+                'score'         => 'string',
+                'hand'          => 'e',
+                'draw'          => 'e',
+                'is_answered'   => 'integer',
+                'answer'        => 'json',
+                'best_answer'   => 'default',
+            ]));
+            return $type;
         });
         $service->register('exercise', function ($service) {
             $type = $service->record([

@@ -61,6 +61,11 @@ class Type extends ParentType implements IterableInterface
         return new View\Separator('', $map);
     }
 
+    public function json($map)
+    {
+        return new View\Json($map);
+    }
+
     public function separator($separator, $map)
     {
         return new View\Separator($separator, $map);
