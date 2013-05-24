@@ -144,21 +144,25 @@ abstract class Type implements TypeInterface
     public function export($name, callable $implementation)
     {
         $this->exports[$this->normalizeName($name)] = $implementation;
+        return $this;
     }
 
     public function getter($name, callable $implementation)
     {
         $this->getters[$this->normalizeName($name)] = $implementation;
+        return $this;
     }
 
     public function import($name, callable $implementation)
     {
         $this->imports[$this->normalizeName($name)] = $implementation;
+        return $this;
     }
 
     public function view($name, ViewInterface $view)
     {
         $this->views[$this->normalizeName($name)] = $view;
+        return $this;
     }
 
     // public : Type //

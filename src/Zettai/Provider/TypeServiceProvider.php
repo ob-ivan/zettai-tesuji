@@ -59,58 +59,68 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'round'  => $service['roundWind'],
                 'square' => $service['squareWind'],
             ]);
-            $type->view('english',  $type->select(['round' => 'english',   'square' => 'english']));
-            $type->view('e',        $type->select(['round' => 'e',         'square' => 'e'      ]));
-            $type->view('russian',  $type->select(['round' => 'russian',   'square' => 'russian']));
-            $type->view('r',        $type->select(['round' => 'r',         'square' => 'r'      ]));
-            $type->view('tenhou',   $type->select(['round' => 'tenhou',    'square' => 'tenhou' ]));
-
-            $type->export('tile', function (UnionInternal $internal) {
+            return $type
+            ->view('english',  $type->select(['round' => 'english',   'square' => 'english']))
+            ->view('e',        $type->select(['round' => 'e',         'square' => 'e'      ]))
+            ->view('russian',  $type->select(['round' => 'russian',   'square' => 'russian']))
+            ->view('r',        $type->select(['round' => 'r',         'square' => 'r'      ]))
+            ->view('tenhou',   $type->select(['round' => 'tenhou',    'square' => 'tenhou' ]))
+            ->export('tile', function (UnionInternal $internal) {
                 return $internal->getValue()->toTile();
             });
-
-            return $type;
         });
         $service->register('kyoku', function ($service) {
             $type = $service->product(
                 $service['roundWind'],
                 $service->enum(range(1, 4))
             );
-            $type->view('english',  $type->separator('-',   ['english', 'default']));
-            $type->view('e',        $type->concat   (       ['e',       'default']));
-            $type->view('russian',  $type->separator('-',   ['russian', 'default']));
-            $type->view('r',        $type->concat   (       ['r',       'default']));
-            return $type;
+            return $type
+            ->view('english',  $type->separator('-',   ['english', 'default']))
+            ->view('e',        $type->concat   (       ['e',       'default']))
+            ->view('russian',  $type->separator('-',   ['russian', 'default']))
+            ->view('r',        $type->concat   (       ['r',       'default']));
         });
         $service->register('abc', function ($service) {
             return $service->enum(['a', 'b', 'c']);
         });
         $service->register('suit', function ($service) {
-            $type = $service->enum(['man', 'pin', 'so']);
-            $type->view('english',  $type->dictionary(['man', 'pin', 'sou']));
-            $type->view('e',        $type->dictionary(['m',   'p',   's'  ]));
-            $type->view('russian',  $type->dictionary(['ман', 'пин', 'со' ]));
-            $type->view('r',        $type->dictionary(['м',   'п',   'с'  ]));
-            return $type;
+            $type = $service->enum(['man', 'pin', 'sou']);
+            return $type
+            ->view('english',  $type->dictionary(['man', 'pin', 'sou']))
+            ->view('e',        $type->dictionary(['m',   'p',   's'  ]))
+            ->view('russian',  $type->dictionary(['ман', 'пин', 'со' ]))
+            ->view('r',        $type->dictionary(['м',   'п',   'с'  ]));
         });
         $service->register('dragon', function ($service) {
             $type = $service->enum(['white', 'green', 'red']);
-            $type->view('english',  $type->dictionary(['White', 'Green',   'Red'    ]));
-            $type->view('e',        $type->dictionary(['W',     'G',       'R'      ]));
-            $type->view('russian',  $type->dictionary(['Белый', 'Зелёный', 'Красный']));
-            $type->view('r',        $type->dictionary(['Б',     'З',       'К'      ]));
-            $type->view('tenhou',   $type->dictionary(['5z',    '6z',      '7z'     ]));
-            return $type;
+            return $type
+            ->view('english',  $type->dictionary(['White', 'Green',   'Red'    ]))
+            ->view('e',        $type->dictionary(['W',     'G',       'R'      ]))
+            ->view('russian',  $type->dictionary(['Белый', 'Зелёный', 'Красный']))
+            ->view('r',        $type->dictionary(['Б',     'З',       'К'      ]))
+            ->view('tenhou',   $type->dictionary(['5z',    '6z',      '7z'     ]));
         });
         $service->register('tile', function ($service) {
-            return $service->union([
-                'number' => $service->product(
-                    $service->enum([1, 2, 3, 4, 0, 5, 6, 7, 8, 9]),
-                    $service['suit']
-                ),
+            $number = $service->product(
+                $service->enum([1, 2, 3, 4, 0, 5, 6, 7, 8, 9]),
+                $service['suit']
+            );
+            $number
+            ->view('english',  $number->separator(' ',   ['default', 'english']))
+            ->view('e',        $number->concat   (       ['default', 'e',     ]))
+            ->view('russian',  $number->separator(' ',   ['default', 'russian']))
+            ->view('r',        $number->concat   (       ['default', 'r',     ]));
+
+            $type = $service->union([
+                'number' => $number,
                 'wind'   => $service['wind'],
                 'dragon' => $service['dragon'],
             ]);
+            return $type
+            ->view('english',   $type->select(['number' => 'english',   'wind' => 'english',    'dragon' => 'english'   ]))
+            ->view('e',         $type->select(['number' => 'e',         'wind' => 'e',          'dragon' => 'e'         ]))
+            ->view('russian',   $type->select(['number' => 'russian',   'wind' => 'russian',    'dragon' => 'russian'   ]))
+            ->view('r',         $type->select(['number' => 'r',         'wind' => 'r',          'dragon' => 'r'         ]));
         });
         $service->register('tileSequence', function ($service) {
             $type = $service->sequence($service['tile']);
@@ -120,7 +130,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 $prevSuitPresentation = null;
                 $presentations = [];
                 foreach ($internal as $index => $value) {
-                    $newPresentation = $value->toView($view);
+                    $newPresentation = $value->to($view);
                     if (preg_match('/^(\d)(\D+)$/', $newPresentation, $matches)) {
                         $newRankPresentation = $matches[1];
                         $newSuitPresentation = $matches[2];
@@ -167,7 +177,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                     $candidate = $this->element->fromView($view, $presentation);
                     if ($candidate) {
                         $internal[] = $candidate;
-                        $presentation = substr($presentation, strlen($candidate->toView($view)));
+                        $presentation = substr($presentation, strlen($candidate->to($view)));
                     } elseif (preg_match('~^(\d+)([^\d\s]+)~', $presentation, $matches)) {
                         $ranks = $matches[1];
                         $suit  = $matches[2];
