@@ -36,6 +36,13 @@ class Type extends ParentType implements IterableInterface
             );
         }
         parent::__construct($options);
+
+        // Наделить значения возможностью выбирать значения координат.
+        foreach ($options as $componentName => $componentType) {
+            $this->getter($componentName, function (Internal $internal) {
+                return $internal[$componentName];
+            });
+        }
     }
 
     public function callValueMethod(InternalInterface $internal, $name, array $arguments)
