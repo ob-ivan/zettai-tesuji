@@ -262,7 +262,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             $type->view('database', $type->associative([
                 'exercise_id'   => 'string',
                 'title'         => 'string',
-                'is_hidden'     => ['*', 'string'],
+                'is_hidden'     => 'integer',
                 'content'       => 'json',
             ]));
             // TODO: A shorter syntax.
