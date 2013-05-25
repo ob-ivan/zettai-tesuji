@@ -49,12 +49,12 @@ class ExerciseTest extends AbstractCase
 
         $newKyoku       = $this->types['kyoku']->random();
         $newPosition    = $this->types['wind']->random();
-        $newTurn        = mt_rand(1, 18);
+        $newTurn        = $this->types['turnNumber']->random();
         $newDora        = $this->types['tile']->random();
         $newScore       = $this->generateText(30);
         $newHand        = $this->types['tileSequence']->fromArray($this->generateTiles(13));
         $newDraw        = $this->types['tile']->random();
-        $newIsAnswered  = ! mt_rand(0, 1);
+        $newIsAnswered  = $this->types['boolean']->random();
         $newAnswer      = $this->generateAnswers();
         $newBestAnswer  = $this->types['abc']->random();
 

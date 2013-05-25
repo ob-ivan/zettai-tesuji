@@ -222,11 +222,14 @@ class TypeServiceProvider implements ServiceProviderInterface
             return $type
             ->view('json', $type->json('default', 'json'));
         });
+        $service->register('turnNumber', function ($service) {
+            return $service->enum(range(1, 18));
+        });
         $service->register('exerciseContent', function ($service) {
             $type = $service->record([
                 'kyoku'         => $service['kyoku'],
                 'position'      => $service['wind'],
-                'turn'          => $service->enum(range(1, 18)),
+                'turn'          => $service['turnNumber'],
                 'dora'          => $service['tile'],
                 'score'         => $service['string'],
                 'hand'          => $service['tileSequence'],

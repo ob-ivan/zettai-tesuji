@@ -121,6 +121,10 @@ abstract class Type implements TypeInterface
         if (isset($this->getters[$name])) {
             return $this->getters[$name]($internal, $this->options);
         }
+        throw new Exception(
+            'Unknown getter "' . $getterName . '" in class ' . get_called_class(),
+            Exception::TYPE_GET_GETTER_NAME_UNKNOWN
+        );
     }
 
     public function has($value)
@@ -208,8 +212,6 @@ abstract class Type implements TypeInterface
     {
         return $this->valueService->produce($internal);
     }
-
-    // private //
 
     /**
      * Приводит название преобразователей к единому виду.
