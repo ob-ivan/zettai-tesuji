@@ -4,6 +4,7 @@
 **/
 namespace Ob_Ivan\EviType\Sort\Union\View;
 
+use Ob_Ivan\EviType\Exception as PackageException;
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\OptionsInterface,
     Ob_Ivan\EviType\ViewInterface;
@@ -51,10 +52,12 @@ class Select implements ViewInterface
         }
         foreach ($options as $variantName => $type) {
             if (isset($this->map[$variantName])) {
-                $value = $type->from($this->map[$variantName], $presentation);
-                if ($value) {
-                    return new Internal($variantName, $value);
-                }
+                try {
+                    $value = $type->from($this->map[$variantName], $presentation);
+                    if ($value) {
+                        return new Internal($variantName, $value);
+                    }
+                } catch (PackageException $e) {}
             }
         }
     }

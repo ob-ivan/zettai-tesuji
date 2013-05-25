@@ -110,7 +110,7 @@ class TypeServiceProvider implements ServiceProviderInterface
             ->view('e',        $number->concat   (       ['integer', 'e',     ]))
             ->view('russian',  $number->separator(' ',   ['integer', 'russian']))
             ->view('r',        $number->concat   (       ['integer', 'r',     ]))
-            ->view('tenhou',   $number->separator(' ',   ['integer', 'e'      ]));
+            ->view('tenhou',   $number->concat   (       ['integer', 'e'      ]));
 
             $type = $service->union([
                 'number' => $number,
@@ -125,7 +125,8 @@ class TypeServiceProvider implements ServiceProviderInterface
             ->view('tenhou',    $type->select(['number' => 'tenhou',    'wind' => 'tenhou',     'dragon' => 'tenhou'    ]));
         });
         $service->register('tileSequence', function ($service) {
-            $type = $service->sequence($service['tile']);
+            $element = $service['tile'];
+            $type = $service->sequence($element);
             $export = function ($view, $internal) {
                 $isLong = in_array($view, ['english', 'russian']);
                 $prevRankPresentation = null;
@@ -170,35 +171,30 @@ class TypeServiceProvider implements ServiceProviderInterface
                 }
                 return implode('', $presentations);
             };
-            $import = function ($view, $presentation) {
-                $internal = [];
+            $import = function ($view, $presentation) use ($element) {
+                $array = [];
                 while (! empty($presentation)) {
                     $prevLength = strlen($presentation);
 
                     $presentation = trim($presentation);
-                    $candidate = $this->element->fromView($view, $presentation);
-                    if ($candidate) {
-                        $internal[] = $candidate;
-                        $presentation = substr($presentation, strlen($candidate->to($view)));
-                    } elseif (preg_match('~^(\d+)([^\d\s]+)~', $presentation, $matches)) {
+                    if (preg_match('~^(\d+)([^\d\s]+)~', $presentation, $matches)) {
                         $ranks = $matches[1];
                         $suit  = $matches[2];
                         for ($i = 0, $l = strlen($ranks); $i < $l; ++$i) {
-                            $candidate = $this->element->fromView($view, $ranks[$i] . $suit);
+                            $candidate = $element->from($view, $ranks[$i] . $suit);
                             if ($candidate) {
-                                $internal[] = $candidate;
+                                $array[] = $candidate;
                             }
                         }
                         $presentation = substr($presentation, strlen($matches[0]));
                     } else {
                         break;
                     }
-
                     if ($prevLength <= strlen($presentation)) {
                         break;
                     }
                 }
-                return $this->value($internal);
+                return new SequenceInternal($array);
             };
             $type->export('english', function (SequenceInternal $internal) use ($export) { return $export('english', $internal); });
             $type->export('e',       function (SequenceInternal $internal) use ($export) { return $export('e',       $internal); });

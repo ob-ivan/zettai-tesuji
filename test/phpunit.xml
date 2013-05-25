@@ -4,7 +4,7 @@
     colors="true"
     stopOnError="true"
     stopOnFailure="true"
-    strict="true"
+    strict="false"
 >
     <testsuites>
         <testsuite>

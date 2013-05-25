@@ -101,7 +101,7 @@ abstract class Type implements TypeInterface
                 }
             } catch (Exception $e) {}
         }
-        foreach ($this->views as $viewName => $view) {
+        foreach ($this->views as $view) {
             try {
                 $internal = $view->import($presentation, $this->options);
                 if ($internal) {
