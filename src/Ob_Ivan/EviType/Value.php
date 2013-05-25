@@ -1,10 +1,12 @@
 <?php
 namespace Ob_Ivan\EviType;
 
-use ArrayAccess;
-use Ob_Ivan\EviType\Sort\StringifierInterface;
+use ArrayAccess,
+    IteratorAggregate;
+use Ob_Ivan\EviType\Sort\StringifierInterface,
+    Ob_Ivan\EviType\Sort\ValueIteratorInterface;
 
-class Value implements ArrayAccess
+class Value implements ArrayAccess, IteratorAggregate
 {
     // var //
 
@@ -43,6 +45,19 @@ class Value implements ArrayAccess
         throw new Exception(
             'Unsetting offsets is not allowed',
             Exception::VALUE_OFFSET_UNSET_NOT_ALLOWED
+        );
+    }
+
+    // public : IteratorAggregate //
+
+    public function getIterator()
+    {
+        if ($this->type instanceof ValueIteratorInterface) {
+            return $this->type->getValueIterator($this->internal);
+        }
+        throw new Exception(
+            'Value of this type cannot be iterated',
+            Exception::VALUE_GET_ITERATOR_NOT_SUPPORTED
         );
     }
 

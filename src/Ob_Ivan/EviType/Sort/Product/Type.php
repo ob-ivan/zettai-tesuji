@@ -3,10 +3,11 @@ namespace Ob_Ivan\EviType\Sort\Product;
 
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\OptionsInterface;
-use Ob_Ivan\EviType\Sort\IterableInterface;
+use Ob_Ivan\EviType\Sort\IterableInterface,
+    Ob_Ivan\EviType\Sort\ValueIteratorInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
-class Type extends ParentType implements IterableInterface
+class Type extends ParentType implements IterableInterface, ValueIteratorInterface
 {
     // var //
 
@@ -23,6 +24,19 @@ class Type extends ParentType implements IterableInterface
             $this->each = $this->generateEach();
         }
         return $this->each;
+    }
+
+    // public : ValueIteratorInterface //
+
+    public function getValueIterator(InternalInterface $internal)
+    {
+        if (! $internal instanceof Internal) {
+            throw new Exception(
+                'Internal must be instance of Internal',
+                Exception::TYPE_GET_VALUE_ITERATOR_INTERNAL_WRONG_TYPE
+            );
+        }
+        return $internal->getIterator();
     }
 
     // public : ParentType //

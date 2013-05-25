@@ -26,10 +26,11 @@ class Exception extends GlobalException
     const TYPE_SERVICE_OFFSET_UNSET_UNSUPPORTED         = 0x010404;
     const TYPE_SERVICE_REGISTER_NAME_ALREADY_EXISTS     = 0x010405;
 
-    const VALUE_OFFSET_EXISTS_NOT_SUPPORTED             = 0x010501;
-    const VALUE_OFFSET_GET_NOT_SUPPORTED                = 0x010502;
-    const VALUE_OFFSET_SET_NOT_ALLOWED                  = 0x010503;
-    const VALUE_OFFSET_UNSET_NOT_ALLOWED                = 0x010504;
+    const VALUE_GET_ITERATOR_NOT_SUPPORTED              = 0x010501;
+    const VALUE_OFFSET_EXISTS_NOT_SUPPORTED             = 0x010502;
+    const VALUE_OFFSET_GET_NOT_SUPPORTED                = 0x010503;
+    const VALUE_OFFSET_SET_NOT_ALLOWED                  = 0x010504;
+    const VALUE_OFFSET_UNSET_NOT_ALLOWED                = 0x010505;
 
     const VIEW_FACTORY_PRODUCE_NAME_UNKNOWN             = 0x010601;
     const VIEW_FACTORY_PRODUCE_SORT_WRONG_TYPE          = 0x010602;

@@ -35,6 +35,11 @@ class TwigServiceProvider implements ServiceProviderInterface
                 return $app['types']->kyoku->fromAny($kyoku)->toRussian();
             }));
             $twig->addFilter('tile', new Twig_Filter_Function(function ($tiles) use ($app) {
+
+                if ($app['types']->tile->has($tiles)) {
+                    $tiles = [$tiles];
+                }
+
                 return $app['twig']->render('_tile.twig', ['tiles' => $tiles]);
             }));
 
