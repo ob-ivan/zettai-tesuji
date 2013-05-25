@@ -26,6 +26,11 @@ class Type extends ParentType implements IterableInterface
             );
         }
         parent::__construct($options);
+
+        // Наделить значения возможностью отбражать значения области определения в область значений.
+        $this->getter('__get', function ($name, Internal $internal, Options $options) {
+            return $internal[$options->getDomain()->fromAny($name)];
+        });
     }
 
     public function callValueMethod(InternalInterface $internal, $name, array $arguments)

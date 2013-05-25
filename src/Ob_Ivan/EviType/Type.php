@@ -5,6 +5,8 @@ use Ob_Ivan\EviType\Sort\IterableInterface;
 
 abstract class Type implements TypeInterface
 {
+    const GETTER_FALLBACK = '__get';
+
     // var //
 
     /**
@@ -13,6 +15,11 @@ abstract class Type implements TypeInterface
     private $exports = [];
 
     /**
+     * Обработчики обращения к координате значения: value->name === implementation(value->internal, this->options)
+     *
+     * Геттер с именем self::GETTER_FALLBACK вызывается, если геттер name не определён.
+     * Он получает дополнительно name в качестве первого параметра.
+     *
      *  @var [<string name> => <mixed implementation(Internal internal, Options options)>]
     **/
     private $getters = [];
@@ -64,8 +71,10 @@ abstract class Type implements TypeInterface
 
     public function exists($getterName)
     {
-        $name = $this->normalizeName($getterName);
-        return isset($this->getters[$name]);
+        if (isset($this->getters[self::GETTER_FALLBACK])) {
+            return true;
+        }
+        return isset($this->getters[$this->normalizeName($getterName)]);
     }
 
     public function from($importName, $presentation)
@@ -120,6 +129,10 @@ abstract class Type implements TypeInterface
         $name = $this->normalizeName($getterName);
         if (isset($this->getters[$name])) {
             return $this->getters[$name]($internal, $this->options);
+        }
+        $fallback = self::GETTER_FALLBACK;
+        if (isset($this->getters[$fallback])) {
+            return $this->getters[$fallback]($name, $internal, $this->options);
         }
         throw new Exception(
             'Unknown getter "' . $getterName . '" in class ' . get_called_class(),

@@ -24,7 +24,7 @@ class Type extends ParentType implements IterableInterface, StringifierInterface
 
     public function stringify(InternalInterface $internal)
     {
-        return $this->getOptions()[$internal->getPrimitive()];
+        return strval($this->getOptions()[$internal->getPrimitive()]);
     }
 
     // public : ParentType //
