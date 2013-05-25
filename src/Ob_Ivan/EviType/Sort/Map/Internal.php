@@ -5,12 +5,11 @@
 **/
 namespace Ob_Ivan\EviType\Sort\Map;
 
-use ArrayAccess,
-    IteratorAggregate;
+use ArrayAccess;
 use Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\Value;
 
-class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
+class Internal implements ArrayAccess, InternalInterface
 {
     // var //
 
@@ -81,13 +80,6 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
         return $this->primitive;
     }
 
-    // public : IteratorAggregate //
-
-    public function getIterator()
-    {
-        return new Iterator($this->domainMap, $this->rangeMap);
-    }
-
     // public : Internal //
 
     /**
@@ -115,5 +107,10 @@ class Internal implements ArrayAccess, InternalInterface, IteratorAggregate
             $this->domainMap[$primitive] = $domainValue;
             $this->rangeMap [$primitive] = $rangeValue;
         }
+    }
+
+    public function keys()
+    {
+        return new ArrayIterator($this->domainMap);
     }
 }
