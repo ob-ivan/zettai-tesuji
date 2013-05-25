@@ -44,6 +44,9 @@ class ExerciseTest extends AbstractCase
         $newExerciseId  = $this->exerciseEntity->getNewId() + mt_rand(10, 100);
         $newTitle       = $this->generateText(30);
         $newIsHidden    = ! mt_rand(0, 1);
+
+        // content //
+
         $newKyoku       = $this->types['kyoku']->random();
         $newPosition    = $this->types['wind']->random();
         $newTurn        = mt_rand(1, 18);
@@ -78,6 +81,19 @@ class ExerciseTest extends AbstractCase
         );
         $this->assertTrue($this->types['exerciseContent']->has($newContent), 'Exercise content must belong to exerciseContent type');
 
+        $this->assertEquals($newKyoku,      $newContent->kyoku,         'Kyoku is not recognized properly');
+        $this->assertEquals($newPosition,   $newContent->position,      'Position is not recognized properly');
+        $this->assertEquals($newTurn,       $newContent->turn,          'Turn is not recognized properly');
+        $this->assertEquals($newDora,       $newContent->dora,          'Dora is not recognized properly');
+        $this->assertEquals($newScore,      $newContent->score,         'Score is not recognized properly');
+        $this->assertEquals($newHand,       $newContent->hand,          'Hand is not recognized properly');
+        $this->assertEquals($newDraw,       $newContent->draw,          'Draw is not recognized properly');
+        $this->assertEquals($newIsAnswered, $newContent->is_answered,   'IsAnswered is not recognized properly');
+        $this->assertEquals($newAnswer,     $newContent->answer,        'Answer is not recognized properly');
+        $this->assertEquals($newBestAnswer, $newContent->best_answer,   'BestAnswer is not recognized properly');
+
+        // exercise //
+
         $exercise = $this->exerciseType->fromArray([
             'exercise_id'   => $newExerciseId,
             'title'         => $newTitle,
@@ -87,10 +103,16 @@ class ExerciseTest extends AbstractCase
 
         $this->assertTrue($exercise instanceof Value, 'Exercise must be an instance of Value');
         $this->assertTrue($this->exerciseType->has($exercise), 'Exercise must belong to exercise type');
+
         $this->assertEquals($newExerciseId, $exercise->exercise_id, 'Exercise id is not recognized properly');
         $this->assertEquals($newTitle,      $exercise->title,       'Exercise title is not recognized properly');
         $this->assertEquals($newIsHidden,   $exercise->is_hidden,   'is_hidden is not recognized properly');
         $this->assertEquals($newContent,    $exercise->content,     'Exercise content is not recognized properly');
+
+        $this->assertEquals($newExerciseId, $exercise['exercise_id'], 'Exercise id is not recognized properly');
+        $this->assertEquals($newTitle,      $exercise['title'],       'Exercise title is not recognized properly');
+        $this->assertEquals($newIsHidden,   $exercise['is_hidden'],   'is_hidden is not recognized properly');
+        $this->assertEquals($newContent,    $exercise['content'],     'Exercise content is not recognized properly');
 
         return $exercise;
     }

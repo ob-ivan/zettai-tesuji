@@ -32,7 +32,7 @@ class Json extends Pairs
 
     public function import($presentation, OptionsInterface $options = null)
     {
-        $map = json_decode($presentation, true);
+        $map = is_array($presentation) ? $presentation : json_decode($presentation, true);
         $valuePairs = [];
         $domain = $options->getDomain();
         $range  = $options->getRange();

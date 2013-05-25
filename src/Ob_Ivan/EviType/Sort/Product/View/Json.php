@@ -13,6 +13,9 @@ class Json extends Associative
 
     public function import($presentation, OptionsInterface $options = null)
     {
-        return parent::import(json_decode($presentation, true), $options);
+        return parent::import(
+            is_array($presentation) ? $presentation : json_decode($presentation, true),
+            $options
+        );
     }
 }

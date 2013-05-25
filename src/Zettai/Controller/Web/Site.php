@@ -62,10 +62,6 @@ class Site implements ControllerProviderInterface
             return $this->app->redirect($this->app['url_generator']->generate('site_page', ['page' => 1]));
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, false);
-
-        print '<pre>' . __METHOD__ . ': exerciseList = ' . var_export($exerciseList, true) . '</pre>'; // debug
-        die; // debug
-
         return $this->app->render('site/page.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
