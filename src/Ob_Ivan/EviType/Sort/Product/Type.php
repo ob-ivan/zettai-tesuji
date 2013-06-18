@@ -55,6 +55,9 @@ class Type extends ParentType implements IterableInterface, ValueIteratorInterfa
         $this->getter('__get', function ($name, Internal $internal) {
             return $internal[$name];
         });
+        $this->getter('__isset', function ($name, Internal $internal) {
+            return isset($internal[$name]);
+        });
     }
 
     public function callValueMethod(InternalInterface $internal, $name, array $arguments)

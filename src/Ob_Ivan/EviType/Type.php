@@ -5,7 +5,8 @@ use Ob_Ivan\EviType\Sort\IterableInterface;
 
 abstract class Type implements TypeInterface
 {
-    const GETTER_FALLBACK = '__get';
+    const FALLBACK_GET   = '__get';
+    const FALLBACK_ISSET = '__isset';
 
     // var //
 
@@ -17,7 +18,7 @@ abstract class Type implements TypeInterface
     /**
      * Обработчики обращения к координате значения: value->name === implementation(value->internal, this->options)
      *
-     * Геттер с именем self::GETTER_FALLBACK вызывается, если геттер name не определён.
+     * Геттер с именем self::FALLBACK_GET вызывается, если геттер name не определён.
      * Он получает дополнительно name в качестве первого параметра.
      *
      *  @var [<string name> => <mixed implementation(Internal internal, Options options)>]
@@ -69,12 +70,13 @@ abstract class Type implements TypeInterface
         );
     }
 
-    public function exists($getterName)
+    public function exists($getterName, InternalInterface $internal)
     {
-        if (isset($this->getters[self::GETTER_FALLBACK])) {
-            return true;
+        $name = $this->normalizeName($getterName);
+        if (isset($this->getters[self::FALLBACK_ISSET])) {
+            return $this->getters[self::FALLBACK_ISSET]($name, $internal, $this->options);
         }
-        return isset($this->getters[$this->normalizeName($getterName)]);
+        return isset($this->getters[$name]);
     }
 
     public function from($importName, $presentation)
@@ -130,7 +132,7 @@ abstract class Type implements TypeInterface
         if (isset($this->getters[$name])) {
             return $this->getters[$name]($internal, $this->options);
         }
-        $fallback = self::GETTER_FALLBACK;
+        $fallback = self::FALLBACK_GET;
         if (isset($this->getters[$fallback])) {
             return $this->getters[$fallback]($name, $internal, $this->options);
         }

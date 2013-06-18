@@ -81,7 +81,7 @@ class Value implements ArrayAccess, IteratorAggregate
 
     public function __isset($name)
     {
-        return $this->type->exists($name);
+        return $this->type->exists($name, $this->internal);
     }
 
     public function __toString()

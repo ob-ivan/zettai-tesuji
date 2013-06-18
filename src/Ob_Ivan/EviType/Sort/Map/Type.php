@@ -23,6 +23,9 @@ class Type extends ParentType
         $this->getter('__get', function ($name, Internal $internal, Options $options) {
             return $internal[$options->getDomain()->fromAny($name)];
         });
+        $this->getter('__isset', function ($name, Internal $internal, Options $options) {
+            return isset($internal[$options->getDomain()->fromAny($name)]);
+        });
 
         // Даёт возможность итерировать по ключам отображения.
         $this->getter('keys', function (Internal $internal, Options $options) {
