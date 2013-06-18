@@ -4,6 +4,8 @@ namespace Zettai\Provider;
 use Silex\Application,
     Silex\ServiceProviderInterface;
 use Ob_Ivan\EviType\TypeService;
+use Ob_Ivan\EviType\Sort\Map\Internal as MapInternal;
+use Ob_Ivan\EviType\Sort\Product\Internal as ProductInternal;
 use Ob_Ivan\EviType\Sort\Sequence\Internal as SequenceInternal;
 
 class TypeServiceProvider implements ServiceProviderInterface
@@ -215,12 +217,26 @@ class TypeServiceProvider implements ServiceProviderInterface
             ->view('json', $type->json([
                 'discard' => 'tenhou',
                 'comment' => 'string',
-            ]));
+            ]))
+            ->import('dummy', function () use ($service) {
+                return new ProductInternal([
+                    'discard' => $service['tile']->fromTenhou('5z'),
+                    'comment' => $service['string']->fromString(''),
+                ]);
+            });
         });
         $service->register('answerCollection', function ($service) {
             $type = $service->map($service['abc'], $service['answer']);
             return $type
-            ->view('json', $type->json('default', 'json'));
+            ->view('json', $type->json('default', 'json'))
+            ->import('new', function () use ($service) {
+                $dummyAnswer = $service['answer']->fromDummy();
+                return new MapInternal([
+                    [$service['abc']->fromDefault('a'), $dummyAnswer],
+                    [$service['abc']->fromDefault('b'), $dummyAnswer],
+                    [$service['abc']->fromDefault('c'), $dummyAnswer],
+                ]);
+            });
         });
         $service->register('turnNumber', function ($service) {
             return $service->enum(range(1, 18));
@@ -250,6 +266,20 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'answer'        => 'json',
                 'best_answer'   => 'default',
             ]));
+            $type->import('new', function () use ($service) {
+                return new ProductInternal([
+                    'kyoku'         => $service['kyoku']            ->fromE('e1'),
+                    'position'      => $service['wind']             ->fromE('e'),
+                    'turn'          => $service['turnNumber']       ->fromInteger(1),
+                    'dora'          => $service['tile']             ->fromTenhou('5z'),
+                    'score'         => $service['string']           ->fromString('25000'),
+                    'hand'          => $service['tileSequence']     ->fromTenhou('123456789m1234z'),
+                    'draw'          => $service['tile']             ->fromTenhou('5z'),
+                    'is_answered'   => $service['boolean']          ->fromBoolean(false),
+                    'answer'        => $service['answerCollection'] ->fromNew(),
+                    'best_answer'   => $service['abc']              ->fromDefault('a'),
+                ]);
+            });
             return $type;
         });
         $service->register('exercise', function ($service) {
@@ -265,6 +295,14 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'is_hidden'     => 'integer',
                 'content'       => 'json',
             ]));
+            $type->import('new', function ($presentation) use ($service) {
+                return new ProductInternal([
+                    'exercise_id'   => $service['integer']          ->fromString    ($presentation),
+                    'title'         => $service['string']           ->fromString    (''),
+                    'is_hidden'     => $service['boolean']          ->fromBoolean   (true),
+                    'content'       => $service['exerciseContent']  ->fromNew       (),
+                ]);
+            });
             // TODO: A shorter syntax.
             $type->getter('exercise_id',    function ($internal) { return $internal->exercise_id    ->toInteger(); });
             $type->getter('title',          function ($internal) { return $internal->title          ->toString (); });

@@ -4,8 +4,6 @@ namespace Zettai\Controller\Web;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Zettai\Exercise;
-use Zettai\Tile;
 
 class Admin implements ControllerProviderInterface
 {
@@ -120,11 +118,11 @@ class Admin implements ControllerProviderInterface
                 $errors[] = 'CSRF';
             }
 
-            $exercise = new Exercise ([
-                'exercise_id' => $request->request->get('exercise_id'),
-                'title'     => $request->request->get('title'),
-                'is_hidden' => intval($request->request->get('is_hidden')) === 1,
-                'content'   => [
+            $exercise = $this->app['types']->exercise->fromArray([
+                'exercise_id'   => $request->request->get('exercise_id'),
+                'title'         => $request->request->get('title'),
+                'is_hidden'     => intval($request->request->get('is_hidden')) === 1,
+                'content'       => [
                     'kyoku'         => $this->app['types']->kyoku->from($request->request->get('kyoku'))->toEnglish(),
                     'position'      => $this->app['types']->wind->from($request->request->get('position'))->toEnglish(),
                     'turn'          => $request->request->get('turn'),
@@ -216,7 +214,7 @@ class Admin implements ControllerProviderInterface
                 'csrf'        => $this->app['csrf']->generate($csrfKey),
                 'exercise'    => $exercise,
                 'errors'      => $errors,
-                'TILES'       => Tile::$TILES,
+                'TILES'       => $this->app['types']->tile->each(),
             ]);
         };
 
@@ -229,7 +227,9 @@ class Admin implements ControllerProviderInterface
 
         // Отобразить свежую форму для новой задачи.
         if ($exercise_id === 'new') {
-            return $view(new Exercise (['exercise_id' => $this->app['model']->exercise->getNewId()]));
+            return $view(
+                $this->app['types']->exercise->fromNew($this->app['model']->exercise->getNewId())
+            );
         }
 
         // Существует ли запрошенная задача?

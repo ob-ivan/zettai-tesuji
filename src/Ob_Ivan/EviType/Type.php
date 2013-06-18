@@ -196,7 +196,10 @@ abstract class Type implements TypeInterface
     public function __call($name, $arguments)
     {
         if (preg_match('~^from(\w+)$~', $name, $matches)) {
-            return $this->from($matches[1], $arguments[0]);
+            return $this->from(
+                $matches[1],
+                isset($arguments[0]) ? $arguments[0] : null
+            );
         }
         throw new Exception(
             'Unknown method "' . $name . '" in class ' . get_called_class(),
