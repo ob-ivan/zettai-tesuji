@@ -94,7 +94,7 @@ abstract class Type implements TypeInterface
             }
         }
         throw new Exception(
-            'Could not import "' . $presentation . '" as "' . $importName . '" in class ' . get_called_class(),
+            'Could not import a value as "' . $importName . '" in class ' . get_called_class(),
             Exception::TYPE_FROM_IMPORT_FAIL
         );
     }

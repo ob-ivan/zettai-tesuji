@@ -254,10 +254,10 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'answer'        => $service['answerCollection'],
                 'best_answer'   => $service['abc'],
             ]);
-            $type->view('json', $type->json([
+            $subviews = [
                 'kyoku'         => ['*', 'e'],
                 'position'      => ['*', 'e'],
-                'turn'          => 'default',
+                'turn'          => ['*', 'default'],
                 'dora'          => 'tenhou',
                 'score'         => 'string',
                 'hand'          => 'tenhou',
@@ -265,7 +265,9 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'is_answered'   => 'integer',
                 'answer'        => 'json',
                 'best_answer'   => 'default',
-            ]));
+            ];
+            $type->view('form', $type->associative($subviews));
+            $type->view('json', $type->json($subviews));
             $type->import('new', function () use ($service) {
                 return new ProductInternal([
                     'kyoku'         => $service['kyoku']            ->fromE('e1'),
@@ -294,6 +296,12 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'title'         => 'string',
                 'is_hidden'     => 'integer',
                 'content'       => 'json',
+            ]));
+            $type->view('form', $type->associative([
+                'exercise_id'   => 'string',
+                'title'         => 'string',
+                'is_hidden'     => 'integer',
+                'content'       => ['*', 'form'],
             ]));
             $type->import('new', function ($presentation) use ($service) {
                 return new ProductInternal([

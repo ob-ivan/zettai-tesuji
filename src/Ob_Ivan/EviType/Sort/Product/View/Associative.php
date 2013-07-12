@@ -14,7 +14,8 @@ namespace Ob_Ivan\EviType\Sort\Product\View;
 
 use ArrayAccess,
     Traversable;
-use Ob_Ivan\EviType\InternalInterface,
+use Ob_Ivan\EviType\Exception as PackageException,
+    Ob_Ivan\EviType\InternalInterface,
     Ob_Ivan\EviType\OptionsInterface,
     Ob_Ivan\EviType\Value,
     Ob_Ivan\EviType\ViewInterface;
@@ -114,7 +115,11 @@ class Associative implements ViewInterface
                     // После звёздочки нет смысла прогонять какие-то другие попытки.
                     break;
                 }
-                $candidate = $type->from($viewName, $presentation[$componentName]);
+                try {
+                    $candidate = $type->from($viewName, $presentation[$componentName]);
+                } catch (PackageException $exception) {
+                    continue;
+                }
                 if ($candidate instanceof Value) {
                     $value = $candidate;
                     break;
