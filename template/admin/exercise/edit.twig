@@ -125,7 +125,7 @@
                     {% include 'admin/exercise/_tile_select.twig' with {
                         'name'  : 'answer[' ~ letter ~ '][discard]',
                         'TILES' : TILES,
-                        'value' : attribute(exercise.content.answer, letter).discard,
+                        'value' : attribute(exercise.content.answer, letter.toString()).discard,
                     } only %}
                 </label>
                 <label>
@@ -142,7 +142,7 @@
             </p>
             <p>
                 <textarea class="answer" name="answer[{{ letter }}][comment]">
-                    {{- attribute(exercise.content.answer, letter).comment -}}
+                    {{- attribute(exercise.content.answer, letter.toString()).comment -}}
                 </textarea>
             </p>
         {% endfor %}
