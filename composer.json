@@ -5,6 +5,9 @@
         "jquery/jquery"                 : "1.*",
         "monolog/monolog"               : "1.*",
         "silex/silex"                   : "1.*",
+        "symfony/config"                : "2.3.*",
+        "symfony/security"              : "2.3.*",
+        "symfony/twig-bridge"           : "2.3.*",
         "twig/twig"                     : "1.*"
     },
     "require-dev": {
