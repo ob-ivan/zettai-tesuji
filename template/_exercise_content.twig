@@ -71,7 +71,7 @@
                 {% include '_answer.twig' with {
                     mode    : mode,
                     letter  : letter,
-                    fields  : attribute(content.answer, letter),
+                    fields  : attribute(content.answer, letter.toString()),
                     is_best : false,
                 } only %}
             {% endif %}
