@@ -110,14 +110,7 @@ class TypeService implements TypeServiceInterface
         }
 
         // Стандартные сорта.
-        $this->factory->register([
-            'enum'      => function () { return new EnumBuilder;        },
-            'map'       => function () { return new MapBuilder;         },
-            'product'   => function () { return new CartesianBuilder;   },
-            'record'    => function () { return new RecordBuilder;      },
-            'sequence'  => function () { return new SequenceBuilder;    },
-            'union'     => function () { return new UnionBuilder;       },
-        ]);
+        $this->factory->register($this->getDefaultSorts());
     }
 
     public function __call($name, $args)
@@ -136,6 +129,18 @@ class TypeService implements TypeServiceInterface
     }
 
     // protected /
+
+    protected function getDefaultSorts()
+    {
+        return [
+            'enum'      => function () { return new EnumBuilder;        },
+            'map'       => function () { return new MapBuilder;         },
+            'product'   => function () { return new CartesianBuilder;   },
+            'record'    => function () { return new RecordBuilder;      },
+            'sequence'  => function () { return new SequenceBuilder;    },
+            'union'     => function () { return new UnionBuilder;       },
+        ];
+    }
 
     /**
      * Return types to be registered on construction.
