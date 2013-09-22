@@ -9,6 +9,7 @@
 namespace Ob_Ivan\EviType\Sort\Map;
 
 use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\Sort\IterableInterface;
 use Ob_Ivan\EviType\TypeInterface;
 
 class Options implements OptionsInterface
@@ -21,6 +22,13 @@ class Options implements OptionsInterface
 
     public function __construct($isTotal, TypeInterface $domain, TypeInterface $range)
     {
+        // Check whether domain accepts total maps.
+        if ($isTotal) {
+            if (! $domain instanceof IterableInterface) {
+                throw new Exception('Total map cannot be defined with non-iterable domain');
+            }
+        }
+
         $this->isTotal = !! $isTotal;
         $this->domain  = $domain;
         $this->range   = $range;

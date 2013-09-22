@@ -43,9 +43,13 @@ class Pairs implements ViewInterface
                 Exception::PAIRS_IMPORT_OPTIONS_WRONG_TYPE
             );
         }
-        $pairs = [];
-        $domain = $options->getDomain();
-        $range  = $options->getRange();
+        $isTotal = $options->isTotal();
+        $domain  = $options->getDomain();
+        $range   = $options->getRange();
+        $pairs   = [];
+        if ($isTotal) {
+            $allDomainValues = $unusedDomainValues = $domain->each();
+        }
         foreach ($presentation as $key => $value) {
             $domainValue = $domain->fromAny($key);
             if (! $domainValue) {
@@ -53,6 +57,10 @@ class Pairs implements ViewInterface
                     'Key "' . $key . '" could not be converted to domain value',
                     Exception::PAIRS_IMPORT_KEY_NOT_RECOGNIZED
                 );
+            }
+            if ($isTotal) {
+                $key = array_search($domainValue, $allDomainValues);
+                unset($unusedDomainValues[$key]);
             }
             $rangeValue = $range->fromAny($value);
             if (! $rangeValue) {
@@ -62,6 +70,9 @@ class Pairs implements ViewInterface
                 );
             }
             $pairs[] = [$domainValue, $rangeValue];
+        }
+        if ($isTotal && ! empty($unusedDomainValues)) {
+            throw new Exception('Some domain values are not defined in total map presentation');
         }
         return new Internal($pairs);
     }
