@@ -1,14 +1,14 @@
 <?php
 namespace Ob_Ivan\EviType\Sort\Map\View;
 
-use ArrayAccess,
-    Traversable;
-use Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\OptionsInterface,
-    Ob_Ivan\EviType\Value,
-    Ob_Ivan\EviType\ViewInterface;
-use Ob_Ivan\EviType\Sort\Map\Internal,
-    Ob_Ivan\EviType\Sort\Map\Options;
+use ArrayAccess;
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\Sort\Map\Internal;
+use Ob_Ivan\EviType\Sort\Map\Options;
+use Ob_Ivan\EviType\Value;
+use Ob_Ivan\EviType\ViewInterface;
+use Traversable;
 
 class Pairs implements ViewInterface
 {
