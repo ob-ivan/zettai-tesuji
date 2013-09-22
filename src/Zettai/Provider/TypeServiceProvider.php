@@ -1,8 +1,8 @@
 <?php
 namespace Zettai\Provider;
 
-use Silex\Application,
-    Silex\ServiceProviderInterface;
+use Silex\Application;
+use Silex\ServiceProviderInterface;
 use Ob_Ivan\EviType\TypeService;
 use Ob_Ivan\EviType\Sort\Map\Internal as MapInternal;
 use Ob_Ivan\EviType\Sort\Product\Internal as ProductInternal;

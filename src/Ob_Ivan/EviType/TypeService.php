@@ -105,10 +105,9 @@ class TypeService implements TypeServiceInterface
         $this->factory = new TypeFactory();
 
         // Стандартные типы.
-        $this->register('null',     function () { return (new NullBuilder   )->produce(); });
-        $this->register('boolean',  function () { return (new BooleanBuilder)->produce(); });
-        $this->register('integer',  function () { return (new IntegerBuilder)->produce(); });
-        $this->register('string',   function () { return (new StringBuilder )->produce(); });
+        foreach ($this->getDefaultTypes() as $name => $factory) {
+            $this->register($name, $factory);
+        }
 
         // Стандартные сорта.
         $this->factory->register([
@@ -136,9 +135,24 @@ class TypeService implements TypeServiceInterface
         return isset($this[$name]);
     }
 
-    // private /
+    // protected /
 
-    private function set($offset, $value)
+    /**
+     * Return types to be registered on construction.
+     *
+     *  @return [<string name> => <BuilderInterface() factory>]
+    **/
+    protected function getDefaultTypes()
+    {
+        return [
+            'null'      => function () { return (new NullBuilder   )->produce(); },
+            'boolean'   => function () { return (new BooleanBuilder)->produce(); },
+            'integer'   => function () { return (new IntegerBuilder)->produce(); },
+            'string'    => function () { return (new StringBuilder )->produce(); },
+        ];
+    }
+
+    protected function set($offset, $value)
     {
         if (! $value instanceof TypeInterface) {
             throw new Exception(

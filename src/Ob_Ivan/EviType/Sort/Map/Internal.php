@@ -5,10 +5,10 @@
 **/
 namespace Ob_Ivan\EviType\Sort\Map;
 
-use ArrayAccess,
-    ArrayIterator;
-use Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\Value;
+use ArrayAccess;
+use ArrayIterator;
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\Value;
 
 class Internal implements ArrayAccess, InternalInterface
 {
