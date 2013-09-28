@@ -1,4 +1,22 @@
 <?php
+/**
+ * Model service provider.
+ *
+ * Dependencies:
+ *  [config]
+ *      Looks up for model.logger_enable config variable, and enables logginh
+ *      to [monolog] if it is true.
+ *  [db]
+ *      Doctrine service.
+ *  [debug]
+ *      True when in development, false when in production.
+ *  [monolog]
+ *      Monolog service.
+ *
+ * Services:
+ *  [model]
+ *      Instance of Model\Service.
+**/
 namespace Zettai\Provider;
 
 use Silex\Application;

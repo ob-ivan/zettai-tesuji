@@ -34,7 +34,7 @@ class Application extends BaseApplication
 
     // private //
 
-    private function registerConfig ($configRoot)
+    private function registerConfig($configRoot)
     {
         // Запомнить конфиг.
         $this['config'] = new Config($configRoot);
@@ -45,7 +45,7 @@ class Application extends BaseApplication
         }
     }
 
-    private function registerDatabase ()
+    private function registerDatabase()
     {
         $this->register(new DoctrineServiceProvider(), [
             'db.options' => [
