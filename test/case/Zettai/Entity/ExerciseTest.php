@@ -51,7 +51,7 @@ class ExerciseTest extends AbstractCase
     {
         $array = [];
         foreach ($this->types['abc'] as $letter) {
-            $array[$letter] = $this->generateAnswer();
+            $array[$letter->toDefault()] = $this->generateAnswer();
         }
         return $this->types['answerCollection']->fromArray($array);
     }
@@ -134,11 +134,16 @@ class ExerciseTest extends AbstractCase
         return $exercise;
     }
 
+    private function generateTile()
+    {
+        return $this->types['tile']->random();
+    }
+
     private function generateTiles($count)
     {
         $tiles = [];
         for ($i = 0; $i < $count; ++$i) {
-            $tiles[] = $this->types['tile']->random();
+            $tiles[] = $this->generateTile();
         }
 
         foreach ($tiles as $tile) {
