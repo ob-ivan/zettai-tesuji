@@ -39,6 +39,23 @@ class ExerciseTest extends AbstractCase
 
     // private //
 
+    private function generateAnswer()
+    {
+        return $this->types['answer']->fromArray([
+            'discard' => $this->generateTile(),
+            'comment' => $this->generateText(100),
+        ]);
+    }
+
+    private function generateAnswers()
+    {
+        $array = [];
+        foreach ($this->types['abc'] as $letter) {
+            $array[$letter] = $this->generateAnswer();
+        }
+        return $this->types['answerCollection']->fromArray($array);
+    }
+
     private function generateExercise()
     {
         $newExerciseId  = $this->exerciseEntity->getNewId() + mt_rand(10, 100);
@@ -129,14 +146,5 @@ class ExerciseTest extends AbstractCase
         }
 
         return $tiles;
-    }
-
-    private function generateAnswers()
-    {
-        $pairs = [];
-        foreach ($this->types['abc'] as $letter) {
-            $pairs[] = [$letter, $this->generateAnswer()];
-        }
-        return $this->types['answerCollection']->fromPairs($pairs);
     }
 }
