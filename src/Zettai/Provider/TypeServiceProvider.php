@@ -270,7 +270,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'hand'          => 'tenhou',
                 'draw'          => 'tenhou',
                 'is_answered'   => 'integer',
-                'answer'        => 'json',
+                'answer'        => ['json', 'new'],
                 'best_answer'   => 'default',
             ];
             $type->view('form', $type->associative($subviews));
