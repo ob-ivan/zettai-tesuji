@@ -5,10 +5,10 @@
 **/
 namespace Ob_Ivan\EviType\Sort\Map;
 
-use ArrayAccess,
-    ArrayIterator;
-use Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\Value;
+use ArrayAccess;
+use ArrayIterator;
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\Value;
 
 class Internal implements ArrayAccess, InternalInterface
 {
@@ -30,6 +30,40 @@ class Internal implements ArrayAccess, InternalInterface
      *  @var string json([<domainValue->getPrimitive()> => <rangeValue->getPrimitive()>])
     **/
     private $primitive = null;
+
+    // public : Internal //
+
+    /**
+     *  @param  [[<Value domainValue>, <Value rangeValue>], ...]    $pairs
+    **/
+    public function __construct(array $pairs)
+    {
+        $this->domainMap = [];
+        $this->rangeMap  = [];
+        foreach ($pairs as $position => $pair) {
+            list($domainValue, $rangeValue) = $pair;
+            if (! $domainValue instanceof Value) {
+                throw new Exception(
+                    'Domain value at position ' . $position . ' must be instance of Value',
+                    Exception::INTERNAL_CONSTRUCT_DOMAIN_VALUE_WRONG_TYPE
+                );
+            }
+            if (! $rangeValue instanceof Value) {
+                throw new Exception(
+                    'Range value at position ' . $position . ' must be instance of Value',
+                    Exception::INTERNAL_CONSTRUCT_RANGE_VALUE_WRONG_TYPE
+                );
+            }
+            $primitive = $domainValue->getPrimitive();
+            $this->domainMap[$primitive] = $domainValue;
+            $this->rangeMap [$primitive] = $rangeValue;
+        }
+    }
+
+    public function keys()
+    {
+        return new ArrayIterator($this->domainMap);
+    }
 
     // public : ArrayAccess //
 
@@ -79,39 +113,5 @@ class Internal implements ArrayAccess, InternalInterface
             $this->primitive = json_encode($primitives);
         }
         return $this->primitive;
-    }
-
-    // public : Internal //
-
-    /**
-     *  @param  [[<Value domainValue>, <Value rangeValue>], ...]    $pairs
-    **/
-    public function __construct(array $pairs)
-    {
-        $this->domainMap = [];
-        $this->rangeMap  = [];
-        foreach ($pairs as $position => $pair) {
-            list($domainValue, $rangeValue) = $pair;
-            if (! $domainValue instanceof Value) {
-                throw new Exception(
-                    'Domain value at position ' . $position . ' must be instance of Value',
-                    Exception::INTERNAL_CONSTRUCT_DOMAIN_VALUE_WRONG_TYPE
-                );
-            }
-            if (! $rangeValue instanceof Value) {
-                throw new Exception(
-                    'Range value at position ' . $position . ' must be instance of Value',
-                    Exception::INTERNAL_CONSTRUCT_RANGE_VALUE_WRONG_TYPE
-                );
-            }
-            $primitive = $domainValue->getPrimitive();
-            $this->domainMap[$primitive] = $domainValue;
-            $this->rangeMap [$primitive] = $rangeValue;
-        }
-    }
-
-    public function keys()
-    {
-        return new ArrayIterator($this->domainMap);
     }
 }

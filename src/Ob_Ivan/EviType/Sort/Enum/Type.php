@@ -1,13 +1,18 @@
 <?php
 namespace Ob_Ivan\EviType\Sort\Enum;
 
-use Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\OptionsInterface;
-use Ob_Ivan\EviType\Sort\IterableInterface,
-    Ob_Ivan\EviType\Sort\StringifierInterface;
+use ArrayIterator;
+use IteratorAggregate;
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\Sort\IterableInterface;
+use Ob_Ivan\EviType\Sort\StringifierInterface;
 use Ob_Ivan\EviType\Type as ParentType;
 
-class Type extends ParentType implements IterableInterface, StringifierInterface
+class Type extends ParentType implements
+    IterableInterface,
+    IteratorAggregate,
+    StringifierInterface
 {
     // public : IterableInterface //
 
@@ -18,6 +23,13 @@ class Type extends ParentType implements IterableInterface, StringifierInterface
             $values[] = $this->produceValue(new Internal($primitive));
         }
         return $values;
+    }
+
+    // public : IteratorAggregate //
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->each());
     }
 
     // public : StringifierInterface //

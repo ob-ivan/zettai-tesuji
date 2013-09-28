@@ -6,8 +6,8 @@
 **/
 namespace Ob_Ivan\EviType\Sort\Map\View;
 
-use Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\OptionsInterface;
 use Ob_Ivan\EviType\Sort\Map\Internal;
 
 class Json extends Pairs

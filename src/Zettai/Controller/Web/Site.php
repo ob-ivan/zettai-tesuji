@@ -103,9 +103,8 @@ class Site implements ControllerProviderInterface
 
         // Скомпилировать ответы и получить номер следующей задачи.
         $answers = [];
-        foreach ($exercise->content['answer']->keys as $letter) {
-            $answer = $exercise->content['answer'][$letter];
-            $answers[$letter->toDefault()] = [
+        foreach ($exercise->content['answer'] as $letter => $answer) {
+            $answers[$letter] = [
                 // TODO: Устранить дублирование с TwigServiceProvider/addFilter('tile').
                 'discard' => $this->app['twig']->render('_tile.twig', ['tiles' => [$answer['discard']]]),
                 'comment' => $this->app['answer_compiler']->compile($answer['comment']),
