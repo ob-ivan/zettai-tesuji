@@ -1,36 +1,44 @@
 <?php
-namespace Ob_Ivan\Model;
-
-use Doctrine\DBAL\Connection;
-use Monolog\Logger;
-
 /**
  * Класс, дающий доступ к извлечению и изменению данных в базе.
  *
  * Документация: https://github.com/ob-ivan/zettai-tesuji/wiki/Data-Model
 **/
+namespace Ob_Ivan\Model;
+
+use Doctrine\DBAL\Connection;
+use Monolog\Logger;
+
 class Service implements ServiceInterface
 {
     // var //
 
     private $db;
-    private $debug;
+
     private $logger;
+
+    /**
+     * A prefix added to each table name. Enables namespacing for table names
+     * within single database.
+     *
+     *  @var string
+    **/
+    private $tablePrefix = '';
 
     private $entities = [];
     private $registry = [];
 
     // public : ServiceInterface //
 
-    public function __construct (Connection $db, $debug)
+    public function __construct(Connection $db, $tablePrefix = '')
     {
-        $this->db     = $db;
-        $this->debug  = $debug;
+        $this->db           = $db;
+        $this->tablePrefix  = $tablePrefix;
     }
 
     public function getTableName(EntityInterface $entity)
     {
-        return ($this->debug ? '_test_' : '') . $entity->getTableName();
+        return $this->tablePrefix . $entity->getTableName();
     }
 
     public function queryBuilder(EntityInterface $entity)

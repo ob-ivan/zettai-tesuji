@@ -1,10 +1,10 @@
 <?php
 namespace Zettai\Entity;
 
-use Ob_Ivan\Model\Entity,
-    Ob_Ivan\Model\Service;
-use Ob_Ivan\EviType\TypeInterface,
-    Ob_Ivan\EviType\Value;
+use Ob_Ivan\Model\Entity;
+use Ob_Ivan\Model\Service;
+use Ob_Ivan\EviType\TypeInterface;
+use Ob_Ivan\EviType\Value;
 
 class Theme extends Entity
 {
