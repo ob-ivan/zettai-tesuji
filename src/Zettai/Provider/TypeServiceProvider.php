@@ -4,7 +4,6 @@ namespace Zettai\Provider;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Ob_Ivan\EviType\TypeService;
-use Ob_Ivan\EviType\Sort\Map\Internal as MapInternal;
 use Ob_Ivan\EviType\Sort\Product\Internal as ProductInternal;
 use Ob_Ivan\EviType\Sort\Sequence\Internal as SequenceInternal;
 
@@ -226,15 +225,23 @@ class TypeServiceProvider implements ServiceProviderInterface
             });
         });
         $service->register('answerCollection', function ($service) {
-            $type = $service->map($service['abc'], $service['answer']);
+            $type = $service->record([
+                'a' => $service['answer'],
+                'b' => $service['answer'],
+                'c' => $service['answer'],
+            ]);
             return $type
-            ->view('json', $type->json('default', 'json'))
+            ->view('json', $type->json([
+                'a' => 'json',
+                'b' => 'json',
+                'c' => 'json',
+            ]))
             ->import('new', function () use ($service) {
                 $dummyAnswer = $service['answer']->fromDummy();
-                return new MapInternal([
-                    [$service['abc']->fromDefault('a'), $dummyAnswer],
-                    [$service['abc']->fromDefault('b'), $dummyAnswer],
-                    [$service['abc']->fromDefault('c'), $dummyAnswer],
+                return new ProductInternal([
+                    'a' => $dummyAnswer,
+                    'b' => $dummyAnswer,
+                    'c' => $dummyAnswer,
                 ]);
             });
         });
