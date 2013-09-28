@@ -1,11 +1,9 @@
 <?php
-use Monolog\Logger;
 use Ob_Ivan\EviType\Value;
 use Ob_Ivan\TestCase\AbstractCase;
-use Silex\Provider\MonologServiceProvider;
 use Zettai\Application;
 
-class ThemeTestCase extends AbstractCase
+class ThemeTest extends AbstractCase
 {
     private $exerciseEntity;
     private $themeEntity;
@@ -14,6 +12,9 @@ class ThemeTestCase extends AbstractCase
     public function setUp()
     {
         $app = new Application(DOCUMENT_ROOT);
+
+        // TODO: Substitute [db] with a mock in-memory database.
+
         $app->boot();
 
         $this->exerciseEntity   = $app['model']->exercise;
@@ -42,6 +43,8 @@ class ThemeTestCase extends AbstractCase
         $theme3 = $this->themeEntity->get($theme->theme_id);
         $this->assertEmpty($theme3, 'Test theme is not deleted');
     }
+
+    // TODO: testGetList, testGetNextId, testGetPrevId
 
     // private //
 
