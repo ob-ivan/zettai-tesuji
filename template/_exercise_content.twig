@@ -54,11 +54,12 @@
         </div>
     {% endif %}
 
+    {% if not content.is_answered.toBoolean %}
+        <div class="row not_answered">Ответы не опубликованы</div>
+    {% endif %}
+
     <div class="row answers">
         <hr/>
-        {% if mode == 'admin' and not content.is_answered.toBoolean %}
-            <div class="not_answered">Ответы не опубликованы</div>
-        {% endif %}
         {% include '_answer.twig' with {
             mode    : mode,
             letter  : content.best_answer,
