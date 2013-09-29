@@ -7,18 +7,15 @@ mb_internal_encoding('utf-8');
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
 });
+require_once __DIR__ . '/bootstrap.php';
 
 // Пути.
-
-define ('DOCUMENT_ROOT', __DIR__);
-define ('AUTOLOAD_PATH',    DOCUMENT_ROOT . '/vendor/autoload.php');
-define ('DEPLOY_LOCK_PATH', DOCUMENT_ROOT . '/deploy.lock');
-define ('ERROR_DIR',        DOCUMENT_ROOT . '/error');
-define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
+define('DEPLOY_LOCK_PATH', DOCUMENT_ROOT . '/deploy.lock');
+define('ERROR_DIR',        DOCUMENT_ROOT . '/error');
+define('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 
 // Зависимости.
 
-require_once AUTOLOAD_PATH;
 use Symfony\Component\HttpFoundation\Request;
 
 // Инициализируем приложение.
