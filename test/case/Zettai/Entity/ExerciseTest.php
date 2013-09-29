@@ -26,15 +26,17 @@ class ExerciseTest extends AbstractCase
 
     public function testSetGetDelete()
     {
-        $exercise = $this->generateExercise();
+        for ($i = 0; $i < 4; ++$i) {
+            $exercise = $this->generateExercise($i % 2, $i >= 2);
 
-        $this->exerciseEntity->set($exercise);
-        $exercise2 = $this->exerciseEntity->get($exercise->exercise_id);
-        $this->assertEquals($exercise, $exercise2, 'Exercise::get returns wrong value');
+            $this->exerciseEntity->set($exercise);
+            $exercise2 = $this->exerciseEntity->get($exercise->exercise_id);
+            $this->assertEquals($exercise, $exercise2, 'Exercise::get returns wrong value');
 
-        $this->exerciseEntity->delete($exercise->exercise_id);
-        $exercise3 = $this->exerciseEntity->get($exercise->exercise_id);
-        $this->assertEmpty($exercise3, 'Test exercise is not deleted');
+            $this->exerciseEntity->delete($exercise->exercise_id);
+            $exercise3 = $this->exerciseEntity->get($exercise->exercise_id);
+            $this->assertEmpty($exercise3, 'Test exercise is not deleted');
+        }
     }
 
     // private //
@@ -56,11 +58,18 @@ class ExerciseTest extends AbstractCase
         return $this->types['answerCollection']->fromArray($array);
     }
 
-    private function generateExercise()
+    /**
+     * Generates a random exercise based on input parameters.
+     *
+     *  @param  boolean $isHidden   Whether new exercise should be hidden.
+     *  @param  boolean $isAnswered Whether answers should be displayed.
+     *  @return Value               Belongs to $this->exerciseType.
+    **/
+    private function generateExercise($isHidden, $isAnswered)
     {
         $newExerciseId  = $this->exerciseEntity->getNewId() + mt_rand(10, 100);
         $newTitle       = $this->generateText(30);
-        $newIsHidden    = ! mt_rand(0, 1);
+        $newIsHidden    = !! $isHidden;
 
         // content //
 
@@ -71,7 +80,7 @@ class ExerciseTest extends AbstractCase
         $newScore       = $this->generateText(30);
         $newHand        = $this->types['tileSequence']->fromArray($this->generateTiles(13));
         $newDraw        = $this->types['tile']->random();
-        $newIsAnswered  = $this->types['boolean']->random();
+        $newIsAnswered  = $this->types['boolean']->fromBoolean(!! $isAnswered);
         $newAnswer      = $this->generateAnswers();
         $newBestAnswer  = $this->types['abc']->random();
 
