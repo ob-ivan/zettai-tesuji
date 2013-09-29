@@ -8,14 +8,14 @@ use JsonSerializable;
 class Tile implements IteratorAggregate, JsonSerializable
 {
     // const //
-    
+
     public static $TILES = [
         '1m', '2m', '3m', '4m', '0m', '5m', '6m', '7m', '8m', '9m',
         '1p', '2p', '3p', '4p', '0p', '5p', '6p', '7p', '8p', '9p',
         '1s', '2s', '3s', '4s', '0s', '5s', '6s', '7s', '8s', '9s',
         '1z', '2z', '3z', '4z', '5z', '6z', '7z',
     ];
-    
+
     // var //
 
     private $tiles;
@@ -24,6 +24,8 @@ class Tile implements IteratorAggregate, JsonSerializable
 
     public function __construct ($display)
     {
+        throw new Exception('Class "' . __CLASS__ . '" is deprecated', Exception::TILE_DEPRECATED);
+
         // Распознать масти и собрать в массив.
         $this->tiles = [];
         while (strlen($display) > 0) {
@@ -40,12 +42,12 @@ class Tile implements IteratorAggregate, JsonSerializable
             }
         }
     }
-    
+
     public function __toString()
     {
         return $this->stringify();
     }
-    
+
     // IteratorAggregate //
 
     public function getIterator()
@@ -59,9 +61,9 @@ class Tile implements IteratorAggregate, JsonSerializable
     {
         return $this->stringify();
     }
-    
+
     // private //
-    
+
     public function stringify()
     {
         $colors = [

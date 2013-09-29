@@ -4,8 +4,6 @@ namespace Zettai\Controller\Web;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Zettai\Exercise;
-use Zettai\Tile;
 
 class Admin implements ControllerProviderInterface
 {
@@ -102,8 +100,8 @@ class Admin implements ControllerProviderInterface
         ) {
             $formKey = md5(microtime(true));
             $this->app['session']->set($formKey, [
-                'exercise' => $exercise,
-                'errors' => $errors,
+                'exercise'  => $exercise,
+                'errors'    => $errors,
             ]);
             return $this->app->redirect(
                 $this->app['url_generator']->generate('admin_exercise_edit', ['exercise_id' => $exercise_id]) .
@@ -120,22 +118,22 @@ class Admin implements ControllerProviderInterface
                 $errors[] = 'CSRF';
             }
 
-            $exercise = new Exercise ([
-                'exercise_id' => $request->request->get('exercise_id'),
-                'title'     => $request->request->get('title'),
-                'is_hidden' => intval($request->request->get('is_hidden')) === 1,
-                'content'   => [
-                    'kyoku'         => $this->app['types']->kyoku->from($request->request->get('kyoku'))->toEnglish(),
-                    'position'      => $this->app['types']->wind->from($request->request->get('position'))->toEnglish(),
+            $exercise = $this->app['types']->exercise->fromForm([
+                'exercise_id'   => $request->request->get('exercise_id'),
+                'title'         => $request->request->get('title'),
+                'is_hidden'     => $request->request->get('is_hidden'),
+                'content'       => $this->app['types']->exerciseContent->fromForm([
+                    'kyoku'         => $request->request->get('kyoku'),
+                    'position'      => $request->request->get('position'),
                     'turn'          => $request->request->get('turn'),
-                    'dora'          => $this->app['types']->tile->from($request->request->get('dora'))->toTile(),
+                    'dora'          => $request->request->get('dora'),
                     'score'         => $request->request->get('score'),
                     'hand'          => $request->request->get('hand'),
                     'draw'          => $request->request->get('draw'),
-                    'is_answered'   => $request->request->get('is_answered'),
+                    'is_answered'   => $request->request->get('is_answered') === '1',
                     'answer'        => $request->request->get('answer'),
                     'best_answer'   => $request->request->get('best_answer'),
-                ],
+                ]),
             ]);
 
             if ($request->request->get('save')) {
@@ -216,7 +214,7 @@ class Admin implements ControllerProviderInterface
                 'csrf'        => $this->app['csrf']->generate($csrfKey),
                 'exercise'    => $exercise,
                 'errors'      => $errors,
-                'TILES'       => Tile::$TILES,
+                'TILES'       => $this->app['types']->tile->each(),
             ]);
         };
 
@@ -229,7 +227,9 @@ class Admin implements ControllerProviderInterface
 
         // Отобразить свежую форму для новой задачи.
         if ($exercise_id === 'new') {
-            return $view(new Exercise (['exercise_id' => $this->app['model']->exercise->getNewId()]));
+            return $view(
+                $this->app['types']->exercise->fromNew($this->app['model']->exercise->getNewId())
+            );
         }
 
         // Существует ли запрошенная задача?

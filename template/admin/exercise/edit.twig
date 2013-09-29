@@ -51,10 +51,14 @@
             <label>
                 Сдача:
                 <select name="kyoku">
-                    {% for primitive, kyoku in app.types.kyoku.each %}
+                    {% for kyoku in app.types.kyoku.each %}
                         <option
-                            value="{{ primitive }}"
-                            {% if kyoku.equals(exercise.content.kyoku) %}
+                            value="{{ kyoku.toE }}"
+                            {#
+                                Автоматический выбор пока не работает, потому что
+                                exercise.content.kyoku -- это просто строка.
+                            #}
+                            {% if kyoku == exercise.content.kyoku %}
                                 selected
                             {% endif %}
                         >
@@ -68,10 +72,10 @@
             <label>
                 Позиция:
                 <select name="position">
-                    {% for primitive, wind in app.types.wind.each %}
+                    {% for wind in app.types.wind.each %}
                         <option
-                            value="{{ primitive }}"
-                            {% if wind.equals(exercise.content.position) %}
+                            value="{{ wind.toE }}"
+                            {% if wind == exercise.content.position %}
                                 selected
                             {% endif %}
                         >
@@ -93,7 +97,7 @@
             </label>
         </p>
         <p><label>Очки: <input name="score" required value="{{ exercise.content.score }}"/></label></p>
-        <p><label>Рука: <input name="hand"  value="{{ exercise.content.hand }}" /></label></p>
+        <p><label>Рука: <input name="hand"  value="{{ exercise.content.hand.toTenhou }}" /></label></p>
         <p>
             <label>
                 Набрал:
@@ -121,7 +125,7 @@
                     {% include 'admin/exercise/_tile_select.twig' with {
                         'name'  : 'answer[' ~ letter ~ '][discard]',
                         'TILES' : TILES,
-                        'value' : attribute(exercise.content.answer, letter.toString()).discard,
+                        'value' : attribute(exercise.content.answer, letter).discard,
                     } only %}
                 </label>
                 <label>
@@ -138,7 +142,7 @@
             </p>
             <p>
                 <textarea class="answer" name="answer[{{ letter }}][comment]">
-                    {{- attribute(exercise.content.answer, letter.toString()).comment -}}
+                    {{- attribute(exercise.content.answer, letter).comment -}}
                 </textarea>
             </p>
         {% endfor %}

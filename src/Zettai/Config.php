@@ -1,23 +1,21 @@
 <?php
+/**
+ * Загружает конфиг проекта.
+ *
+ * Конфиг берётся из файла {$configRoot}/config.yml.
+ * К переменным конфига можно обращаться через стрелочку (->) или квадратные скобки ([]).
+**/
 namespace Zettai;
 
 use ArrayAccess;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Загружает конфиг проекта.
- *
- * Конфиг берётся из файла {$rootDirectory}/config/config.yml.
- * К переменным конфига можно обращаться через стрелочку (->).
- * Если переменная не определена в конфиге, бросается исключение
- * Zettai\Exception::CONFIG_VARIABLE_UNKNOWN.
-**/
 class Config implements ArrayAccess
 {
     // var //
 
-    private $rootDirectory;
+    private $configRoot;
     private $isLoaded = false;
     private $configValues = null;
 
@@ -45,9 +43,9 @@ class Config implements ArrayAccess
 
     // public : Config //
 
-    public function __construct ($rootDirectory)
+    public function __construct ($configRoot)
     {
-        $this->rootDirectory = $rootDirectory;
+        $this->configRoot = $configRoot;
     }
 
     public function __get ($name)
@@ -89,7 +87,7 @@ class Config implements ArrayAccess
         if ($this->isLoaded) {
             return;
         }
-        $locator = new FileLocator($this->rootDirectory . '/config');
+        $locator = new FileLocator($this->configRoot);
         $resource = $locator->locate('config.yml');
         $this->configValues = Yaml::parse($resource);
         $this->isLoaded = true;

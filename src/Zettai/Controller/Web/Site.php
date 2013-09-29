@@ -62,7 +62,6 @@ class Site implements ControllerProviderInterface
             return $this->app->redirect($this->app['url_generator']->generate('site_page', ['page' => 1]));
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, false);
-
         return $this->app->render('site/page.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
@@ -107,7 +106,7 @@ class Site implements ControllerProviderInterface
         foreach ($exercise->content['answer'] as $letter => $answer) {
             $answers[$letter] = [
                 // TODO: Устранить дублирование с TwigServiceProvider/addFilter('tile').
-                'discard' => $this->app['twig']->render('_tile.twig', ['tiles' => $answer['discard']]),
+                'discard' => $this->app['twig']->render('_tile.twig', ['tiles' => [$answer['discard']]]),
                 'comment' => $this->app['answer_compiler']->compile($answer['comment']),
             ];
         }
@@ -116,7 +115,7 @@ class Site implements ControllerProviderInterface
         // Собрать выходной массив.
         $data = [
             'answers'       => $answers,
-            'best_answer'   => $exercise->content['best_answer'],
+            'best_answer'   => $exercise->content['best_answer']->toDefault(),
         ];
         if ($nextId) {
             $data['exercise_next'] = $this->app['url_generator']->generate(

@@ -16,8 +16,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Ob_Ivan": "src/",
-            "Zettai" : "src/"
+            "": "src/"
         }
     },
     "repositories": [

@@ -47,7 +47,7 @@
             <div class="question">Что сбросить?</div>
             {% for letter in app.types.abc.each %}
                 <button disabled name="{{ letter }}">
-                    {{ letter|upper }}. {{ attribute(content.answer, letter.toString()).discard|tile|raw }}
+                    {{ letter|upper }}. {{ attribute(content.answer, letter).discard|tile|raw }}
                 </button>
             {% endfor %}
             <br/>
@@ -67,11 +67,11 @@
         } only %}
         <p>Другие ответы:</p>
         {% for letter in app.types.abc.each %}
-            {% if not letter.equals(content.best_answer) %}
+            {% if letter != content.best_answer %}
                 {% include '_answer.twig' with {
                     mode    : mode,
                     letter  : letter,
-                    fields  : attribute(content.answer, letter.toString()),
+                    fields  : attribute(content.answer, letter),
                     is_best : false,
                 } only %}
             {% endif %}
