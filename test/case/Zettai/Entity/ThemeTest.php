@@ -32,23 +32,40 @@ class ThemeTest extends AbstractCase
 
     public function testSetGetDelete()
     {
-        $theme = $this->generateTheme();
+        for ($i = 0; $i < 2; ++$i) {
+            $theme = $this->generateTheme([
+                'isHidden' => $i % 2,
+            ]);
 
-        $this->themeEntity->set($theme);
-        $theme2 = $this->themeEntity->get($theme->theme_id);
-        $this->assertEquals($theme, $theme2, 'Theme::get returns wrong value');
+            $this->themeEntity->set($theme);
+            $theme2 = $this->themeEntity->get($theme->theme_id);
+            $this->assertEquals($theme, $theme2, 'Theme::get returns wrong value');
 
-        $this->themeEntity->delete($theme->theme_id);
-        $theme3 = $this->themeEntity->get($theme->theme_id);
-        $this->assertEmpty($theme3, 'Test theme is not deleted');
+            $this->themeEntity->delete($theme->theme_id);
+            $theme3 = $this->themeEntity->get($theme->theme_id);
+            $this->assertEmpty($theme3, 'Test theme is not deleted');
+        }
     }
 
     // TODO: testGetList, testGetNextId, testGetPrevId
 
     // private //
 
-    private function generateTheme()
+    /**
+     * Generates a theme with given parameters.
+     *
+     *  @param  array   $parameters
+     *      [
+     *          'isHidden'  => <boolean>,
+     *      ]
+     *  @return Value   Belongs to $this->themeType.
+    **/
+    private function generateTheme(array $parameters = [])
     {
+        $isHidden = isset($parameters['isHidden'])
+            ? !! $parameters['isHidden']
+            : ! mt_rand(0, 1);
+
         $lastExerciseId         = 100;
         $min_exercise_id        = mt_rand(1, $lastExerciseId);
         $max_exercise_id        = mt_rand($min_exercise_id, $lastExerciseId);
@@ -56,7 +73,7 @@ class ThemeTest extends AbstractCase
         $intermediate_percent   = mt_rand(0, $advanced_percent);
         $newThemeId             = $this->themeEntity->getNewId() + mt_rand(0, 100);
         $newTitle               = $this->generateText(20);
-        $newIsHidden            = ! mt_rand(0, 1);
+        $newIsHidden            = $isHidden;
         $newIntro               = $this->generateText(200);
 
         $theme = $this->themeType->fromDatabase([
