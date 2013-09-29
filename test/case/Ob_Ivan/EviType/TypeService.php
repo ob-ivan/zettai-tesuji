@@ -1,11 +1,11 @@
 <?php
 
-use Ob_Ivan\EviType\TypeService,
-    Ob_Ivan\EviType\Value;
-use Ob_Ivan\EviType\Sort\Boolean\Type as BooleanType;
-use Ob_Ivan\EviType\Sort\Integer\Type as IntegerType;
-use Ob_Ivan\EviType\Sort\Product\Internal as ProductInternal,
-    Ob_Ivan\EviType\Sort\Product\Type     as ProductType;
+use Ob_Ivan\EviType\Sort\Boolean\Type     as BooleanType;
+use Ob_Ivan\EviType\Sort\Integer\Type     as IntegerType;
+use Ob_Ivan\EviType\Sort\Product\Internal as ProductInternal;
+use Ob_Ivan\EviType\Sort\Product\Type     as ProductType;
+use Ob_Ivan\EviType\TypeService;
+use Ob_Ivan\EviType\Value;
 use Ob_Ivan\TestCase\AbstractCase;
 
 class TypeServiceTest extends AbstractCase
@@ -140,14 +140,14 @@ class TypeServiceTest extends AbstractCase
         $this->assertTrue($type instanceof ProductType, 'Тип рекорда не принадлежит сорту произведений');
 
         $type->view('database', $type->associative([
-            'theme_id'              => 'string',
+            'theme_id'              => ['integer', 'string'],
             'title'                 => 'string',
-            'is_hidden'             => ['*', 'string'],
+            'is_hidden'             => ['*', 'integer', 'string'],
             'intro'                 => 'string',
-            'min_exercise_id'       => 'string',
-            'max_exercise_id'       => 'string',
-            'advanced_percent'      => 'string',
-            'intermediate_percent'  => 'string',
+            'min_exercise_id'       => ['integer', 'string'],
+            'max_exercise_id'       => ['integer', 'string'],
+            'advanced_percent'      => ['integer', 'string'],
+            'intermediate_percent'  => ['integer', 'string'],
         ]));
 
         // test //
@@ -158,16 +158,22 @@ class TypeServiceTest extends AbstractCase
         $advanced_percent       = mt_rand(0, 100);
         $intermediate_percent   = mt_rand(0, $advanced_percent);
 
-        $value = $type->fromDatabase([
-            'theme_id'              => mt_rand(1, 100),
-            'title'                 => $this->generateText(20),
-            'is_hidden'             => mt_rand(0, 1),
-            'intro'                 => $this->generateText(200),
-            'min_exercise_id'       => $min_exercise_id,
-            'max_exercise_id'       => $max_exercise_id,
-            'advanced_percent'      => $advanced_percent,
-            'intermediate_percent'  => $intermediate_percent,
-        ]);
-        $this->assertTrue($value instanceof Value, 'Generated value must be an instance of Value');
+        foreach ([0, 1] as $isHidden) {
+            $database = [
+                'theme_id'              => mt_rand(1, 100),
+                'title'                 => $this->generateText(20),
+                'is_hidden'             => $isHidden,
+                'intro'                 => $this->generateText(200),
+                'min_exercise_id'       => $min_exercise_id,
+                'max_exercise_id'       => $max_exercise_id,
+                'advanced_percent'      => $advanced_percent,
+                'intermediate_percent'  => $intermediate_percent,
+            ];
+            $value = $type->fromDatabase($database);
+            $this->assertTrue($value instanceof Value, 'Generated value must be an instance of Value');
+
+            $presentation = $value->toDatabase();
+            $this->assertEquals($database, $presentation, 'Generated presentation differs from its origin');
+        }
     }
 }
