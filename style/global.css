@@ -46,6 +46,14 @@ div.exercise div.question {
     padding : 0 0 10px;
 }
 
+div.exercise div.row.not_answered {
+    background : #ccc;
+    font-weight : bold;
+    text-align : center;
+    padding-bottom : 0;
+    margin-bottom : 20px;
+}
+
 div.exercise div.row.variants button[name] {
     background : white;
     border : 0;
