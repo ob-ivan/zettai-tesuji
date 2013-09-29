@@ -15,7 +15,7 @@ class ExerciseTest extends AbstractCase
         $this->types            = $app['types'];
     }
 
-    public function testGetNewId_basic()
+    public function testGetNewId()
     {
         $newId = $this->exerciseEntity->getNewId();
         $this->assertGreaterThan(0, $newId, 'New id for exercise is not positive');
@@ -39,6 +39,32 @@ class ExerciseTest extends AbstractCase
             $this->exerciseEntity->delete($exercise->exercise_id);
             $exercise3 = $this->exerciseEntity->get($exercise->exercise_id);
             $this->assertEmpty($exercise3, 'Test exercise is not deleted');
+        }
+    }
+
+    public function testUpdate()
+    {
+        for ($i = 0; $i < 4; ++$i) {
+            $first = $this->generateExercise([
+                'isHidden'   => $i % 2,
+                'isAnswered' => $i > 1,
+            ]);
+
+            $this->exerciseEntity->set($first);
+
+            for ($j = 0; $j < 4; ++$j) {
+                $second = $this->generateExercise([
+                    'exerciseId' => $first->exercise_id,
+                    'isHidden'   => $i % 2,
+                    'isAnswered' => $i > 1,
+                ]);
+                $this->exerciseEntity->set($second);
+
+                $third = $this->exerciseEntity->get($first->exercise_id);
+                $this->assertEquals($second, $third, 'Retrieved exercise is not the same as stored one');
+            }
+
+            $this->exerciseEntity->delete($first->exercise_id);
         }
     }
 
