@@ -61,7 +61,9 @@ class Application extends BaseApplication
 
     private function registerModel()
     {
-        $this->register(new ModelServiceProvider());
+        $this->register(new ModelServiceProvider([
+            'model.prefix' => $this['debug'] ? 'dev_' : 'prod_',
+        ]));
     }
 
     private function registerMonolog()

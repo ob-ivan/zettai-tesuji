@@ -2,14 +2,22 @@
 /**
  * Model service provider.
  *
+ * Parameters:
+ *  [model.prefix]
+ *      A string added to each table name.
+ *      Intended to separate table namespaces, e.g.:
+ *          - 'prod_' for production,
+ *          - 'dev_'  for development,
+ *          - 'test_' for testing,
+ *          - and so on.
+ *      Defaults to empty string.
+ *
  * Dependencies:
  *  [config]
- *      Looks up for model.logger_enable config variable, and enables logginh
+ *      Looks up for model.logger_enable config variable, and enables logging
  *      to [monolog] if it is true.
  *  [db]
- *      Doctrine service.
- *  [debug]
- *      True when in development, false when in production.
+ *      Doctrine DBAL service.
  *  [monolog]
  *      Monolog service.
  *
@@ -32,7 +40,7 @@ class ModelServiceProvider implements ServiceProviderInterface
         $app['model'] = $app->share(function ($app) {
             return new Service(
                 $app['db'],
-                $app['debug'] ? '_test_' : ''
+                isset($app['model.prefix']) ? $app['model.prefix'] : ''
             );
         });
     }

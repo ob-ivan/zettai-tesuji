@@ -1,13 +1,15 @@
 <?php
 use Zettai\Application;
 
-class ModelTestCase extends \PHPUnit_Framework_TestCase
+class ModelTest extends \PHPUnit_Framework_TestCase
 {
     private $app;
 
     public function setUp()
     {
+        // TODO: Eliminate code reduplication with Zettai\Entity\*Test.
         $this->app = new Application(DOCUMENT_ROOT);
+        $app['model.prefix'] = 'test_';
         $this->app->boot();
     }
 

@@ -11,10 +11,9 @@ class ThemeTest extends AbstractCase
 
     public function setUp()
     {
+        // TODO: Eliminate code reduplication with ExerciseTest.
         $app = new Application(DOCUMENT_ROOT);
-
-        // TODO: Substitute [db] with a mock in-memory database.
-
+        $app['model.prefix'] = 'test_';
         $app->boot();
 
         $this->exerciseEntity   = $app['model']->exercise;
