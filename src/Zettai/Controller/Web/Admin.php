@@ -121,7 +121,7 @@ class Admin implements ControllerProviderInterface
             $exercise = $this->app['types']->exercise->fromForm([
                 'exercise_id'   => $request->request->get('exercise_id'),
                 'title'         => $request->request->get('title'),
-                'is_hidden'     => $request->request->get('is_hidden'),
+                'is_hidden'     => $request->request->get('is_hidden') === '1',
                 'content'       => $this->app['types']->exerciseContent->fromForm([
                     'kyoku'         => $request->request->get('kyoku'),
                     'position'      => $request->request->get('position'),
@@ -205,7 +205,6 @@ class Admin implements ControllerProviderInterface
             $exercise,
             $errors = []
         ) use (
-            $request,
             $exercise_id,
             $csrfKey
         ) {
