@@ -64,11 +64,12 @@ var ExercisePage = Class({
         this.sad  = options.sad;
     },
     _handle : function (element, event) {
-        var show = this._show;
-        var sad  = this.sad;
-        $.post(
-            this.ajaxPath,
-            {
+        var showAnswers = this._showAnswers;
+        var showSadness = this._showSadness;
+        $.ajax({
+            type     : 'POST',
+            url      : this.ajaxPath,
+            data     : {
                 csrf : this.csrf
             },
             /**
@@ -80,42 +81,46 @@ var ExercisePage = Class({
              *      exercise_next   : <string>, // Может отсутствовать.
              *  }
             **/
-            function (data, textStatus, jqXHR) {
+            success  : function (data, textStatus, jqXHR) {
                 // Если контроллер не принял входные данные, показать на экране, чем он недоволен.
                 if (typeof data.errors !== 'undefined') {
-                    var sadText = [];
+                    var sadTexts = [];
                     for (var i in data.errors) {
                         switch (data.errors[i]) {
                             case 'CSRF':
-                                sadText.push('Сессия устарела. Обновите, пожалуйста, страницу и попробуйте ещё раз.');
+                                sadTexts.push('Сессия устарела. Обновите, пожалуйста, страницу и попробуйте ещё раз.');
                                 break;
 
                             case 'EXERCISE:DOES_NOT_EXIST':
-                                sadText.push('Этой задачи больше не существует. Ничего не поделаешь.');
+                                sadTexts.push('Этой задачи больше не существует. Ничего не поделаешь.');
                                 break;
 
                             case 'EXERCISE:NOT_ANSWERED':
-                                sadText.push('Ответы к этой задаче ещё не опубликованы. Следите за обновлениями.');
+                                sadTexts.push('Ответы к этой задаче ещё не опубликованы. Следите за обновлениями.');
                                 break;
                         }
                     }
-                    var sadSpans = [];
-                    for (var i = 0; i < sadText.length; ++i) {
-                        sadSpans.push($('<div/>').addClass('message').text(sadText[i]))
-                    }
-                    sad.empty().append(sadSpans);
+                    showSadness(sadTexts);
                     return;
                 }
                 // Отобразить ответы и навигацию.
-                show(
+                showAnswers(
                     $(element).attr('name'),
                     data.answers,
                     data.best_answer,
                     data.exercise_next
                 );
             },
-            'json'
-        )
+            error    : function (jqXHR, textStatus, errorThrown) {
+                showSadness([
+                    'Что-то пошло не так во время выполнения запроса.',
+                    'textStatus = '  + textStatus,
+                    'errorThrown = ' + errorThrown,
+                    'Пожалуйста, сообщите об этом автору сайта.'
+                ]);
+            },
+            dataType : 'json'
+        })
     },
     /**
      * Показывает ответы и навигацию.
@@ -128,7 +133,7 @@ var ExercisePage = Class({
      *  @param  <abc>       best_answer
      *  @param  <string>    exercise_next   Optional.
     **/
-    _show : function (user_answer, answers, best_answer, exercise_next) {
+    _showAnswers : function (user_answer, answers, best_answer, exercise_next) {
 
         // Заполнить ответы.
         var letters = [best_answer];
@@ -161,6 +166,18 @@ var ExercisePage = Class({
         if (exercise_next) {
             this.next.attr('href', exercise_next).show();
         }
+    },
+    /**
+     * Displays sad messages.
+     *
+     *  @param  [ <string> ]    sadTexts
+    **/
+    _showSadness : function (sadTexts) {
+        var sadSpans = [];
+        for (var i = 0; i < sadTexts.length; ++i) {
+            sadSpans.push($('<div/>').addClass('message').text(sadTexts[i]))
+        }
+        this.sad.empty().append(sadSpans);
     }
 });
 

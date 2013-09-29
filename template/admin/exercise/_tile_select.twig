@@ -2,18 +2,18 @@
     Селектор фишек для формы редактирования задачи.
     Параметры:
         name    Имя переменной формы.
-        TILES   Перечисление всех возможных представлений Tile.
-        value   Представление Tile для выбранного значения.
+        TILES   Перечисление всех возможных значений типа tile.
+        value   Выбранное значение типа tile.
 #}
 <select name="{{ name }}">
     {% for tile in TILES %}
         <option
-            value="{{ tile }}"
+            value="{{ tile.toTenhou }}"
             {% if tile == value %}
                 selected
             {% endif %}
         >
-            {{ tile }}
+            {{ tile.toRussian }}
         </option>
     {% endfor %}
 </select>

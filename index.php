@@ -14,18 +14,16 @@ define ('DOCUMENT_ROOT', __DIR__);
 define ('AUTOLOAD_PATH',    DOCUMENT_ROOT . '/vendor/autoload.php');
 define ('DEPLOY_LOCK_PATH', DOCUMENT_ROOT . '/deploy.lock');
 define ('ERROR_DIR',        DOCUMENT_ROOT . '/error');
-define ('LOG_DIR',          DOCUMENT_ROOT . '/log');
 define ('TEMPLATE_DIR',     DOCUMENT_ROOT . '/template');
 
 // Зависимости.
 
 require_once AUTOLOAD_PATH;
-use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 
 // Инициализируем приложение.
 
-$app = new Zettai\Application(new Zettai\Config(DOCUMENT_ROOT));
+$app = new Zettai\Application(DOCUMENT_ROOT);
 
 $app['answer_compiler'] = $app->share(function () {
     return new Zettai\AnswerCompiler\Service();
@@ -33,18 +31,6 @@ $app['answer_compiler'] = $app->share(function () {
 $app['csrf'] = $app->share(function () use ($app) {
     return new Zettai\CsrfHandler($app['session']);
 });
-$app->register(new Silex\Provider\MonologServiceProvider(), [
-    'monolog.logfile'   => LOG_DIR . (
-        $app['debug']
-        ? '/debug.log'
-        : '/error.log'
-    ),
-    'monolog.level'     =>
-        $app['debug']
-        ? Logger::DEBUG
-        : Logger::ERROR,
-    'monolog.name'      => 'zettai-tesuji',
-]);
 $app->register(new Zettai\Provider\ParameterServiceProvider([
     'page' => [
         'assert'  => '\\d*',
@@ -100,7 +86,6 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Zettai\Provider\TwigServiceProvider(), [
     'twig.path' => TEMPLATE_DIR,
 ]);
-$app->register(new Zettai\Provider\TypeServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 // TODO: Научиться обращаться с валидатором.
 // $app->register(new Silex\Provider\ValidatorServiceProvider());

@@ -2,7 +2,9 @@
 <phpunit
     bootstrap="bootstrap.php"
     colors="true"
-    strict="true"
+    stopOnError="true"
+    stopOnFailure="true"
+    strict="false"
 >
     <testsuites>
         <testsuite>
