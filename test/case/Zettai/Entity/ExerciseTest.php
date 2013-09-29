@@ -7,7 +7,9 @@ class ExerciseTest extends AbstractCase
 {
     public function setUp()
     {
+        // TODO: Eliminate code reduplication with ThemeTest.
         $app = new Application(DOCUMENT_ROOT);
+        $app['model.prefix'] = 'test_';
         $app->boot();
 
         $this->exerciseEntity   = $app['model']->exercise;
