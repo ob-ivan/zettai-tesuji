@@ -40,7 +40,7 @@
                     type="checkbox"
                     name="is_hidden"
                     value="1"
-                    {% if exercise.is_hidden == 1 %}
+                    {% if exercise.is_hidden %}
                         checked
                     {% endif %}
                 />
@@ -112,7 +112,7 @@
             <label>
                 Публиковать ответы:
                 <input type="checkbox" name="is_answered" value="1"
-                    {% if exercise.content.is_answered %}
+                    {% if exercise.content.is_answered.toBoolean %}
                         checked
                     {% endif %}
                 />

@@ -25,20 +25,22 @@
             mode    : 'site',
         } only %}
         <div class="sad"></div>
-        <script>
-            $(function () {
-                new ExercisePage({
-                    ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
-                    answers     : $('div.answer'),
-                    buttons     : $('button[name]'),
-                    csrf        : '{{ csrf }}',
-                    hide        : $('div.variants'),
-                    show        : $('div.answers'),
-                    next        : $('p.links a.next'),
-                    sad         : $('div.sad'),
+        {% if exercise.content.is_answered.toBoolean %}
+            <script>
+                $(function () {
+                    new ExercisePage({
+                        ajaxPath    : "{{ path('site_exercise_answer', { exercise_id : exercise.exercise_id }) }}",
+                        answers     : $('div.answer'),
+                        buttons     : $('button[name]'),
+                        csrf        : '{{ csrf }}',
+                        hide        : $('div.variants'),
+                        show        : $('div.answers'),
+                        next        : $('p.links a.next'),
+                        sad         : $('div.sad'),
+                    });
                 });
-            });
-        </script>
+            </script>
+        {% endif %}
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
