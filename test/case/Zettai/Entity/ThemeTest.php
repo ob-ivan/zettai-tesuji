@@ -49,6 +49,14 @@ class ThemeTest extends AbstractCase
 
     // TODO: testGetList, testGetNextId, testGetPrevId
 
+    public function testGetList()
+    {
+        // [int => Value] getList(int $offset, int $limit, boolean $includeHidden = false)
+        // 1. Setup database.
+        // 2. Run a series of getList's
+        // 3. Cleanup.
+    }
+
     // private //
 
     /**
