@@ -1,3 +1,11 @@
+{#
+    admin/exercise/view
+
+    @param  Value   exercise
+    @param  integer prev
+    @param  integer next
+    @param  integer page
+#}
 {% extends 'admin/_layout.twig' %}
 
 {% block body %}
@@ -10,7 +18,7 @@
                 (скрыта)
             {% endif %}
         </h2>
-        
+
         {# Навигация на соседние задачи #}
         {% if prev or next %}
             <div>
@@ -27,19 +35,19 @@
                 <br/>
             </div>
         {% endif %}
-        
+
         {# Текст задачи #}
         {% include '_exercise_content.twig' with {
             content : exercise.content,
             mode    : 'admin',
         } only %}
-        
+
         {# Ссылка на редактирование #}
         <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : exercise.exercise_id }) }}">[редактировать]</a></p>
     {% else %}
         <p class="empty">Нет такой задачи</p>
     {% endif %}
-    
+
     {# Кнопки возврата #}
     <p>
         <a href="{{ path('admin_page') }}">[на главную]</a>
