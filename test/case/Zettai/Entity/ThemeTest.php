@@ -49,7 +49,7 @@ class ThemeTest extends AbstractCase
 
     private function generateTheme()
     {
-        $lastExerciseId         = $this->exerciseEntity->getNewId() - 1;
+        $lastExerciseId         = 100;
         $min_exercise_id        = mt_rand(1, $lastExerciseId);
         $max_exercise_id        = mt_rand($min_exercise_id, $lastExerciseId);
         $advanced_percent       = mt_rand(0, 100);
