@@ -27,7 +27,10 @@ class ExerciseTest extends AbstractCase
     public function testSetGetDelete()
     {
         for ($i = 0; $i < 4; ++$i) {
-            $exercise = $this->generateExercise($i % 2, $i >= 2);
+            $exercise = $this->generateExercise([
+                'isHidden'   => $i % 2,
+                'isAnswered' => $i > 1,
+            ]);
 
             $this->exerciseEntity->set($exercise);
             $exercise2 = $this->exerciseEntity->get($exercise->exercise_id);
@@ -61,15 +64,32 @@ class ExerciseTest extends AbstractCase
     /**
      * Generates a random exercise based on input parameters.
      *
-     *  @param  boolean $isHidden   Whether new exercise should be hidden.
-     *  @param  boolean $isAnswered Whether answers should be displayed.
-     *  @return Value               Belongs to $this->exerciseType.
+     *  @param  array   $parameters
+     *      Predefined values if needed.
+     *      Each parameter is optional and is filled with a random value if omitted.
+     *      [
+     *          'exerciseId'    => <integer>,
+     *          'isHidden'      => <boolean>,
+     *          'isAnswered'    => <boolean>,
+     *      ]
+     *
+     *  @return Value   Belongs to $this->exerciseType.
     **/
-    private function generateExercise($isHidden, $isAnswered)
+    private function generateExercise(array $parameters = [])
     {
-        $newExerciseId  = $this->exerciseEntity->getNewId() + mt_rand(10, 100);
+        $newExerciseId  = isset($parameters['exerciseId'])
+            ? $parameters['exerciseId']
+            : $this->exerciseEntity->getNewId() + mt_rand(10, 100);
+
+        $newIsHidden    = isset($parameters['isHidden'])
+            ? !! $parameters['isHidden']
+            : ! mt_rand(0, 1);
+
+        $isAnswered    = isset($parameters['isAnswered'])
+            ? !! $parameters['isAnswered']
+            : ! mt_rand(0, 1);
+
         $newTitle       = $this->generateText(30);
-        $newIsHidden    = !! $isHidden;
 
         // content //
 
@@ -80,7 +100,7 @@ class ExerciseTest extends AbstractCase
         $newScore       = $this->generateText(30);
         $newHand        = $this->types['tileSequence']->fromArray($this->generateTiles(13));
         $newDraw        = $this->types['tile']->random();
-        $newIsAnswered  = $this->types['boolean']->fromBoolean(!! $isAnswered);
+        $newIsAnswered  = $this->types['boolean']->fromBoolean($isAnswered);
         $newAnswer      = $this->generateAnswers();
         $newBestAnswer  = $this->types['abc']->random();
 
