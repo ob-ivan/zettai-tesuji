@@ -2,11 +2,11 @@
 namespace Zettai;
 
 use Monolog\Logger;
-use Silex\Provider\DoctrineServiceProvider,
-    Silex\Provider\MonologServiceProvider;
+use Silex\Provider\DoctrineServiceProvider;
+use Silex\Provider\MonologServiceProvider;
 use Silex\Application as BaseApplication;
-use Zettai\Provider\ModelServiceProvider,
-    Zettai\Provider\TypeServiceProvider;
+use Zettai\Provider\ModelServiceProvider;
+use Zettai\Provider\TypeServiceProvider;
 
 class Application extends BaseApplication
 {
