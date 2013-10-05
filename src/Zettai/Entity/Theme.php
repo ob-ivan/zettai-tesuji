@@ -35,13 +35,4 @@ class Theme extends HidableDictionary
     {
         return 'theme_id';
     }
-
-    protected function validateRecord(Value $record)
-    {
-        parent::validateRecord($record);
-
-        if (! (strlen($record->title) > 0)) {
-            throw new Exception('Theme title is empty', Exception::THEME_TITLE_EMPTY);
-        }
-    }
 }

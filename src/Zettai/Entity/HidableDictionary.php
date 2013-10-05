@@ -212,6 +212,7 @@ abstract class HidableDictionary extends Entity
         return [
             $this->getPrimaryKeyName(),
             'is_hidden',
+            'title',
         ];
     }
 
@@ -247,6 +248,9 @@ abstract class HidableDictionary extends Entity
         }
         if (! ($record->id > 0)) {
             throw new Exception('Id is empty', Exception::ID_EMPTY);
+        }
+        if (! (strlen($record->title) > 0)) {
+            throw new Exception('Title is empty', Exception::TITLE_EMPTY);
         }
     }
 }
