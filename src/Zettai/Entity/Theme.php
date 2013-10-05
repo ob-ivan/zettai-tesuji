@@ -1,27 +1,10 @@
 <?php
 namespace Zettai\Entity;
 
-use Ob_Ivan\Model\Entity;
-use Ob_Ivan\Model\Service;
-use Ob_Ivan\EviType\TypeInterface;
 use Ob_Ivan\EviType\Value;
 
-class Theme extends Entity
+class Theme extends HidableDictionary
 {
-    // const //
-
-    // TODO: Придумать, как это сделать лучше.
-    const VIEW_NAME = 'database';
-
-    // var //
-
-    /**
-     * Тип рекордов.
-     *
-     *  @var TypeInterface
-    **/
-    private $type;
-
     // public : EntityInterface //
 
     public function getTableName()
@@ -29,173 +12,27 @@ class Theme extends Entity
         return 'theme';
     }
 
-    // public : Entity //
+    // protected : HideableDictionary //
 
-    public function __construct(Service $service, TypeInterface $recordType)
+    protected function getDatabaseViewName()
     {
-        parent::__construct($service);
-
-        $this->type = $recordType;
+        return 'database';
     }
 
-    // public : Theme //
-
-    public function delete($theme_id)
+    protected function getFieldList()
     {
-        // prepare
-        $theme_id = intval($theme_id);
-
-        // validate
-        if (! ($theme_id > 0)) {
-            throw new Exception('Theme id is empty', Exception::THEME_ID_EMPTY);
-        }
-
-        // execute
-        $this->queryBuilder()->delete(['theme_id' => $theme_id]);
+        return array_merge(parent::getFieldList(), [
+            'title',
+            'intro',
+            'min_exercise_id',
+            'max_exercise_id',
+            'advanced_percent',
+            'intermediate_percent',
+        ]);
     }
 
-    /**
-     *  @param  integer $theme_id
-     *  @return Value
-    **/
-    public function get($theme_id)
+    protected function getPrimaryKeyName()
     {
-        // prepare
-        $theme_id  = intval($theme_id);
-
-        // validate
-        if (! ($theme_id > 0)) {
-            throw new Exception('Theme id is empty', Exception::THEME_ID_EMPTY);
-        }
-
-        // execute
-        $row = $this->queryBuilder_selectAll()
-        ->where(function($expression) {
-            return $expression->equals('theme_id', ':theme_id');
-        })
-        ->fetchAssoc(['theme_id' => $theme_id]);
-
-        // convert to record, if possible.
-        if (! $row) {
-            return null;
-        }
-        return $this->type->from(self::VIEW_NAME, $row);
-    }
-
-    public function getList($offset = 0, $limit = 20, $includeHidden = false)
-    {
-        // prepare
-        $offset = intval($offset);
-        $limit  = intval($limit);
-
-        // execute
-        $qb = $this->queryBuilder_selectAll()
-        ->orderBy('theme_id', 'ASC')
-        ->offset($offset)
-        ->limit($limit);
-        if (! $includeHidden) {
-            $qb->where(function ($expr) {
-                return $expr->equals('is_hidden', 0);
-            });
-        }
-        $rows = $qb->fetchAll();
-
-        // convert to records
-        $records = [];
-        foreach ($rows as $row) {
-            $records[] = $this->type->from(self::VIEW_NAME, $row);
-        }
-        return $records;
-    }
-
-    public function getNewId()
-    {
-        return $this->queryBuilder()
-        ->select(function ($expr) {
-            return $expr->max('theme_id');
-        })
-        ->fetchColumn() + 1;
-    }
-
-    public function getNextId($theme_id, $includeHidden = false)
-    {
-        return $this->queryBuilder()
-        ->select(function ($expr) {
-            return $expr->min('theme_id');
-        })
-        ->where(function ($expr) use ($includeHidden) {
-            $exprNext = $expr->greaterThan('theme_id', ':theme_id');
-            if (! $includeHidden) {
-                return $exprNext->addAnd($expr->equals('is_hidden', 0));
-            }
-            return $exprNext;
-        })
-        ->fetchColumn(['theme_id' => $theme_id]);
-    }
-
-    public function getPrevId($theme_id, $includeHidden = false)
-    {
-        return $this->queryBuilder()
-        ->select(function ($expr) {
-            return $expr->max('theme_id');
-        })
-        ->where(function ($expr) use ($includeHidden) {
-            $exprPrev = $expr->lessThan('theme_id', ':theme_id');
-            if (! $includeHidden) {
-                return $exprPrev->addAnd($expr->equals('is_hidden', 0));
-            }
-            return $exprPrev;
-        })
-        ->fetchColumn(['theme_id' => $theme_id]);
-    }
-
-    public function getPage($theme_id, $per_page, $includeHidden = false)
-    {
-        return $this->queryBuilder()
-        ->select(function ($expr) use ($per_page) {
-            return $expr->ceil($expr->divide($expr->count(), $per_page));
-        })
-        ->where(function ($expr) use ($includeHidden) {
-            $exprPrev = $expr->lessThanOrEqual('theme_id', ':theme_id');
-            if (! $includeHidden) {
-                return $exprPrev->addAnd($expr->equals('is_hidden', 0));
-            }
-            return $exprPrev;
-        })
-        ->fetchColumn(['theme_id' => $theme_id]);
-    }
-
-    public function set(Value $theme)
-    {
-        // validate
-        if (! $this->type->has($theme)) {
-            throw new Exception('Argument does not belong to type theme', Exception::THEME_SET_THEME_WRONG_TYPE);
-        }
-        if (! ($theme->theme_id > 0)) {
-            throw new Exception('Theme id is empty', Exception::THEME_ID_EMPTY);
-        }
-        if (! (strlen($theme->title) > 0)) {
-            throw new Exception('Theme title is empty', Exception::THEME_TITLE_EMPTY);
-        }
-
-        if ($this->get($theme->theme_id)) {
-            return $this->queryBuilder()->update($theme->to(self::VIEW_NAME), ['theme_id' => $theme->theme_id]);
-        }
-        return $this->queryBuilder()->insert($theme->to(self::VIEW_NAME));
-    }
-
-    // protected //
-
-    protected function queryBuilder_selectAll()
-    {
-        return $this->queryBuilder()
-        ->select('theme_id')
-        ->select('title')
-        ->select('is_hidden')
-        ->select('intro')
-        ->select('min_exercise_id')
-        ->select('max_exercise_id')
-        ->select('advanced_percent')
-        ->select('intermediate_percent');
+        return 'theme_id';
     }
 }
