@@ -181,13 +181,13 @@ abstract class HidableDictionary extends Entity
     public function set(Value $record)
     {
         $this->validateRecord($record);
-        $row = $record->to($this->getDatabaseViewName());
 
-        if ($this->get($record->id)) {
-            return $this->queryBuilder()->update(
-                $row,
-                [$this->getPrimaryKeyName() => $record->id]
-            );
+        $primary = $this->getPrimaryKeyName();
+        $id      = $record->{$primary};
+        $row     = $record->to($this->getDatabaseViewName());
+
+        if ($this->get($id)) {
+            return $this->queryBuilder()->update($row, [$primary => $id]);
         }
         return $this->queryBuilder()->insert($row);
     }
@@ -246,7 +246,7 @@ abstract class HidableDictionary extends Entity
         if (! $this->type->has($record)) {
             throw new Exception('Record does not belong to its type', Exception::RECORD_WRONG_TYPE);
         }
-        if (! ($record->id > 0)) {
+        if (! ($record->{$this->getPrimaryKeyName()} > 0)) {
             throw new Exception('Id is empty', Exception::ID_EMPTY);
         }
         if (! (strlen($record->title) > 0)) {
