@@ -44,6 +44,14 @@ class ExerciseTest extends AbstractCase
         }
     }
 
+    // TODO: testGetCount
+
+    public function testTruncate()
+    {
+        $this->exerciseEntity->truncate();
+        $this->assertEquals(0, $this->exerciseEntity->getCount(true), 'Table is not empty after truncate');
+    }
+
     public function testUpdate()
     {
         for ($i = 0; $i < 4; ++$i) {
