@@ -3,7 +3,7 @@ namespace Zettai\Entity;
 
 use Ob_Ivan\EviType\Value;
 
-class Theme extends HideableDictionary
+class Theme extends HidableDictionary
 {
     // public : EntityInterface //
 
