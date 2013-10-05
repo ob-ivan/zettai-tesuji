@@ -52,9 +52,40 @@ class ThemeTest extends AbstractCase
     public function testGetList()
     {
         // [int => Value] getList(int $offset, int $limit, boolean $includeHidden = false)
+
         // 1. Setup database.
-        // 2. Run a series of getList's
+        $themeHidden    = $this->generateTheme(['isHidden' => true]);
+        $this->themeEntity->set($themeHidden);
+
+        $themeNotHidden = $this->generateTheme(['isHidden' => false]);
+        $this->themeEntity->set($themeNotHidden);
+
+        $randomHidden   = ! mt_rand(0, 1);
+        $themeRandom    = $this->generateTheme(['isHidden' => $randomHidden]);
+        $this->themeEntity->set($themeRandom);
+        $arrayRandom = $randomHidden ? [] : [$themeRandom];
+
+        // 2. Run a series of getList's.
+        foreach ([
+            ['offset' => 0, 'limit' => 10, 'includeHidden' => true,  'expect' => [$themeHidden, $themeNotHidden, $themeRandom]],
+            ['offset' => 0, 'limit' => 10, 'includeHidden' => false, 'expect' => array_merge([$themeNotHidden], $arrayRandom)],
+            ['offset' => 1, 'limit' => 10, 'includeHidden' => true,  'expect' => [$themeNotHidden, $themeRandom]],
+            ['offset' => 1, 'limit' => 10, 'includeHidden' => false, 'expect' => [$arrayRandom]],
+            ['offset' => 0, 'limit' =>  1, 'includeHidden' => true,  'expect' => [$themeHidden]],
+            ['offset' => 0, 'limit' =>  1, 'includeHidden' => false, 'expect' => [$themeNotHidden]],
+            ['offset' => 1, 'limit' =>  1, 'includeHidden' => true,  'expect' => [$themeNotHidden]],
+            ['offset' => 1, 'limit' =>  1, 'includeHidden' => false, 'expect' => [$arrayRandom]],
+        ] as $data) {
+            $this->assertEquals(
+                $data['expect'],
+                $this->themeEntity->getList($data['offset'], $data['limit'], $data['includeHidden'])
+            );
+        }
+
         // 3. Cleanup.
+        $this->themeEntity->delete($themeHidden->theme_id);
+        $this->themeEntity->delete($themeNotHidden->theme_id);
+        $this->themeEntity->delete($themeRandom->theme_id);
     }
 
     // private //
