@@ -192,6 +192,11 @@ abstract class HidableDictionary extends Entity
         return $this->queryBuilder()->insert($row);
     }
 
+    public function truncate()
+    {
+        $this->queryBuilder()->truncate();
+    }
+
     // protected //
 
     /**
