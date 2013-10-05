@@ -15,7 +15,7 @@ use Ob_Ivan\Model\Service;
 use Ob_Ivan\EviType\TypeInterface;
 use Ob_Ivan\EviType\Value;
 
-abstract class AbstractDictionary extends Entity
+abstract class HidableDictionary extends Entity
 {
     /**
      * Record type.
