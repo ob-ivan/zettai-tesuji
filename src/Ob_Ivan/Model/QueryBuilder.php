@@ -100,6 +100,11 @@ class QueryBuilder
         $this->service->update($this->getTableName(), $data, $filter);
     }
 
+    public function truncate()
+    {
+        $this->service->truncate($this->getTableName());
+    }
+
     // private //
 
     private function buildQuery()

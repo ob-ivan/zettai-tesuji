@@ -93,6 +93,12 @@ class Service implements ServiceInterface
         return $this->db->update($tableName, $data, $filter);
     }
 
+    public function truncate($tableName)
+    {
+        // TODO: Escape tableName.
+        return $this->db->executeQuery('TRUNCATE ' . $tableName);
+    }
+
     // public : Service //
 
     public function __get($name)
