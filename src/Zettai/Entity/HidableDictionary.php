@@ -81,6 +81,20 @@ abstract class HidableDictionary extends Entity
         return $this->type->from($this->getDatabaseViewName(), $row);
     }
 
+    public function getCount($includeHidden = false)
+    {
+        $qb = $this->queryBuilder()
+        ->select(function($expression) {
+            return $expression->count($this->getPrimaryKeyName());
+        });
+        if (! $includeHidden) {
+            $qb->where(function($expr) {
+                return $expr->equals('is_hidden', 0);
+            });
+        }
+        return $qb->fetchColumn();
+    }
+
     public function getList($offset = 0, $limit = 20, $includeHidden = false)
     {
         // prepare
