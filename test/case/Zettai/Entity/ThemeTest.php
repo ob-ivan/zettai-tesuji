@@ -47,7 +47,54 @@ class ThemeTest extends AbstractCase
         }
     }
 
-    // TODO: testGetCount
+    public function testGetCount()
+    {
+        $countAll     = $this->themeEntity->getCount(true);
+        $countVisible = $this->themeEntity->getCount(false);
+
+        // Add hidden theme.
+        $hiddenTheme = $this->generateTheme(['isHidden' => true]);
+        $this->themeEntity->set($hiddenTheme);
+        $this->assertEquals(
+            1 + $countAll,
+            $this->themeEntity->getCount(true),
+            'Total count did not increase after a hidden theme was added'
+        );
+        $this->assertEquals(
+            $countVisible,
+            $this->themeEntity->getCount(false),
+            'Visible count increased after a hidden theme was added'
+        );
+
+        // Add visible theme.
+        $visibleTheme = $this->generateTheme(['isHidden' => false]);
+        $this->themeEntity->set($visibleTheme);
+        $this->assertEquals(
+            2 + $countAll,
+            $this->themeEntity->getCount(true),
+            'Total count did not increase after a visible theme was added'
+        );
+        $this->assertEquals(
+            1 + $countVisible,
+            $this->themeEntity->getCount(false),
+            'Visible count did not increase after a visible theme was added'
+        );
+
+        // Cleanup.
+        $this->themeEntity->delete($hiddenTheme->theme_id);
+        $this->themeEntity->delete($visibleTheme->theme_id);
+
+        $this->assertEquals(
+            $countAll,
+            $this->themeEntity->getCount(true),
+            'Total count did not restore after an added hidden theme was deleted'
+        );
+        $this->assertEquals(
+            $countVisible,
+            $this->themeEntity->getCount(false),
+            'Visible count did not restore after an added visible theme was deleted'
+        );
+    }
 
     public function testTruncate()
     {
@@ -55,7 +102,116 @@ class ThemeTest extends AbstractCase
         $this->assertEquals(0, $this->themeEntity->getCount(true), 'Table is not empty after truncate');
     }
 
-    // TODO: testGetList, testGetNextId, testGetPrevId
+    /**
+     * Test getList method.
+     *
+     * [int => Value] getList(int $offset, int $limit, boolean $includeHidden = false)
+    **/
+    public function testGetList()
+    {
+        // 0. Work with empty tables.
+        $this->themeEntity->truncate();
+
+        // 1. Setup database.
+        $themeHidden    = $this->generateTheme(['isHidden' => true]);
+        $this->themeEntity->set($themeHidden);
+
+        $themeNotHidden = $this->generateTheme(['isHidden' => false]);
+        $this->themeEntity->set($themeNotHidden);
+
+        $randomHidden   = ! mt_rand(0, 1);
+        $themeRandom    = $this->generateTheme(['isHidden' => $randomHidden]);
+        $this->themeEntity->set($themeRandom);
+        $arrayRandom = $randomHidden ? [] : [$themeRandom];
+
+        // 2. Run a series of getList's.
+        foreach ([
+            ['offset' => 0, 'limit' => 10, 'includeHidden' => true,  'expect' => [$themeHidden, $themeNotHidden, $themeRandom]],
+            ['offset' => 0, 'limit' => 10, 'includeHidden' => false, 'expect' => array_merge([$themeNotHidden], $arrayRandom)],
+            ['offset' => 1, 'limit' => 10, 'includeHidden' => true,  'expect' => [$themeNotHidden, $themeRandom]],
+            ['offset' => 1, 'limit' => 10, 'includeHidden' => false, 'expect' => $arrayRandom],
+            ['offset' => 0, 'limit' =>  1, 'includeHidden' => true,  'expect' => [$themeHidden]],
+            ['offset' => 0, 'limit' =>  1, 'includeHidden' => false, 'expect' => [$themeNotHidden]],
+            ['offset' => 1, 'limit' =>  1, 'includeHidden' => true,  'expect' => [$themeNotHidden]],
+            ['offset' => 1, 'limit' =>  1, 'includeHidden' => false, 'expect' => $arrayRandom],
+        ] as $data) {
+            $this->assertEquals(
+                $data['expect'],
+                $this->themeEntity->getList($data['offset'], $data['limit'], $data['includeHidden'])
+            );
+        }
+
+        // 3. Cleanup.
+        $this->themeEntity->delete($themeHidden->theme_id);
+        $this->themeEntity->delete($themeNotHidden->theme_id);
+        $this->themeEntity->delete($themeRandom->theme_id);
+    }
+
+    public function testGetNextId()
+    {
+        // 0. Work with empty tables.
+        $this->themeEntity->truncate();
+
+        // 1. Setup database.
+        $theme = $this->generateTheme();
+        $this->themeEntity->set($theme);
+
+        $themeHidden = $this->generateTheme(['isHidden' => true]);
+        $this->themeEntity->set($themeHidden);
+
+        $themeVisible = $this->generateTheme(['isHidden' => false]);
+        $this->themeEntity->set($themeVisible);
+
+        // 2. Run method.
+        $this->assertEquals(
+            $themeHidden->theme_id,
+            $this->themeEntity->getNextId($theme->theme_id, true),
+            'GetNextId does not return expected hidden theme'
+        );
+        $this->assertEquals(
+            $themeVisible->theme_id,
+            $this->themeEntity->getNextId($theme->theme_id, false),
+            'GetNextId does not return expected visible theme'
+        );
+
+        // 3. Cleanup.
+        $this->themeEntity->delete($themeHidden->theme_id);
+        $this->themeEntity->delete($themeVisible->theme_id);
+        $this->themeEntity->delete($theme->theme_id);
+    }
+
+    public function testGetPrevId()
+    {
+        // 0. Work with empty tables.
+        $this->themeEntity->truncate();
+
+        // 1. Setup database.
+        $themeVisible = $this->generateTheme(['isHidden' => false]);
+        $this->themeEntity->set($themeVisible);
+
+        $themeHidden = $this->generateTheme(['isHidden' => true]);
+        $this->themeEntity->set($themeHidden);
+
+        $theme = $this->generateTheme();
+        $this->themeEntity->set($theme);
+
+        // 2. Run method.
+        $this->assertEquals(
+            $themeHidden->theme_id,
+            $this->themeEntity->getPrevId($theme->theme_id, true),
+            'getPrevId does not return expected hidden theme'
+        );
+        $this->assertEquals(
+            $themeVisible->theme_id,
+            $this->themeEntity->getPrevId($theme->theme_id, false),
+            'getPrevId does not return expected visible theme'
+        );
+
+        // 3. Cleanup.
+        $this->themeEntity->delete($themeHidden->theme_id);
+        $this->themeEntity->delete($themeVisible->theme_id);
+        $this->themeEntity->delete($theme->theme_id);
+    }
 
     // private //
 
