@@ -12,15 +12,15 @@
 **/
 namespace Ob_Ivan\EviType\Sort\Product\View;
 
-use ArrayAccess,
-    Traversable;
-use Ob_Ivan\EviType\Exception as PackageException,
-    Ob_Ivan\EviType\InternalInterface,
-    Ob_Ivan\EviType\OptionsInterface,
-    Ob_Ivan\EviType\Value,
-    Ob_Ivan\EviType\ViewInterface;
-use Ob_Ivan\EviType\Sort\Product\Internal,
-    Ob_Ivan\EviType\Sort\Product\Options;
+use ArrayAccess;
+use Ob_Ivan\EviType\Exception as PackageException;
+use Ob_Ivan\EviType\InternalInterface;
+use Ob_Ivan\EviType\OptionsInterface;
+use Ob_Ivan\EviType\Sort\Product\Internal;
+use Ob_Ivan\EviType\Sort\Product\Options;
+use Ob_Ivan\EviType\Value;
+use Ob_Ivan\EviType\ViewInterface;
+use Traversable;
 
 class Associative implements ViewInterface
 {
