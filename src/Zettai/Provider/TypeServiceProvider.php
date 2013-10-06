@@ -212,11 +212,13 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'discard' => $service['tile'],
                 'comment' => $service['string'],
             ]);
-            return $type
-            ->view('json', $type->json([
+            $subviews = [
                 'discard' => 'tenhou',
                 'comment' => 'string',
-            ]))
+            ];
+            return $type
+            ->view('json', $type->json($subviews))
+            ->view('database', $type->associative($subviews))
             ->import('dummy', function () use ($service) {
                 return new ProductInternal([
                     'discard' => $service['tile']->fromTenhou('5z'),
@@ -235,6 +237,11 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'a' => 'json',
                 'b' => 'json',
                 'c' => 'json',
+            ]))
+            ->view('database', $type->associative([
+                'a' => 'database',
+                'b' => 'database',
+                'c' => 'database',
             ]))
             ->import('new', function () use ($service) {
                 $dummyAnswer = $service['answer']->fromDummy();
@@ -270,7 +277,7 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'hand'          => 'tenhou',
                 'draw'          => 'tenhou',
                 'is_answered'   => 'integer',
-                'answer'        => ['json', 'new'],
+                'answer'        => ['database', 'json', 'new'],
                 'best_answer'   => 'default',
             ];
             $type->view('form', $type->associative($subviews));
