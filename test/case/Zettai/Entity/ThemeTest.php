@@ -147,7 +147,40 @@ class ThemeTest extends AbstractCase
         $this->themeEntity->delete($themeRandom->theme_id);
     }
 
-    // TODO: testGetNextId, testGetPrevId
+    public function testGetNextId()
+    {
+        // 0. Work with empty tables.
+        $this->themeEntity->truncate();
+
+        // 1. Setup database.
+        $theme = $this->generateTheme();
+        $this->themeEntity->set($theme);
+
+        $themeHidden = $this->generateTheme(['isHidden' => true]);
+        $this->themeEntity->set($themeHidden);
+
+        $themeVisible = $this->generateTheme(['isHidden' => false]);
+        $this->themeEntity->set($themeVisible);
+
+        // 2. Run method.
+        $this->assertEquals(
+            $themeHidden->theme_id,
+            $this->themeEntity->getNextId($theme->theme_id, true),
+            'GetNextId does not return expected hidden theme'
+        );
+        $this->assertEquals(
+            $themeVisible->theme_id,
+            $this->themeEntity->getNextId($theme->theme_id, false),
+            'GetNextId does not return expected visible theme'
+        );
+
+        // 3. Cleanup.
+        $this->themeEntity->delete($themeHidden->theme_id);
+        $this->themeEntity->delete($themeVisible->theme_id);
+        $this->themeEntity->delete($theme->theme_id);
+    }
+
+    // TODO: testGetPrevId
 
     // private //
 
