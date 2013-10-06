@@ -102,11 +102,15 @@ class ThemeTest extends AbstractCase
         $this->assertEquals(0, $this->themeEntity->getCount(true), 'Table is not empty after truncate');
     }
 
-    // TODO: testGetList, testGetNextId, testGetPrevId
-
+    /**
+     * Test getList method.
+     *
+     * [int => Value] getList(int $offset, int $limit, boolean $includeHidden = false)
+    **/
     public function testGetList()
     {
-        // [int => Value] getList(int $offset, int $limit, boolean $includeHidden = false)
+        // 0. Work with empty tables.
+        $this->themeEntity->truncate();
 
         // 1. Setup database.
         $themeHidden    = $this->generateTheme(['isHidden' => true]);
@@ -142,6 +146,8 @@ class ThemeTest extends AbstractCase
         $this->themeEntity->delete($themeNotHidden->theme_id);
         $this->themeEntity->delete($themeRandom->theme_id);
     }
+
+    // TODO: testGetNextId, testGetPrevId
 
     // private //
 
