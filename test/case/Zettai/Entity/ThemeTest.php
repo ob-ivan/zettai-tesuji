@@ -47,6 +47,14 @@ class ThemeTest extends AbstractCase
         }
     }
 
+    // TODO: testGetCount
+
+    public function testTruncate()
+    {
+        $this->themeEntity->truncate();
+        $this->assertEquals(0, $this->themeEntity->getCount(true), 'Table is not empty after truncate');
+    }
+
     // TODO: testGetList, testGetNextId, testGetPrevId
 
     public function testGetList()
