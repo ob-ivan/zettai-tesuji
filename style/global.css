@@ -2,6 +2,7 @@
 /* _layout.twig */
 
 div.column {
+    float : left;
     width : 570px;
 }
 

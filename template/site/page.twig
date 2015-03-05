@@ -17,15 +17,9 @@
 {% block body %}
     <h2>Задачи</h2>
     {% if exerciseList %}
-        <ul>
-            {% for exercise in exerciseList %}
-                <li>
-                    <a href="{{ path('site_exercise', { 'exercise_id' : exercise.exercise_id }) }}">
-                        №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+        {% include 'site/_list.twig' with {
+            'exerciseList' : exerciseList,
+        } only %}
         {% include '_paginator.twig' with {
             'totalCount'    : exerciseCount,
             'perPage'       : perPage,
@@ -35,5 +29,14 @@
         } only %}
     {% else %}
         <p class="empty">Нет задач</p>
+    {% endif %}
+{% endblock %}
+
+{% block right %}
+    {% if recentList is defined and recentList %}
+        <h2>Свежие поступления</h2>
+        {% include 'site/_list.twig' with {
+            'exerciseList' : recentList,
+        } only %}
     {% endif %}
 {% endblock %}

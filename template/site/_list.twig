@@ -1,0 +1,14 @@
+{#
+    Шаблон для списка задач.
+    Параметры:
+        exerciseList    [Exercise]  Список задач для вывода на странице.
+#}
+<ul>
+    {% for exercise in exerciseList %}
+        <li>
+            <a href="{{ path('site_exercise', { 'exercise_id' : exercise.exercise_id }) }}">
+                №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
