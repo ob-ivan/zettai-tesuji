@@ -95,15 +95,16 @@ abstract class HidableDictionary extends Entity
         return $qb->fetchColumn();
     }
 
-    public function getList($offset = 0, $limit = 20, $includeHidden = false)
+    public function getList($offset = 0, $limit = 20, $includeHidden = false, $sortAsc = true)
     {
         // prepare
-        $offset = intval($offset);
-        $limit  = intval($limit);
+        $offset  = intval($offset);
+        $limit   = intval($limit);
+        $sortDir = $sortAsc ? 'ASC' : 'DESC';
 
         // execute
         $qb = $this->queryBuilder_selectAll()
-        ->orderBy($this->getPrimaryKeyName(), 'ASC')
+        ->orderBy($this->getPrimaryKeyName(), $sortDir)
         ->offset($offset)
         ->limit($limit);
         if (! $includeHidden) {
