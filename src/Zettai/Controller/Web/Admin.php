@@ -51,6 +51,24 @@ class Admin implements ControllerProviderInterface
         ->method('GET|POST')
         ->bind('admin_exercise_edit');
 
+        // Страница создания темы в админке.
+        $controllers->get('/theme/new', function () {
+            return $this->themeNew();
+        })
+        ->bind('admin_theme_new');
+
+        // Страница редактирования темы в админке.
+        $controllers->get('/theme/edit/{theme_id}', function ($theme_id) {
+            return $this->themeEdit($theme_id);
+        })
+        ->bind('admin_theme_edit');
+
+        // Контроллер сохранения темы в админке.
+        $controllers->post('/theme/save/{theme_id}', function ($theme_id) {
+            return $this->themeSave($theme_id);
+        })
+        ->bind('admin_theme_save');
+
         return $controllers;
     }
 
@@ -239,5 +257,13 @@ class Admin implements ControllerProviderInterface
 
         // Отобразить свежую форму для старой задачи.
         return $view($exercise);
+    }
+
+    private function themeNew()
+    {
+        $csrfKey = 'admin_theme_new';
+        return $this->app->render('admin/theme/theme_new.twig', [
+            'csrf' => $this->app['csrf']->generate($csrfKey),
+        ]);
     }
 }
