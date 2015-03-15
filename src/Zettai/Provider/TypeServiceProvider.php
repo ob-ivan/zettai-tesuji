@@ -353,6 +353,18 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'advanced_percent'      => ['integer', 'string'],
                 'intermediate_percent'  => ['integer', 'string'],
             ]));
+            $type->import('new', function ($presentation) use ($service) {
+                return new ProductInternal([
+                    'theme_id'              => $service['integer']  ->fromString    ($presentation),
+                    'title'                 => $service['string']   ->fromString    (''),
+                    'is_hidden'             => $service['boolean']  ->fromBoolean   (true),
+                    'intro'                 => $service['string']   ->fromString    (''),
+                    'min_exercise_id'       => $service['integer']  ->fromInteger   (0),
+                    'max_exercise_id'       => $service['integer']  ->fromInteger   (0),
+                    'advanced_percent'      => $service['integer']  ->fromInteger   (0),
+                    'intermediate_percent'  => $service['integer']  ->fromInteger   (0),
+                ]);
+            });
             // TODO: A shorter syntax.
             $type->getter('theme_id',               function ($internal) { return $internal->theme_id               ->toInteger(); });
             $type->getter('title',                  function ($internal) { return $internal->title                  ->toString (); });

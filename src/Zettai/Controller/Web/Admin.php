@@ -51,6 +51,12 @@ class Admin implements ControllerProviderInterface
         ->method('GET|POST')
         ->bind('admin_exercise_edit');
 
+        // Страница просмотра темы в админке.
+        $controllers->get('/theme/view/{theme_id}', function ($theme_id) {
+            return $this->themeView($theme_id);
+        })
+        ->bind('admin_theme_view');
+
         // Страница создания темы в админке.
         $controllers->get('/theme/new', function () {
             return $this->themeNew();
@@ -262,8 +268,9 @@ class Admin implements ControllerProviderInterface
     private function themeNew()
     {
         $csrfKey = 'admin_theme_new';
-        return $this->app->render('admin/theme/theme_new.twig', [
+        return $this->app->render('admin/theme/edit.twig', [
             'csrf' => $this->app['csrf']->generate($csrfKey),
+            'theme' => $this->app['types']->theme->fromNew($this->app['model']->theme->getNewId()),
         ]);
     }
 }
