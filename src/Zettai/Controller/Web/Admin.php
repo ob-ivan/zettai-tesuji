@@ -58,20 +58,20 @@ class Admin implements ControllerProviderInterface
         ->bind('admin_theme_view');
 
         // Страница создания темы в админке.
-        $controllers->get('/theme/new', function () {
+        $controllers->get('/theme/edit/new', function () {
             return $this->themeNew();
         })
         ->bind('admin_theme_new');
 
         // Страница редактирования темы в админке.
-        $controllers->get('/theme/edit/{theme_id}', function ($theme_id) {
-            return $this->themeEdit($theme_id);
+        $controllers->get('/theme/edit/{theme_id}', function (Request $request, $theme_id) {
+            return $this->themeEdit($request, $theme_id);
         })
         ->bind('admin_theme_edit');
 
         // Контроллер сохранения темы в админке.
-        $controllers->post('/theme/save/{theme_id}', function ($theme_id) {
-            return $this->themeSave($theme_id);
+        $controllers->post('/theme/save/{theme_id}', function (Request $request, $theme_id) {
+            return $this->themeSave($request, $theme_id);
         })
         ->bind('admin_theme_save');
 
@@ -119,7 +119,6 @@ class Admin implements ControllerProviderInterface
             $exercise,
             $errors
         ) use (
-            $request,
             $exercise_id
         ) {
             $formKey = md5(microtime(true));
@@ -265,12 +264,219 @@ class Admin implements ControllerProviderInterface
         return $view($exercise);
     }
 
+    private function themeView($theme_id)
+    {
+        $theme = $this->app['model']->theme->get($theme_id);
+        $prev = $this->app['model']->theme->getPrevId($theme_id, true);
+        $next = $this->app['model']->theme->getNextId($theme_id, true);
+        $page = $this->app['model']->theme->getPage($theme_id, self::PER_PAGE, true);
+        return $this->app->render('admin/theme/view.twig', [
+            'theme'  => $theme,
+            'prev'      => $prev,
+            'next'      => $next,
+            'page'      => $page,
+        ]);
+    }
+
     private function themeNew()
     {
-        $csrfKey = 'admin_theme_new';
-        return $this->app->render('admin/theme/edit.twig', [
-            'csrf' => $this->app['csrf']->generate($csrfKey),
-            'theme' => $this->app['types']->theme->fromNew($this->app['model']->theme->getNewId()),
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        $theme = $this->app['types']->theme->fromNew($this->app['model']->theme->getNewId());
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        $theme_id = 'new';
+        $csrfKey = $this->themeGetCsrfToken($theme_id);
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        return $this->themeViewForm($theme, [], $theme_id, $csrfKey);
+    }
+
+    private function themeSave(Request $request, $theme_id)
+    {
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        $errors = [];
+        $csrfKey = $this->themeGetCsrfToken($theme_id);
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        // Проверить csrf-токен.
+        if (! $this->app['csrf']->validate($request->request->get('csrf'), $csrfKey)) {
+            $errors[] = 'CSRF';
+        }
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        $theme = $this->app['types']->theme->fromForm([
+            'theme_id'              => $request->request->get('theme_id'),
+            'title'                 => $request->request->get('title'),
+            'is_hidden'             => $request->request->get('is_hidden') === '1',
+            'intro'                 => $request->request->get('intro'),
+            'min_exercise_id'       => $request->request->get('min_exercise_id'),
+            'max_exercise_id'       => $request->request->get('max_exercise_id'),
+            'advanced_percent'      => $request->request->get('advanced_percent'),
+            'intermediate_percent'  => $request->request->get('intermediate_percent'),
         ]);
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        if ($request->request->get('save')) {
+            // Попросили сохранить тему.
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Проверить поля.
+            // TODO: Прикрутить валидатор.
+            if (! preg_match ('/\\d{1,2}/', $theme->theme_id)) {
+                $errors[] = 'THEME_ID:NOT_A_NUMBER';
+            } else {
+                if (! ($theme->theme_id > 0)) {
+                    $errors[] = 'THEME_ID:NOT_POSITIVE';
+                } else {
+                    // Если новый номер не равен старому, то проверить, что темы с новым номером ещё не существует.
+                    if ($theme_id !== $theme->theme_id &&
+                        $this->app['model']->theme->get($theme->theme_id)
+                    ) {
+                        $errors[] = 'THEME_ID:ALREADY_EXISTS';
+                    }
+                }
+            }
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            if (empty($theme->title)) {
+                $errors[] = 'TITLE:EMPTY';
+            }
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            if (empty($theme->intro)) {
+                $errors[] = 'INTRO:EMPTY';
+            }
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Если есть ошибки, редиректнуть на форму и показать ошибки.
+            if (! empty($errors)) {
+                return $this->themeRedirect($theme, $errors, $theme_id);
+            }
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Создать тему.
+            $this->app['model']->theme->set($theme);
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Если старый номер не равен new, то после создания нового надо удалить старое.
+            if ($theme_id !== 'new' && $theme_id !== $theme->theme_id) {
+                $this->app['model']->theme->delete($theme_id);
+            }
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Показать новую тему в админке.
+            return $this->app->redirect(
+                $this->app['url_generator']->generate(
+                    'admin_theme_view',
+                    ['theme_id' => $theme->theme_id]
+                )
+            );
+        } elseif ($request->request->get('delete')) {
+            // Попросили удалить тему.
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Если есть ошибки, редиректнуть на форму и показать ошибки.
+            if (! empty($errors)) {
+                return $this->themeRedirect($theme, $errors, $theme_id);
+            }
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Заранее посчитать, на какую страницу потом перенаправить пользователя.
+            $page = $this->app['model']->theme->getPage($theme_id, self::PER_PAGE, true);
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Удалить задачу.
+            $this->app['model']->theme->delete($theme_id);
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
+            // Показать список задач.
+            return $this->app->redirect(
+                $this->app['url_generator']->generate('admin_page', ['page' => $page])
+            );
+        }
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+    }
+
+    private function themeEdit(Request $request, $theme_id)
+    {
+        $csrfKey = $this->themeGetCsrfToken($theme_id);
+
+        // Отобразить старую форму после редиректа.
+        $formKey = $request->query->get('formKey');
+        if ($formKey) {
+            $data = $this->app['session']->get($formKey);
+            return $this->themeViewForm($data['theme'], $data['errors'], $theme_id, $csrfKey);
+        }
+
+        // Отобразить свежую форму для новой задачи.
+        if ($theme_id === 'new') {
+            return $this->themeViewForm(
+                $this->app['types']->theme->fromNew($this->app['model']->theme->getNewId()),
+                [],
+                $theme_id,
+                $csrfKey
+            );
+        }
+
+        // Существует ли запрошенная задача?
+        $theme = $this->app['model']->theme->get($theme_id);
+        if (! $theme) {
+            return $this->themeViewForm(null, ['THEME:DOES_NOT_EXIST'], $theme_id, $csrfKey);
+        }
+
+        // Отобразить свежую форму для старой задачи.
+        return $this->themeViewForm($theme, [], $theme_id, $csrfKey);
+    }
+
+    private function themeViewForm($theme, $errors, $theme_id, $csrfKey)
+    {
+        return $this->app->render('admin/theme/edit.twig', [
+            'theme_id'  => $theme_id,
+            'csrf'      => $this->app['csrf']->generate($csrfKey),
+            'theme'     => $theme,
+            'errors'    => $errors,
+        ]);
+    }
+
+    private function themeGetCsrfToken($theme_id)
+    {
+        return 'admin_theme_edit_' . $theme_id;
+    }
+
+    private function themeRedirect($theme, $errors, $theme_id)
+    {
+        $formKey = md5(microtime(true));
+        $this->app['session']->set($formKey, [
+            'theme'  => $theme,
+            'errors' => $errors,
+        ]);
+        return $this->app->redirect(
+            $this->app['url_generator']->generate('admin_theme_edit', ['theme_id' => $theme_id]) .
+            '?formKey=' . $formKey
+        );
+    }
+
+    private function log($message)
+    {
+        $this->app['monolog']->addInfo($message);
     }
 }

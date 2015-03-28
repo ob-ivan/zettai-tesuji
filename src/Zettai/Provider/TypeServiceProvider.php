@@ -353,6 +353,16 @@ class TypeServiceProvider implements ServiceProviderInterface
                 'advanced_percent'      => ['integer', 'string'],
                 'intermediate_percent'  => ['integer', 'string'],
             ]));
+            $type->view('form', $type->associative([
+                'theme_id'              => 'string',
+                'title'                 => 'string',
+                'is_hidden'             => 'integer',
+                'intro'                 => 'string',
+                'min_exercise_id'       => ['integer', 'string'],
+                'max_exercise_id'       => ['integer', 'string'],
+                'advanced_percent'      => ['integer', 'string'],
+                'intermediate_percent'  => ['integer', 'string'],
+            ]));
             $type->import('new', function ($presentation) use ($service) {
                 return new ProductInternal([
                     'theme_id'              => $service['integer']  ->fromString    ($presentation),

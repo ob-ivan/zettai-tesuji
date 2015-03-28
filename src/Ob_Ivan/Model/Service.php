@@ -60,20 +60,32 @@ class Service implements ServiceInterface
 
     public function fetchAll($query, array $parameters)
     {
-        $this->logQuery(__METHOD__, $query, $parameters);
-        return $this->db->fetchAll($query, $parameters);
+        return $this->runTimedQuery(
+            [$this->db, 'fetchAll'],
+            __METHOD__,
+            $query,
+            $parameters
+        );
     }
 
     public function fetchAssoc($query, array $parameters)
     {
-        $this->logQuery(__METHOD__, $query, $parameters);
-        return $this->db->fetchAssoc($query, $parameters);
+        return $this->runTimedQuery(
+            [$this->db, 'fetchAssoc'],
+            __METHOD__,
+            $query,
+            $parameters
+        );
     }
 
     public function fetchColumn($query, array $parameters)
     {
-        $this->logQuery(__METHOD__, $query, $parameters);
-        return $this->db->fetchColumn($query, $parameters);
+        return $this->runTimedQuery(
+            [$this->db, 'fetchColumn'],
+            __METHOD__,
+            $query,
+            $parameters
+        );
     }
 
     // public : ServiceInterface : modify //
@@ -120,10 +132,23 @@ class Service implements ServiceInterface
 
     // private //
 
-    private function logQuery($method, $query, array $parameters)
+    private function runTimedQuery(callable $execute, $label, $query, $parameters)
+    {
+        $start = microtime(true);
+        $return = $execute($query, $parameters);
+        $this->logQuery($label, $query, $parameters, microtime(true) - $start);
+        return $return;
+    }
+
+    private function logQuery($method, $query, array $parameters, $duration = null)
     {
         if ($this->logger) {
-            $this->logger->addInfo($method . ': query = ' . $query . '; parameters = ' . var_export($parameters, true));
+            $message = $method . ': query = ' . $query . '; parameters = ' . var_export($parameters, true);
+            if ($duration !== null)
+            {
+                $message .= '; duration = ' . sprintf('%.2f', $duration) . ' sec';
+            }
+            $this->logger->addInfo($message);
         }
     }
 }
