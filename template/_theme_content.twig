@@ -1,0 +1,22 @@
+{#
+    Красивый вывод темы.
+    Параметры:
+        content
+            intro
+            min_exercise_id
+            max_exercise_id
+            advanced_percent
+            intermediate_percent
+#}
+<div class="theme">
+    <div>{{ content.intro }}</div>
+    <div>
+        Задачи от {{ content.min_exercise_id }} до {{ content.max_exercise_id }}.
+    </div>
+    <div>
+        Доля правильных ответов для продвинутого игрока: {{ content.advanced_percent }}%
+    </div>
+    <div>
+        Доля правильных ответов для среднего игрока: {{ content.intermediate_percent }}%
+    </div>
+</div>

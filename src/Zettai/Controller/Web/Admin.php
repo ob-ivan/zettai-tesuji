@@ -67,11 +67,17 @@ class Admin implements ControllerProviderInterface
         $controllers->get('/theme/edit/{theme_id}', function (Request $request, $theme_id) {
             return $this->themeEdit($request, $theme_id);
         })
+        ->convert('theme_id', function ($theme_id) {
+            return $this->convertThemeId($theme_id);
+        })
         ->bind('admin_theme_edit');
 
         // Контроллер сохранения темы в админке.
         $controllers->post('/theme/save/{theme_id}', function (Request $request, $theme_id) {
             return $this->themeSave($request, $theme_id);
+        })
+        ->convert('theme_id', function ($theme_id) {
+            return $this->convertThemeId($theme_id);
         })
         ->bind('admin_theme_save');
 
@@ -337,6 +343,10 @@ class Admin implements ControllerProviderInterface
                     $errors[] = 'THEME_ID:NOT_POSITIVE';
                 } else {
                     // Если новый номер не равен старому, то проверить, что темы с новым номером ещё не существует.
+
+                    $this->log(__METHOD__ . ':' . __LINE__ . ': $theme_id = ' . var_export($theme_id, true));
+                    $this->log(__METHOD__ . ':' . __LINE__ . ': $theme->theme_id = ' . var_export($theme->theme_id, true));
+
                     if ($theme_id !== $theme->theme_id &&
                         $this->app['model']->theme->get($theme->theme_id)
                     ) {
@@ -361,6 +371,10 @@ class Admin implements ControllerProviderInterface
 
             // Если есть ошибки, редиректнуть на форму и показать ошибки.
             if (! empty($errors)) {
+
+                $this->log(__METHOD__ . ':' . __LINE__ . ': count($errors) = ' . count($errors));
+                $this->log(__METHOD__ . ':' . __LINE__ . ': $errors = ' . var_export($errors, true));
+
                 return $this->themeRedirect($theme, $errors, $theme_id);
             }
 
@@ -418,12 +432,25 @@ class Admin implements ControllerProviderInterface
 
     private function themeEdit(Request $request, $theme_id)
     {
+        $this->log(__METHOD__ . ':' . __LINE__);
+
         $csrfKey = $this->themeGetCsrfToken($theme_id);
+
+        $this->log(__METHOD__ . ':' . __LINE__);
 
         // Отобразить старую форму после редиректа.
         $formKey = $request->query->get('formKey');
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
         if ($formKey) {
+
+            $this->log(__METHOD__ . ':' . __LINE__);
+
             $data = $this->app['session']->get($formKey);
+
+            $this->log(__METHOD__ . ':' . __LINE__ . ': data = ' . var_export($data, true));
+
             return $this->themeViewForm($data['theme'], $data['errors'], $theme_id, $csrfKey);
         }
 
@@ -449,6 +476,8 @@ class Admin implements ControllerProviderInterface
 
     private function themeViewForm($theme, $errors, $theme_id, $csrfKey)
     {
+        $this->log(__METHOD__ . ':' . __LINE__);
+
         return $this->app->render('admin/theme/edit.twig', [
             'theme_id'  => $theme_id,
             'csrf'      => $this->app['csrf']->generate($csrfKey),
@@ -464,19 +493,37 @@ class Admin implements ControllerProviderInterface
 
     private function themeRedirect($theme, $errors, $theme_id)
     {
+        $this->log(__METHOD__ . ':' . __LINE__);
+
         $formKey = md5(microtime(true));
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
         $this->app['session']->set($formKey, [
             'theme'  => $theme,
             'errors' => $errors,
         ]);
-        return $this->app->redirect(
-            $this->app['url_generator']->generate('admin_theme_edit', ['theme_id' => $theme_id]) .
-            '?formKey=' . $formKey
-        );
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        $url = $this->app['url_generator']->generate('admin_theme_edit', ['theme_id' => $theme_id]) .
+            '?formKey=' . $formKey;
+
+        $this->log(__METHOD__ . ':' . __LINE__);
+
+        return $this->app->redirect($url);
     }
 
     private function log($message)
     {
         $this->app['monolog']->addInfo($message);
+    }
+
+    private function convertThemeId ($theme_id) {
+        $theme_id = intval($theme_id);
+        if ($theme_id < 1) {
+            throw new Exception('Theme id must be positive integer');
+        }
+        return $theme_id;
     }
 }
