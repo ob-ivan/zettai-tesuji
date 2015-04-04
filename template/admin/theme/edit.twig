@@ -1,0 +1,69 @@
+{% extends 'admin/_layout.twig' %}
+
+{% block body %}
+    <h2>Редактирование темы</h2>
+    {% if errors %}
+        <ul class="error">
+            {% for error in errors %}
+                <li>
+                    {% if error == 'CSRF' %}
+                        Попытка взлома.
+                    {% else %}
+                        Ошибка {{ error }}.
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if theme is not null %}
+        <form
+            id="admin_theme_edit"
+            action="{{ path('admin_theme_save', { 'theme_id' : theme_id }) }}"
+            method="post"
+        >
+            <input type="hidden" name="csrf" value="{{ csrf }}"/>
+            <p>
+                <label>№<input name="theme_id" required value="{{ theme.theme_id }}" maxlength="3"/>.</label>
+                <input name="title" required value="{{ theme.title }}"/>
+                <label>
+                    <input
+                        type="checkbox"
+                        name="is_hidden"
+                        value="1"
+                        {% if theme.is_hidden %}
+                            checked
+                        {% endif %}
+                    />
+                    (скрыта)
+                </label>
+            </p>
+            <p>
+                <label>
+                    <span>Описание:</span>
+                    <textarea class="intro" name="intro">
+                        {{- theme.intro -}}
+                    </textarea>
+                </label>
+            </p>
+            <p><label>Первая задача: <input name="min_exercise_id" required value="{{ theme.min_exercise_id }}"/></label></p>
+            <p><label>Последняя задача: <input name="max_exercise_id" required value="{{ theme.max_exercise_id }}"/></label></p>
+            <p><label>Доля задач для продвинутого: <input name="advanced_percent" required value="{{ theme.advanced_percent }}"/></label></p>
+            <p><label>Доля задач для среднего: <input name="intermediate_percent" required value="{{ theme.intermediate_percent }}"/></label></p>
+            <p>
+                <input type="submit" name="save" value="Сохранить"/>
+                {% if theme.theme_id == 'new' %}
+                    {% set cancel = path('admin_page') %}
+                {% else %}
+                    {% set cancel = path('admin_theme_view', { 'theme_id' : theme.theme_id }) %}
+                {% endif %}
+                <input type="button" onclick="location = '{{ cancel }}'" value="Отмена"/>
+                {% if theme.theme_id != 'new' %}
+                    <input
+                        type="submit" name="delete" value="Удалить"
+                        onclick="return window.confirm('После удаления тема не может быть восстановлена.\n\nУдалить задачу?')"
+                    />
+                {% endif %}
+            </p>
+        </form>
+    {% endif %}
+{% endblock %}

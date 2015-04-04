@@ -1,0 +1,55 @@
+{#
+    admin/theme/view
+
+    @param  Value   theme
+    @param  integer prev
+    @param  integer next
+    @param  integer page
+#}
+{% extends 'admin/_layout.twig' %}
+
+{% block body %}
+    {% if theme %}
+        {# Заголовок темы #}
+        <h2>
+            Тема №{{ theme.theme_id|lpad('0', 2) }}.
+            {{ theme.title }}
+            {% if theme.is_hidden %}
+                (скрыта)
+            {% endif %}
+        </h2>
+
+        {# Навигация на соседние темы #}
+        {% if prev or next %}
+            <div>
+                {% if prev %}
+                    <div class="prev">
+                        <a href="{{ path('admin_theme_view', { 'theme_id' : prev }) }}">[предыдущая]</a>
+                    </div>
+                {% endif %}
+                {% if next %}
+                    <div class="next">
+                        <a href="{{ path('admin_theme_view', { 'theme_id' : next }) }}">[следующая]</a>
+                    </div>
+                {% endif %}
+                <br/>
+            </div>
+        {% endif %}
+
+        {# Текст темы #}
+        {% include '_theme_content.twig' with {
+            content : theme,
+        } only %}
+
+        {# Ссылка на редактирование #}
+        <p><a href="{{ path('admin_theme_edit', { 'theme_id' : theme.theme_id }) }}">[редактировать]</a></p>
+    {% else %}
+        <p class="empty">Нет такой задачи</p>
+    {% endif %}
+
+    {# Кнопки возврата #}
+    <p>
+        <a href="{{ path('admin_page') }}">[на главную]</a>
+        <a href="{{ path('admin_page', { 'page' : page }) }}">[к списку тем]</a>
+    </p>
+{% endblock %}
