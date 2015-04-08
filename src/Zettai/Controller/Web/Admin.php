@@ -288,6 +288,22 @@ class Admin implements ControllerProviderInterface
         return $view($exercise);
     }
 
+    private function themePage($page)
+    {
+        $themeCount = $this->app['model']->theme->getCount(true);
+        if (($page - 1) * self::PER_PAGE > $themeCount) {
+            return $this->app->redirect($this->app['url_generator']->generate('admin_theme_page', ['page' => 1]));
+        }
+        $themeList = $this->app['model']->theme->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
+
+        return $this->app->render('admin/theme/page.twig', [
+            'themeList'  => $themeList,
+            'themeCount' => $themeCount,
+            'curPage'    => $page,
+            'perPage'    => self::PER_PAGE,
+        ]);
+    }
+
     private function themeView($theme_id)
     {
         $theme = $this->app['model']->theme->get($theme_id);

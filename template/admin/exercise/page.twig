@@ -25,5 +25,8 @@
     {% else %}
         <p class="empty">Нет задач</p>
     {% endif %}
-    <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : 'new' }) }}">[Создать задачу]</a></p>
+    <p>
+        <a href="{{ path('admin_main') }}">[на главную]</a>
+        <a href="{{ path('admin_exercise_edit', { 'exercise_id' : 'new' }) }}">[Создать задачу]</a>
+    </p>
 {% endblock %}

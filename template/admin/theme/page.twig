@@ -1,0 +1,35 @@
+{#
+    admin/theme/page
+#}
+{% extends 'admin/_layout.twig' %}
+
+{% block body %}
+    <h2>Темы</h2>
+    {% if themeList %}
+        <ul>
+            {% for theme in themeList %}
+                <li>
+                    <a href="{{ path('admin_theme_view', { 'theme_id' : theme.theme_id }) }}">
+                        №{{ theme.theme_id|lpad('0', 3) }}. {{ theme.title }}
+                    </a>
+                    {% if theme.is_hidden %}
+                        (скрыта)
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% include '_paginator.twig' with {
+            'totalCount'    : themeCount,
+            'perPage'       : perPage,
+            'curPage'       : curPage,
+            'adjacentPages' : 5,
+            'linkTemplate'  : 'admin_theme_page'
+        } only %}
+    {% else %}
+        <p class="empty">Нет тем</p>
+    {% endif %}
+    <p>
+        <a href="{{ path('admin_main') }}">[на главную]</a>
+        <a href="{{ path('admin_theme_edit', { 'theme_id' : 'new' }) }}">[Создать тем]</a>
+    </p>
+{% endblock %}
