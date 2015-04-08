@@ -30,7 +30,7 @@ class Admin implements ControllerProviderInterface
             }),
             ['page' => 'page']
         )
-        ->bind('admin_page');
+        ->bind('admin_exercise_page');
 
         // Страница просмотра задачи в админке.
         $app['parameter']->setParameters(
@@ -90,7 +90,7 @@ class Admin implements ControllerProviderInterface
     {
         $exerciseCount = $this->app['model']->exercise->getCount(true);
         if (($page - 1) * self::PER_PAGE > $exerciseCount) {
-            return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => 1]));
+            return $this->app->redirect($this->app['url_generator']->generate('admin_exercise_page', ['page' => 1]));
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
 
@@ -224,7 +224,7 @@ class Admin implements ControllerProviderInterface
 
                 // Показать список задач.
                 return $this->app->redirect(
-                    $this->app['url_generator']->generate('admin_page', ['page' => $page])
+                    $this->app['url_generator']->generate('admin_exercise_page', ['page' => $page])
                 );
             }
         }
@@ -423,7 +423,7 @@ class Admin implements ControllerProviderInterface
 
             // Показать список задач.
             return $this->app->redirect(
-                $this->app['url_generator']->generate('admin_page', ['page' => $page])
+                $this->app['url_generator']->generate('admin_exercise_page', ['page' => $page])
             );
         }
 

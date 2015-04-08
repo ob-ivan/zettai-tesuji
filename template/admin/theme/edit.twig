@@ -52,7 +52,7 @@
             <p>
                 <input type="submit" name="save" value="Сохранить"/>
                 {% if theme.theme_id == 'new' %}
-                    {% set cancel = path('admin_page') %}
+                    {% set cancel = path('admin_exercise_page') %}
                 {% else %}
                     {% set cancel = path('admin_theme_view', { 'theme_id' : theme.theme_id }) %}
                 {% endif %}
