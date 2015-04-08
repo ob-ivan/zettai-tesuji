@@ -24,8 +24,14 @@ class Admin implements ControllerProviderInterface
         $controllers = $app['controllers_factory'];
 
         // Главная страница админки.
+        $controllers->get('/', function () {
+            return $this->main();
+        })
+        ->bind('admin_main');
+
+        // Список задач.
         $app['parameter']->setParameters(
-            $controllers->get('/{page}', function ($page) {
+            $controllers->get('/exercise/{page}', function ($page) {
                 return $this->exercisePage($page);
             }),
             ['page' => 'page']
@@ -50,6 +56,13 @@ class Admin implements ControllerProviderInterface
         )
         ->method('GET|POST')
         ->bind('admin_exercise_edit');
+
+        // Список тем.
+        $controllers->get('/theme/{page}', function ($page) {
+            return $this->themePage($page);
+        })
+        ->value('page', 1)
+        ->bind('admin_theme_page');
 
         // Страница просмотра темы в админке.
         $controllers->get('/theme/view/{theme_id}', function ($theme_id) {
@@ -85,6 +98,11 @@ class Admin implements ControllerProviderInterface
     }
 
     // private : controllers //
+
+    private function main()
+    {
+        return $this->app->render('admin/main.twig');
+    }
 
     private function exercisePage($page)
     {

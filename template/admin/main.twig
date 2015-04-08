@@ -1,0 +1,17 @@
+{#
+    admin/main
+#}
+{% extends 'admin/_layout.twig' %}
+
+{% block body %}
+    <h2>Разделы</h2>
+    <ul>
+        <li>
+            <a href="{{ path('admin_exercise_page') }}">Задачи</a>
+        </li>
+        <li>
+            <a href="{{ path('admin_theme_page') }}">Темы</a>
+        </li>
+    </ul>
+{% endblock %}
+
