@@ -12,7 +12,7 @@
     {% if theme %}
         {# Заголовок темы #}
         <h2>
-            Тема №{{ theme.theme_id|lpad('0', 2) }}.
+            Тема №{{ theme.theme_id }}.
             {{ theme.title }}
             {% if theme.is_hidden %}
                 (скрыта)
