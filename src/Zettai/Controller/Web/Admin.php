@@ -26,7 +26,7 @@ class Admin implements ControllerProviderInterface
         // Главная страница админки.
         $app['parameter']->setParameters(
             $controllers->get('/{page}', function ($page) {
-                return $this->page($page);
+                return $this->exercisePage($page);
             }),
             ['page' => 'page']
         )
@@ -86,7 +86,7 @@ class Admin implements ControllerProviderInterface
 
     // private : controllers //
 
-    private function page ($page)
+    private function exercisePage($page)
     {
         $exerciseCount = $this->app['model']->exercise->getCount(true);
         if (($page - 1) * self::PER_PAGE > $exerciseCount) {
@@ -94,7 +94,7 @@ class Admin implements ControllerProviderInterface
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
 
-        return $this->app->render('admin/main.twig', [
+        return $this->app->render('admin/exercise/page.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
             'curPage'       => $page,
