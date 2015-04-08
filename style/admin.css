@@ -17,7 +17,7 @@ div.next {
 
 /* Редактирование задачи */
 
-input[name=exercise_id] {
+input[name=exercise_id], input[name=theme_id] {
     width: 3.5ex;
 }
 
@@ -29,7 +29,7 @@ input[name=title] {
     width: 30ex;
 }
 
-textarea.answer {
+textarea.answer, textarea.intro {
     width : 560px;
     height: 7em;
 }
