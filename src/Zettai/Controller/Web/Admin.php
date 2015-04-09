@@ -24,13 +24,19 @@ class Admin implements ControllerProviderInterface
         $controllers = $app['controllers_factory'];
 
         // Главная страница админки.
+        $controllers->get('/', function () {
+            return $this->main();
+        })
+        ->bind('admin_main');
+
+        // Список задач.
         $app['parameter']->setParameters(
-            $controllers->get('/{page}', function ($page) {
-                return $this->page($page);
+            $controllers->get('/exercise/{page}', function ($page) {
+                return $this->exercisePage($page);
             }),
             ['page' => 'page']
         )
-        ->bind('admin_page');
+        ->bind('admin_exercise_page');
 
         // Страница просмотра задачи в админке.
         $app['parameter']->setParameters(
@@ -50,6 +56,13 @@ class Admin implements ControllerProviderInterface
         )
         ->method('GET|POST')
         ->bind('admin_exercise_edit');
+
+        // Список тем.
+        $controllers->get('/theme/{page}', function ($page) {
+            return $this->themePage($page);
+        })
+        ->value('page', 1)
+        ->bind('admin_theme_page');
 
         // Страница просмотра темы в админке.
         $controllers->get('/theme/view/{theme_id}', function ($theme_id) {
@@ -86,15 +99,20 @@ class Admin implements ControllerProviderInterface
 
     // private : controllers //
 
-    private function page ($page)
+    private function main()
+    {
+        return $this->app->render('admin/main.twig');
+    }
+
+    private function exercisePage($page)
     {
         $exerciseCount = $this->app['model']->exercise->getCount(true);
         if (($page - 1) * self::PER_PAGE > $exerciseCount) {
-            return $this->app->redirect($this->app['url_generator']->generate('admin_page', ['page' => 1]));
+            return $this->app->redirect($this->app['url_generator']->generate('admin_exercise_page', ['page' => 1]));
         }
         $exerciseList = $this->app['model']->exercise->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
 
-        return $this->app->render('admin/main.twig', [
+        return $this->app->render('admin/exercise/page.twig', [
             'exerciseList'  => $exerciseList,
             'exerciseCount' => $exerciseCount,
             'curPage'       => $page,
@@ -224,7 +242,7 @@ class Admin implements ControllerProviderInterface
 
                 // Показать список задач.
                 return $this->app->redirect(
-                    $this->app['url_generator']->generate('admin_page', ['page' => $page])
+                    $this->app['url_generator']->generate('admin_exercise_page', ['page' => $page])
                 );
             }
         }
@@ -268,6 +286,22 @@ class Admin implements ControllerProviderInterface
 
         // Отобразить свежую форму для старой задачи.
         return $view($exercise);
+    }
+
+    private function themePage($page)
+    {
+        $themeCount = $this->app['model']->theme->getCount(true);
+        if (($page - 1) * self::PER_PAGE > $themeCount) {
+            return $this->app->redirect($this->app['url_generator']->generate('admin_theme_page', ['page' => 1]));
+        }
+        $themeList = $this->app['model']->theme->getList(($page - 1) * self::PER_PAGE, self::PER_PAGE, true);
+
+        return $this->app->render('admin/theme/page.twig', [
+            'themeList'  => $themeList,
+            'themeCount' => $themeCount,
+            'curPage'    => $page,
+            'perPage'    => self::PER_PAGE,
+        ]);
     }
 
     private function themeView($theme_id)
@@ -423,7 +457,7 @@ class Admin implements ControllerProviderInterface
 
             // Показать список задач.
             return $this->app->redirect(
-                $this->app['url_generator']->generate('admin_page', ['page' => $page])
+                $this->app['url_generator']->generate('admin_exercise_page', ['page' => $page])
             );
         }
 

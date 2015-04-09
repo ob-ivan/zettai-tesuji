@@ -12,7 +12,7 @@
     {% if theme %}
         {# Заголовок темы #}
         <h2>
-            Тема №{{ theme.theme_id|lpad('0', 2) }}.
+            Тема №{{ theme.theme_id }}.
             {{ theme.title }}
             {% if theme.is_hidden %}
                 (скрыта)
@@ -49,7 +49,7 @@
 
     {# Кнопки возврата #}
     <p>
-        <a href="{{ path('admin_page') }}">[на главную]</a>
-        <a href="{{ path('admin_page', { 'page' : page }) }}">[к списку тем]</a>
+        <a href="{{ path('admin_main') }}">[на главную]</a>
+        <a href="{{ path('admin_theme_page', { 'page' : page }) }}">[к списку тем]</a>
     </p>
 {% endblock %}

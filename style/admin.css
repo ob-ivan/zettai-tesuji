@@ -15,7 +15,7 @@ div.next {
     float : right;
 }
 
-/* Редактирование задачи */
+/* Задачи */
 
 input[name=exercise_id] {
     width: 3.5ex;
@@ -32,6 +32,21 @@ input[name=title] {
 textarea.answer {
     width : 560px;
     height: 7em;
+}
+
+/* Темы */
+
+input[name=theme_id] {
+    width: 3.5ex;
+}
+
+textarea.intro {
+    width : 560px;
+    height: 7em;
+}
+
+div.theme div.intro {
+    margin-bottom : 0.5em;
 }
 
 /* happy.js */

@@ -150,7 +150,7 @@
             <p>
                 <input type="submit" name="save" value="Сохранить"/>
                 {% if exercise_id == 'new' %}
-                    {% set cancel = path('admin_page') %}
+                    {% set cancel = path('admin_exercise_page') %}
                 {% else %}
                     {% set cancel = path('admin_exercise_view', { 'exercise_id' : exercise_id }) %}
                 {% endif %}

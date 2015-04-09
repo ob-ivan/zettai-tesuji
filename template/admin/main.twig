@@ -1,29 +1,16 @@
+{#
+    admin/main
+#}
 {% extends 'admin/_layout.twig' %}
 
 {% block body %}
-    <h2>Задачи</h2>
-    {% if exerciseList %}
-        <ul>
-            {% for exercise in exerciseList %}
-                <li>
-                    <a href="{{ path('admin_exercise_view', { 'exercise_id' : exercise.exercise_id }) }}">
-                        №{{ exercise.exercise_id|lpad('0', 3) }}. {{ exercise.title }}
-                    </a>
-                    {% if exercise.is_hidden %}
-                        (скрыта)
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-        {% include '_paginator.twig' with {
-            'totalCount'    : exerciseCount,
-            'perPage'       : perPage,
-            'curPage'       : curPage,
-            'adjacentPages' : 5,
-            'linkTemplate'  : 'admin_page'
-        } only %}
-    {% else %}
-        <p class="empty">Нет задач</p>
-    {% endif %}
-    <p><a href="{{ path('admin_exercise_edit', { 'exercise_id' : 'new' }) }}">[Создать задачу]</a></p>
+    <h2>Разделы</h2>
+    <ul>
+        <li>
+            <a href="{{ path('admin_exercise_page') }}">Задачи</a>
+        </li>
+        <li>
+            <a href="{{ path('admin_theme_page') }}">Темы</a>
+        </li>
+    </ul>
 {% endblock %}
