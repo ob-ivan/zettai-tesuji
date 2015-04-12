@@ -4,6 +4,7 @@ namespace Zettai\Controller\Web;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Zettai\Controller\Exception;
 
 class Admin implements ControllerProviderInterface
 {
@@ -90,7 +91,7 @@ class Admin implements ControllerProviderInterface
             return $this->themeSave($request, $theme_id);
         })
         ->convert('theme_id', function ($theme_id) {
-            return $this->convertThemeId($theme_id);
+            return $this->convertThemeIdNew($theme_id);
         })
         ->bind('admin_theme_save');
 
@@ -553,10 +554,19 @@ class Admin implements ControllerProviderInterface
         $this->app['monolog']->addInfo($message);
     }
 
-    private function convertThemeId ($theme_id) {
+    private function convertThemeIdNew($theme_id)
+    {
+        if ($theme_id === 'new') {
+            return $theme_id;
+        }
+        return $this->convertThemeId($theme_id);
+    }
+
+    private function convertThemeId($theme_id)
+    {
         $theme_id = intval($theme_id);
         if ($theme_id < 1) {
-            throw new Exception('Theme id must be positive integer');
+            throw new Exception('Theme id must be positive integer', Exception::THEME_ID_INCONVERTIBLE);
         }
         return $theme_id;
     }
